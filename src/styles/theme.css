@@ -1,0 +1,46 @@
+/* ============================================================
+   THEME / DESIGN TOKENS
+   Este es el ÚNICO lugar donde se definen colores y estilos base.
+   Cuando lleguen los colores oficiales de la marca, se cambian aquí
+   y se aplican a todo el sitio automáticamente.
+   ============================================================ */
+
+:root {
+  /* --- Colores de marca Shark Caribe --- */
+  --color-primary: #2b57ff;        /* azul eléctrico neón / botones, enlaces */
+  --color-primary-dark: #1e3fd6;   /* hover de botones */
+  --color-secondary: #0d1a3d;      /* azul marino profundo / hero, footer */
+  --color-accent: #5a2d8f;         /* morado/violeta / badges, detalles */
+  --color-charcoal: #33383f;       /* gris carbón ("Caribe") */
+
+  /* --- Neutros --- */
+  --color-bg: #ffffff;
+  --color-bg-alt: #f4f6fb;         /* fondo de secciones alternas (tinte azulado) */
+  --color-text: #1a1e2b;
+  --color-text-muted: #5c6472;
+  --color-border: #dde3f0;
+  --color-white: #ffffff;
+
+  /* --- Tipografía --- */
+  --font-base: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --fs-hero: clamp(2.2rem, 6vw, 4rem);
+  --fs-h2: clamp(1.6rem, 4vw, 2.5rem);
+  --fs-h3: clamp(1.2rem, 2.5vw, 1.5rem);
+  --fs-body: clamp(1rem, 2vw, 1.125rem);
+
+  /* --- Espaciado --- */
+  --space-section: clamp(3.5rem, 8vw, 6rem);
+  --container-max: 1200px;
+  --container-pad: clamp(1rem, 4vw, 2rem);
+
+  /* --- Bordes y sombras --- */
+  --radius: 12px;
+  --radius-lg: 20px;
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.15);
+
+  /* --- Transiciones --- */
+  --transition: 0.25s ease;
+}

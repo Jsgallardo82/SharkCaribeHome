@@ -1,0 +1,33 @@
+.testimonials__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.testimonial-card {
+  background-color: var(--color-bg-alt);
+  border-radius: var(--radius);
+  padding: 2rem;
+  border-left: 4px solid var(--color-primary);
+}
+
+.testimonial-card blockquote {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--color-text);
+  margin-bottom: 1.25rem;
+}
+
+.testimonial-card figcaption {
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-card__name {
+  font-weight: 700;
+}
+
+.testimonial-card__role {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
