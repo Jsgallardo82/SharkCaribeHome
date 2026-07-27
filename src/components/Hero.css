@@ -1,11 +1,12 @@
 .hero {
   position: relative;
-  min-height: 90vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   text-align: center;
   color: var(--color-white);
   overflow: hidden;
+  padding-block: 3rem;
   /* Base: azul marino profundo de la marca */
   background:
     radial-gradient(120% 80% at 50% 120%, rgba(43, 87, 255, 0.25), transparent 60%),
@@ -45,37 +46,144 @@
   }
 }
 
-.hero__content {
-  position: relative;
+/* ===== Carrusel de fondo ===== */
+.hero__carousel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero__slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.hero__slide.is-active {
+  opacity: 1;
+}
+
+/* Placeholders con gradientes de marca distintos, para ver el carrusel girar */
+.hero__slide--1 {
+  background-image: linear-gradient(135deg, #0d1a3d, #2b57ff);
+}
+.hero__slide--2 {
+  background-image: linear-gradient(135deg, #1a2a5a, #5a2d8f);
+}
+.hero__slide--3 {
+  background-image: linear-gradient(135deg, #0a1330, #6f9bff);
+}
+
+.hero__slide-tag {
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Capa oscura sobre el carrusel para legibilidad del ticket */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
   z-index: 1;
-  max-width: 800px;
+  background: radial-gradient(
+    80% 80% at 50% 50%,
+    rgba(8, 15, 40, 0.5),
+    rgba(8, 15, 40, 0.78)
+  );
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+}
+
+/* El boleto insignia (horizontal) */
+.hero__ticket {
+  width: 100%;
+  max-width: 960px;
+}
+
+.hero__ticket-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.75rem, 4vw, 3rem);
+  color: var(--color-secondary);
+  text-align: left;
+}
+
+.hero__barcode {
+  height: 40px;
+  max-width: 340px;
+  margin-bottom: 1.75rem;
 }
 
 .hero__kicker {
   text-transform: uppercase;
-  letter-spacing: 3px;
-  font-weight: 600;
-  font-size: 0.9rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  font-size: 0.8rem;
   margin-bottom: 1rem;
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 .hero__title {
-  font-size: var(--fs-hero);
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
   margin-bottom: 1.25rem;
+  color: var(--color-secondary);
 }
 
 .hero__subtitle {
-  font-size: var(--fs-body);
-  margin-bottom: 2.5rem;
-  opacity: 0.92;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.hero__actions {
+/* La colilla azul con el llamado a la acción */
+.hero__stub {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1.1rem;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  animation: heroStubFade 0.5s ease;
+}
+
+@keyframes heroStubFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Etiqueta de categoría (píldora morada, como en los tickets) */
+.hero__category {
+  background: var(--color-accent);
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
 }
 
 .hero__cta {
@@ -95,4 +203,79 @@
 .hero__terms:hover {
   opacity: 1;
   border-bottom-color: var(--color-white);
+}
+
+/* ===== Controles del carrusel ===== */
+.hero__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-white);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background var(--transition);
+}
+
+.hero__nav:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.hero__nav--prev {
+  left: clamp(0.75rem, 3vw, 2rem);
+}
+
+.hero__nav--next {
+  right: clamp(0.75rem, 3vw, 2rem);
+}
+
+.hero__dots {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.hero__dot {
+  width: 11px;
+  height: 11px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.hero__dot:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.hero__dot.is-active {
+  background: var(--color-white);
+  transform: scale(1.25);
+}
+
+/* En móvil (ticket apilado) el contenido se centra */
+@media (max-width: 720px) {
+  .hero__ticket-main {
+    text-align: center;
+  }
+
+  .hero__barcode {
+    margin-inline: auto;
+  }
 }

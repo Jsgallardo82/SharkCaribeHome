@@ -16,6 +16,7 @@
   /* --- Neutros --- */
   --color-bg: #ffffff;
   --color-bg-alt: #f4f6fb;         /* fondo de secciones alternas (tinte azulado) */
+  --color-bg-dark: #0a1330;        /* fondo oscuro global (hilera de tickets) */
   --color-text: #1a1e2b;
   --color-text-muted: #5c6472;
   --color-border: #dde3f0;

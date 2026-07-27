@@ -1,46 +1,54 @@
-.about__grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 3rem;
-  align-items: center;
-  margin-top: 2rem;
+.about-ticket__main {
+  padding: clamp(1.75rem, 5vw, 3rem);
+  text-align: center;
 }
 
-.about__text p {
+.about-ticket__barcode {
+  height: 36px;
+  max-width: 260px;
+  margin: 0 auto 1.75rem;
+}
+
+.about-ticket__text {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.about-ticket__text p {
   margin-bottom: 1.25rem;
   color: var(--color-text-muted);
 }
 
-.about__stats {
-  display: grid;
-  gap: 1.5rem;
+.about-ticket__text p:last-child {
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
-.about__stat {
-  background-color: var(--color-bg-alt);
-  border-radius: var(--radius);
-  padding: 1.5rem;
+/* Colilla: línea de tiempo de ediciones */
+.about-ticket__stub {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  padding: 1.75rem 1.5rem;
+}
+
+.about-ticket__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 
-.about__stat-value {
-  display: block;
-  font-size: 2.5rem;
+.about-ticket__stat-value {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
   font-weight: 800;
-  color: var(--color-primary);
   line-height: 1;
+  color: var(--color-white);
 }
 
-.about__stat-label {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
-}
-
-@media (max-width: 768px) {
-  .about__grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
+.about-ticket__stat-label {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
 }

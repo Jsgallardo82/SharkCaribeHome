@@ -1,0 +1,172 @@
+/* ============================================================
+   TICKET — estética de boleto reutilizable
+   ============================================================ */
+
+.ticket {
+  /* Color de las muescas: por defecto el fondo de secciones alternas.
+     Pásalo por prop notchBg cuando el ticket vaya sobre otro fondo. */
+  --notch-bg: var(--color-bg-alt);
+  --notch-size: 22px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+/* Ticket de sección: centrado y ancho, sobre el fondo oscuro global */
+.ticket--section {
+  --notch-bg: var(--color-bg-dark);
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+/* Cuerpo (parte blanca) */
+.ticket__main {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+/* Línea de perforación con muescas semicirculares a los lados */
+.ticket__perf {
+  position: relative;
+  height: 0;
+  border-top: 2px dashed rgba(13, 26, 61, 0.28);
+}
+
+.ticket__perf::before,
+.ticket__perf::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: var(--notch-size);
+  height: var(--notch-size);
+  border-radius: 50%;
+  background: var(--notch-bg);
+  transform: translateY(-50%);
+}
+
+.ticket__perf::before {
+  left: calc(var(--notch-size) / -2);
+}
+
+.ticket__perf::after {
+  right: calc(var(--notch-size) / -2);
+}
+
+/* Colilla (parte azul marino) */
+.ticket__stub {
+  background: var(--color-secondary);
+  color: var(--color-white);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* ============================================================
+   Variante HORIZONTAL: cuerpo a la izquierda, colilla a la derecha,
+   perforación vertical con muescas arriba y abajo.
+   ============================================================ */
+
+.ticket--horizontal {
+  flex-direction: row;
+}
+
+.ticket--horizontal .ticket__main {
+  flex: 1 1 60%;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+
+.ticket--horizontal .ticket__stub {
+  flex: 1 1 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
+.ticket--horizontal .ticket__perf {
+  height: auto;
+  width: 0;
+  align-self: stretch;
+  border-top: none;
+  border-left: 2px dashed rgba(13, 26, 61, 0.28);
+}
+
+.ticket--horizontal .ticket__perf::before {
+  top: calc(var(--notch-size) / -2);
+  left: 0;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+.ticket--horizontal .ticket__perf::after {
+  top: auto;
+  bottom: calc(var(--notch-size) / -2);
+  left: 0;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+/* En móvil el ticket horizontal se apila (vuelve a vertical) */
+@media (max-width: 720px) {
+  .ticket--horizontal {
+    flex-direction: column;
+  }
+
+  .ticket--horizontal .ticket__main {
+    flex: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .ticket--horizontal .ticket__stub {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
+
+  .ticket--horizontal .ticket__perf {
+    height: 0;
+    width: auto;
+    align-self: auto;
+    border-left: none;
+    border-top: 2px dashed rgba(13, 26, 61, 0.28);
+  }
+
+  .ticket--horizontal .ticket__perf::before {
+    top: 0;
+    bottom: auto;
+    left: calc(var(--notch-size) / -2);
+    right: auto;
+    transform: translateY(-50%);
+  }
+
+  .ticket--horizontal .ticket__perf::after {
+    top: 0;
+    bottom: auto;
+    left: auto;
+    right: calc(var(--notch-size) / -2);
+    transform: translateY(-50%);
+  }
+}
+
+/* ============================================================
+   Código de barras
+   ============================================================ */
+
+.barcode {
+  display: block;
+  height: 34px;
+  width: 100%;
+}
+
+.barcode rect {
+  fill: currentColor;
+}
+
+.barcode--dark {
+  color: var(--color-secondary);
+}
+
+.barcode--light {
+  color: var(--color-white);
+}

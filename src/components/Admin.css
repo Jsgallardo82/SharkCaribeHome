@@ -1,0 +1,262 @@
+.admin {
+  min-height: 100vh;
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+}
+
+.admin--center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.admin__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem clamp(1rem, 4vw, 2.5rem);
+  background: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.admin__title {
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+}
+
+.admin__user {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin-top: 0.25rem;
+}
+
+.admin__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin__link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.admin__link:hover {
+  color: var(--color-white);
+}
+
+.admin__body {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.admin__muted {
+  color: var(--color-text-muted);
+}
+
+.admin__error {
+  color: #c62828;
+  background: #fdecea;
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  max-width: 720px;
+}
+
+.admin__count {
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.admin__table-wrap {
+  overflow-x: auto;
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.admin__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.admin__table th,
+.admin__table td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin__table th {
+  background: var(--color-bg-alt);
+  font-weight: 700;
+  color: var(--color-secondary);
+  position: sticky;
+  top: 0;
+}
+
+.admin__table tbody tr:hover {
+  background: var(--color-bg-alt);
+}
+
+.admin__th-toggle {
+  width: 4.5rem;
+}
+
+.admin__toggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-secondary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.admin__toggle:hover {
+  background: var(--color-bg-alt);
+  border-color: var(--color-secondary);
+}
+
+.admin__row--open {
+  background: var(--color-bg-alt);
+}
+
+.admin__status {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+  color: var(--color-secondary);
+}
+
+.admin__status--pending,
+.admin__status--under_review {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.admin__status--pago,
+.admin__status--approved {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.admin__status--rejected,
+.admin__status--cancelled {
+  background: #fdecea;
+  color: #c62828;
+}
+
+.admin__detail-row > td {
+  white-space: normal;
+  background: var(--color-bg-alt);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.admin__detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.85rem 1.25rem;
+  margin: 0;
+}
+
+.admin__detail-item {
+  min-width: 0;
+}
+
+.admin__detail-item--wide {
+  grid-column: 1 / -1;
+}
+
+.admin__detail dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin__detail dd {
+  margin: 0;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.admin__detail-text {
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+.admin__pay {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.85rem 1rem;
+}
+
+.admin__pay-title {
+  flex: 1 1 100%;
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+.admin__pay-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 0 0 auto;
+  width: min(100%, 220px);
+}
+
+.admin__pay-field span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.admin__pay-field input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.85rem;
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-white);
+}
+
+.admin__pay-field input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.admin__pay-error {
+  flex: 1 1 100%;
+  margin: 0;
+  color: #c62828;
+  font-size: 0.9rem;
+}
+
+.admin__pay-ok {
+  margin: 0.85rem 0 0;
+  color: #2e7d32;
+  font-weight: 600;
+  font-size: 0.9rem;
+}

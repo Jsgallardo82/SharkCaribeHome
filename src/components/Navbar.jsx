@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { NAV_LINKS, REGISTER_URL, INSTAGRAM_URL } from '../data/content.js'
+import { NAV_LINKS, INSTAGRAM_URL } from '../data/content.js'
 import './Navbar.css'
 
-export default function Navbar() {
+export default function Navbar({ onRegister }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -53,15 +53,16 @@ export default function Navbar() {
               </a>
             </li>
             <li>
-              <a
-                href={REGISTER_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
                 className="btn btn--primary navbar__cta"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false)
+                  onRegister()
+                }}
               >
                 Inscríbete
-              </a>
+              </button>
             </li>
           </ul>
         </nav>

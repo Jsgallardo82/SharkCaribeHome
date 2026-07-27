@@ -19,7 +19,13 @@ body {
   font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--color-text);
-  background-color: var(--color-bg);
+  /* Fondo oscuro de la "hilera de tickets": azul marino con halos sutiles */
+  background-color: var(--color-bg-dark);
+  background-image:
+    radial-gradient(60% 40% at 12% 12%, rgba(43, 87, 255, 0.14), transparent 60%),
+    radial-gradient(55% 40% at 88% 88%, rgba(90, 45, 143, 0.12), transparent 60%),
+    radial-gradient(45% 35% at 90% 15%, rgba(111, 155, 255, 0.10), transparent 60%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -80,8 +86,13 @@ ul {
   padding: 0.9rem 2rem;
   border: none;
   border-radius: var(--radius);
+  /* font-family y line-height explícitos: los <button> nativos no los heredan,
+     y se usa .btn tanto en <a> como en <button>. */
+  font-family: inherit;
   font-size: 1rem;
+  line-height: 1.6;
   font-weight: 600;
+  text-align: center;
   cursor: pointer;
   transition: transform var(--transition), background-color var(--transition);
 }

@@ -1,27 +1,37 @@
+.editions-ticket__main {
+  padding: clamp(1.75rem, 5vw, 3rem);
+}
+
 .editions__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 2rem;
-  max-width: 760px;
-  margin-inline: auto;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+@media (max-width: 640px) {
+  .editions__grid {
+    grid-template-columns: 1fr;
+    max-width: 340px;
+    margin-inline: auto;
+  }
 }
 
 .edition-card {
-  background-color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-alt);
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: transform var(--transition);
 }
 
 .edition-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
 }
 
 .edition-card__image {
   aspect-ratio: 4 / 3;
-  overflow: hidden;
 }
 
 .edition-card__image img {
@@ -43,23 +53,66 @@
 }
 
 .edition-card__body {
-  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
 }
 
 .edition-card__year {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-primary);
-  text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .edition-card__body h3 {
   font-size: var(--fs-h3);
-  margin: 0.35rem 0 0.75rem;
+  margin: 0.35rem 0 0.6rem;
+  color: var(--color-secondary);
 }
 
 .edition-card__body p {
   color: var(--color-text-muted);
   font-size: 0.95rem;
+}
+
+/* Enlace a la transmisión (se ancla al fondo de la tarjeta) */
+.edition-card__video {
+  margin-top: auto;
+  padding-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  transition: color var(--transition);
+}
+
+.edition-card__video:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Colilla */
+.editions-ticket__stub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.75rem;
+}
+
+.editions-ticket__stub-label {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.editions-ticket__barcode {
+  height: 30px;
+  width: 120px;
+  flex-shrink: 0;
 }
