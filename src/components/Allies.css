@@ -99,8 +99,12 @@
 .allies__organizer-logo {
   height: 96px;
   width: auto;
-  max-width: 240px;
+  max-width: 280px;
   object-fit: contain;
+  /* El logo ISS viene con fondo claro y tipografía outlined */
+  background: #f2f2f2;
+  border-radius: var(--radius);
+  padding: 0.65rem 1rem;
 }
 
 /* Placeholders (espacios libres para las imágenes) */

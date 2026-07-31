@@ -24,45 +24,63 @@ export const SPONSOR_URL =
 export const TERMS_URL =
   '/shark%20caribe%20Pitch%20Competition%202026%20t%C3%A9rminos%20de%20referencia%20-%20v1.docx'
 
-/* Modos de inscripción que rotan en el carrusel del hero.
-   Cada slide = una imagen + un mensaje + un botón.
+/* Modos de inscripción que rotan en las cajas 2 y 3 del hero (el fondo es fijo).
    - action 'modal'  -> abre el formulario propio (RegisterModal, competidores)
-   - action 'link'   -> abre el formulario viejo (Microsoft Forms) en pestaña nueva
-   Deja "image" vacío para mostrar un placeholder. */
+   - action 'link'   -> abre el formulario (Microsoft Forms) en pestaña nueva */
 export const HERO_MODES = [
   {
     id: 'participante',
     title: 'Participante',
-    text: 'Compite en la Pitch Competition: presenta tu emprendimiento ante el jurado y conecta con inversionistas.',
-    cta: 'Inscríbete como participante',
-    image: '', // TODO: falta el banner real de competidores
+    cta: 'Inscríbete',
     alt: 'Inscripción de participantes',
     action: 'modal',
+    details: [
+      {
+        title: 'Shark Caribe 2026',
+        text: 'Donde nacen los próximos grandes negocios',
+      },
+      { title: 'Inscripciones abiertas' },
+      { title: 'Valor', text: '$15.000 COP' },
+    ],
   },
   {
     id: 'patrocinador',
     title: 'Patrocinador',
-    text: 'Lleva tu marca al escenario de Shark Caribe con patrocinios y muestra comercial.',
-    cta: 'Inscríbete como patrocinador',
-    image: '', // por definir
+    cta: 'Inscríbete',
     alt: 'Inscripción de patrocinadores y muestra comercial',
     action: 'link',
     url: REGISTER_URL,
+    details: [
+      {
+        title: 'Elite',
+        text: 'Para las empresas que quieren',
+        emphasis: 'dejar huella.',
+      },
+      {
+        title: 'Platinium',
+        text: 'Para las empresas que quieren',
+        emphasis: 'abrir conversaciones.',
+      },
+      {
+        title: 'Diamond',
+        text: 'Para las empresas que quieren estar donde ocurren las',
+        emphasis: 'oportunidades.',
+      },
+    ],
   },
   {
     id: 'asistente',
     title: 'Asistente',
-    text: 'Vive la experiencia en vivo: charlas, pitches y networking con el ecosistema emprendedor del Caribe.',
-    cta: 'Inscríbete como asistente',
-    image: '', // por definir
+    cta: 'Inscríbete',
     alt: 'Inscripción de asistentes',
     action: 'link',
     url: REGISTER_URL,
+    details: [{ title: 'Inscripciones abiertas', text: '80k' }],
   },
 ]
 
 /* Organizador. */
-export const ORGANIZER = { name: 'IS Comunicaciones', logo: '/logos/iss.png' }
+export const ORGANIZER = { name: 'IS Comunicaciones', logo: '/logos/iss.jpeg' }
 
 /* Aliados estratégicos (logos en /public/logos). */
 export const ALLIES = [
@@ -147,19 +165,146 @@ export const REFERRAL_SOURCES = [
 ]
 
 export const NAV_LINKS = [
+  { label: 'Competidores', href: '#competidores' },
+  { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
   { label: 'Ediciones', href: '#ediciones' },
-  { label: 'Testimonios', href: '#testimonios' },
+  // { label: 'Testimonios', href: '#testimonios' },
   { label: 'Galería', href: '#galeria' },
   // { label: 'Contacto', href: '#contacto' },
 ]
 
+/* Noticias del evento en medios */
+export const NEWS = {
+  background: '/album/2023/Imagen8.jpg',
+  titleSolid: 'Explora Shark',
+  titleOutline: 'Caribe',
+  subtitle: 'Novedades y coberturas del ecosistema Shark Caribe.',
+  items: [
+    {
+      title: 'Shark Caribe abre convocatoria para impulsar emprendimientos del Caribe',
+      excerpt:
+        'LaVibrante: convocatoria abierta hasta el 10 de agosto para la cuarta edición del Pitch Competition.',
+      image: '/album/2024/Imagen12.jpg',
+      href: 'https://lavibrante.com/shark-caribe-abre-convocatoria-para-impulsar-los-emprendimientos-que-transforman-el-caribe/',
+      cta: 'Leer más',
+    },
+    {
+      title: 'Abierta convocatoria para emprendedores en la IV edición',
+      excerpt:
+        'La Esquina Deportes y Algo Más: sectores convocados, categorías Junior, Prime y Silver +50.',
+      image: '/album/2024/Imagen13.jpg',
+      href: 'https://www.laesquinadeportesyalgomas.com/abierta-convocatoria-para-los-emprendedores-en-la-iv-edicion-de-shark-caribe/',
+      cta: 'Leer más',
+    },
+    {
+      title: 'Pitch Competition 2026 busca impulsar el emprendimiento del Caribe',
+      excerpt:
+        'Ey Boricua: Barranquilla como punto de encuentro entre innovación, tradición y proyección internacional.',
+      image: '/album/2024/Imagen14.jpg',
+      href: 'https://eyboricua.com/shark-caribe-pitch-competition-abre-convocatoria-para-la-iv-edicion-y-busca-impulsar-el-emprendimiento-que-transforma-el-caribe/',
+      cta: 'Leer más',
+    },
+    {
+      title: 'Convocatoria IV edición del Pitch Competition 2026',
+      excerpt:
+        'Índice Colombia: requisitos, fechas clave y el llamado a transformar el Caribe con emprendimiento.',
+      image: '/album/2024/Imagen15.jpg',
+      href: 'https://indicecolombia.com/2026/07/16/shark-caribe-abre-convocatoria-para-la-iv-edicion-del-pitch-competition-2026-y-busca-impulsar-el-emprendimiento-que-transforma-el-caribe/',
+      cta: 'Leer más',
+    },
+  ],
+}
+
 export const HERO = {
-  kicker: '25 de Noviembre, 2026 · Barranquilla, Colombia',
-  title: 'Shark Caribe Pitch Competition 2026',
-  subtitle:
-    'La competencia de pitch que impulsa a los emprendedores del Caribe. Vuelve una nueva edición del evento que ya es referente en la región.',
-  ctaLabel: 'Inscríbete ahora',
+  titlePitch: 'Pitch',
+  titleCompetition: 'Competition',
+  brandLine: 'by',
+  brand: 'Shark Caribe',
+  meta: '25/11/2026 - Hotel Dann Carlton Barranquilla',
+}
+
+/* Sección competidores + calendario (debajo del hero) */
+export const COMPETITION = {
+  eyebrow: 'Pitch Competition',
+  title: 'Para competidores',
+  intro:
+    'Información clara para quienes van a postular sus startups o proyectos.',
+  categories: [
+    {
+      label: 'Junior',
+      description: 'Jóvenes emprendedores de hasta 17 años.',
+    },
+    {
+      label: 'Prime',
+      description: 'Emprendedores de 18 a 45 años.',
+    },
+    {
+      label: 'Silver +50',
+      description: 'Emprendedores mayores de 50 años que se reinventan.',
+    },
+  ],
+  sectorsNote: 'Únicamente 9 sectores admitidos:',
+  sectors: [
+    'Startups de base tecnológica',
+    'Turismo',
+    'Textiles y confección',
+    'Cuero y calzado',
+    'Cerámica y arcilla',
+    'Madera y construcción ligera',
+    'Artes plásticas',
+    'Manualidades',
+    'Oficios rurales y sostenibles',
+  ],
+  requirements: [
+    'Contar con Producto Mínimo Viable (PMV) validado.',
+    'Haber recibido capital semilla u otro estímulo previo.',
+    'Valor de inscripción: $15.000 COP.',
+    'Enviar soportes requeridos y autorización firmada (categoría Junior).',
+  ],
+  cta: 'Postularme ahora',
+}
+
+export const SCHEDULE = {
+  eyebrow: 'Cronograma oficial',
+  title: 'Calendario',
+  intro: 'Línea de tiempo clara del proceso de la competencia.',
+  milestones: [
+    { date: '5 Jul – 10 Ago', event: 'Inscripciones abiertas.' },
+    {
+      date: '10 Ago – 13 Ago',
+      event: 'Evaluación y 1ª ronda de preselección.',
+    },
+    { date: '14 Ago', event: 'Presentación y 2ª ronda.' },
+    {
+      date: '15 Ago – 31 Oct',
+      event: 'Bootcamp de entrenamiento intensivo.',
+    },
+    {
+      date: '25 Nov',
+      event: 'Gran Final / Gala Pitch Competition (Hotel Dann Carlton).',
+    },
+  ],
+  galaTitle: 'Agenda de la Gala',
+  galaSubtitle: '25 de noviembre · Hotel Dann Carlton',
+  galaAgenda: [
+    {
+      time: '5:00 PM – 6:30 PM',
+      detail: 'Pitch de finalistas.',
+    },
+    {
+      time: '6:30 PM – 7:30 PM',
+      detail: 'Deliberación de los Sharks.',
+    },
+    {
+      time: '7:30 PM – 8:30 PM',
+      detail: 'Invitados especiales.',
+    },
+    {
+      time: '8:30 PM – 9:45 PM',
+      detail: 'Premiación y cierre.',
+    },
+  ],
 }
 
 export const ABOUT = {

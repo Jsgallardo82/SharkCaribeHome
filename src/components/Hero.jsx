@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { HERO, HERO_MODES, TERMS_URL } from '../data/content.js'
+import { HERO, HERO_MODES } from '../data/content.js'
 import Ticket, { Barcode } from './Ticket.jsx'
 import './Hero.css'
 
@@ -18,19 +18,11 @@ export default function Hero({ onRegister }) {
 
   return (
     <section id="inicio" className="hero">
-      <div className="hero__carousel" aria-hidden="true">
-        {HERO_MODES.map((m, i) => (
-          <div
-            key={m.id}
-            className={`hero__slide hero__slide--${(i % 3) + 1} ${
-              i === active ? 'is-active' : ''
-            }`}
-            style={m.image ? { backgroundImage: `url("${m.image}")` } : undefined}
-          >
-            {!m.image && <span className="hero__slide-tag">{m.title}</span>}
-          </div>
-        ))}
-      </div>
+      <div
+        className="hero__bg"
+        style={{ backgroundImage: 'url("/album/2023/Imagen9.jpg")' }}
+        aria-hidden="true"
+      />
       <div className="hero__overlay" aria-hidden="true" />
 
       <div className="container hero__inner">
@@ -38,9 +30,51 @@ export default function Hero({ onRegister }) {
           className="hero__ticket ticket--horizontal"
           notchBg="#0b1533"
           stub={
-            <div className="hero__stub" key={mode.id}>
-              <p className="hero__category">Categoría · {mode.title}</p>
-              <p className="hero__subtitle">{mode.text}</p>
+            <div className="hero__stub" key={`${mode.id}-details`}>
+              <Barcode variant="light" className="hero__stub-barcode" />
+              <ul className="hero__details">
+                {(mode.details || []).map((item) => (
+                  <li key={item.title} className="hero__detail">
+                    <p className="hero__detail-title">{item.title}</p>
+                    {(item.text || item.emphasis) && (
+                      <p className="hero__detail-text">
+                        {item.text ? `${item.text} ` : null}
+                        {item.emphasis ? (
+                          <span className="hero__detail-emphasis">{item.emphasis}</span>
+                        ) : null}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          }
+        >
+          <div className="hero__ticket-main">
+            <div className="hero__brand">
+              <Barcode variant="dark" className="hero__barcode" />
+              <h1 className="hero__headline">
+                <span className="hero__title hero__title--pitch">{HERO.titlePitch}</span>
+                <span className="hero__title hero__title--competition">
+                  {HERO.titleCompetition}
+                </span>
+              </h1>
+              <div className="hero__brand-block">
+                <p className="hero__brand-line">
+                  <span className="hero__brand-rule" aria-hidden="true" />
+                  <span>{HERO.brandLine}</span>
+                  <span className="hero__brand-rule" aria-hidden="true" />
+                </p>
+                <p className="hero__brand-name">{HERO.brand}</p>
+              </div>
+              <p className="hero__meta">{HERO.meta}</p>
+            </div>
+
+            <div className="hero__category-panel" key={mode.id}>
+              <div className="hero__category-badge">
+                <span className="hero__category-label">Categoría</span>
+                <span className="hero__category-title">{mode.title}</span>
+              </div>
               {mode.action === 'modal' ? (
                 <button
                   type="button"
@@ -59,18 +93,7 @@ export default function Hero({ onRegister }) {
                   {mode.cta}
                 </a>
               )}
-              {mode.id === 'participante' && (
-                <a href={TERMS_URL} className="hero__terms" download>
-                  ↓ Descargar términos de referencia
-                </a>
-              )}
             </div>
-          }
-        >
-          <div className="hero__ticket-main">
-            <Barcode variant="dark" className="hero__barcode" />
-            {HERO.kicker && <p className="hero__kicker">{HERO.kicker}</p>}
-            <h1 className="hero__title">{HERO.title}</h1>
           </div>
         </Ticket>
       </div>

@@ -6,99 +6,36 @@
   text-align: center;
   color: var(--color-white);
   overflow: hidden;
-  padding-block: 3rem;
-  /* Base: azul marino profundo de la marca */
-  background:
-    radial-gradient(120% 80% at 50% 120%, rgba(43, 87, 255, 0.25), transparent 60%),
-    linear-gradient(160deg, #0a1330 0%, #0d1a3d 45%, #0a1230 100%);
+  padding-block: 0.75rem;
+  background: linear-gradient(160deg, #0a1330 0%, #0d1a3d 45%, #0a1230 100%);
 }
 
-/* Capa 1: halos de luz azul que se desplazan y respiran (efecto neón) */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: -20%;
-  background:
-    radial-gradient(35% 45% at 20% 30%, rgba(43, 87, 255, 0.55), transparent 60%),
-    radial-gradient(30% 40% at 82% 68%, rgba(90, 45, 143, 0.45), transparent 60%),
-    radial-gradient(28% 35% at 65% 18%, rgba(111, 155, 255, 0.5), transparent 60%),
-    radial-gradient(25% 30% at 35% 80%, rgba(43, 87, 255, 0.4), transparent 60%);
-  filter: blur(10px);
-  animation: heroDrift 16s ease-in-out infinite alternate;
-}
-
-@keyframes heroDrift {
-  0% {
-    transform: translate3d(-4%, -2%, 0) scale(1.05);
-  }
-  50% {
-    transform: translate3d(3%, 3%, 0) scale(1.12);
-  }
-  100% {
-    transform: translate3d(-2%, 4%, 0) scale(1.05);
-  }
-}
-
-/* Respeta a quienes prefieren menos movimiento */
-@media (prefers-reduced-motion: reduce) {
-  .hero::before {
-    animation: none;
-  }
-}
-
-/* ===== Carrusel de fondo ===== */
-.hero__carousel {
+.hero__bg {
   position: absolute;
   inset: 0;
   z-index: 0;
-}
-
-.hero__slide {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  opacity: 0;
-  transition: opacity 1s ease;
 }
 
-.hero__slide.is-active {
-  opacity: 1;
-}
-
-/* Placeholders con gradientes de marca distintos, para ver el carrusel girar */
-.hero__slide--1 {
-  background-image: linear-gradient(135deg, #0d1a3d, #2b57ff);
-}
-.hero__slide--2 {
-  background-image: linear-gradient(135deg, #1a2a5a, #5a2d8f);
-}
-.hero__slide--3 {
-  background-image: linear-gradient(135deg, #0a1330, #6f9bff);
-}
-
-.hero__slide-tag {
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-/* Capa oscura sobre el carrusel para legibilidad del ticket */
 .hero__overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: radial-gradient(
-    80% 80% at 50% 50%,
-    rgba(8, 15, 40, 0.5),
-    rgba(8, 15, 40, 0.78)
-  );
+  background:
+    linear-gradient(
+      160deg,
+      rgba(10, 19, 48, 0.72) 0%,
+      rgba(13, 26, 61, 0.68) 45%,
+      rgba(10, 19, 48, 0.78) 100%
+    ),
+    radial-gradient(
+      80% 70% at 50% 40%,
+      rgba(43, 87, 255, 0.28),
+      rgba(10, 19, 48, 0.55) 70%
+    );
+  pointer-events: none;
 }
 
 .hero__inner {
@@ -108,62 +45,289 @@
   justify-content: center;
 }
 
-/* El boleto insignia (horizontal) */
 .hero__ticket {
   width: 100%;
-  max-width: 960px;
+  max-width: 1040px;
 }
 
+/* Altura fija para que no salte al cambiar el modo del carrusel */
+.hero__ticket.ticket--horizontal {
+  height: 380px;
+  align-items: stretch;
+}
+
+.hero__ticket.ticket--horizontal .ticket__main,
+.hero__ticket.ticket--horizontal .ticket__stub {
+  min-height: 0;
+  height: auto;
+  align-self: stretch;
+}
+
+.hero__ticket.ticket--horizontal .ticket__main {
+  flex: 1 1 66.666%;
+}
+
+.hero__ticket.ticket--horizontal .ticket__stub {
+  flex: 0 1 33.333%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+/* Zona blanca: caja 1 + caja 2 */
 .hero__ticket-main {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  padding: 0.5rem clamp(1rem, 3vw, 1.75rem);
+  color: var(--color-secondary);
+  text-align: left;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.hero__brand {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(1.75rem, 4vw, 3rem);
-  color: var(--color-secondary);
-  text-align: left;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding-inline: 0.25rem;
 }
 
 .hero__barcode {
-  height: 40px;
-  max-width: 340px;
-  margin-bottom: 1.75rem;
+  height: 32px;
+  width: min(100%, 340px);
+  margin-bottom: 0.25rem;
+  flex-shrink: 0;
 }
 
-.hero__kicker {
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 700;
-  font-size: 0.8rem;
-  margin-bottom: 1rem;
-  color: var(--color-primary);
-}
-
-.hero__title {
-  font-size: clamp(2rem, 6vw, 3.25rem);
-  line-height: 1.05;
-  text-transform: uppercase;
-  letter-spacing: -0.5px;
-  margin-bottom: 1.25rem;
-  color: var(--color-secondary);
-}
-
-.hero__subtitle {
-  font-size: 0.98rem;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-/* La colilla azul con el llamado a la acción */
-.hero__stub {
+.hero__headline {
+  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.1rem;
-  padding: clamp(1.5rem, 4vw, 2.25rem);
-  animation: heroStubFade 0.5s ease;
+  gap: 0;
+  line-height: 0.86;
+  width: 100%;
 }
 
-@keyframes heroStubFade {
+/* Gradiente azul → navy (efecto “brillo”) */
+.hero__title {
+  display: block;
+  margin: 0;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  background: linear-gradient(
+    95deg,
+    #2b57ff 0%,
+    #1a3fd4 18%,
+    #0d1a3d 55%,
+    #0a1330 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(43, 87, 255, 0.4));
+}
+
+.hero__title--pitch {
+  font-size: clamp(3.1rem, 7.5vw, 5.1rem);
+  width: 100%;
+}
+
+.hero__title--competition {
+  font-size: clamp(1.55rem, 3.8vw, 2.45rem);
+  letter-spacing: 0.02em;
+  font-weight: 800;
+  margin-top: 0.02em;
+  width: 100%;
+}
+
+.hero__brand-block {
+  margin-top: 0.4rem;
+  width: min(100%, 360px);
+}
+
+.hero__brand-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+}
+
+.hero__brand-rule {
+  flex: 1 1 auto;
+  height: 1.5px;
+  max-width: 96px;
+  background: var(--color-secondary);
+  opacity: 0.9;
+}
+
+.hero__brand-name {
+  margin: 0;
+  font-size: clamp(1.45rem, 3.2vw, 2rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary);
+}
+
+.hero__meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+  opacity: 0.9;
+  max-width: 360px;
+}
+
+/* Caja 2: categoría + CTA */
+.hero__category-panel {
+  flex: 0 0 auto;
+  width: min(100%, 190px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  animation: heroPanelFade 0.45s ease;
+}
+
+.hero__category-badge {
+  width: 100%;
+  background: var(--color-accent);
+  color: var(--color-white);
+  border-radius: var(--radius);
+  padding: 1rem 0.85rem;
+  text-align: center;
+}
+
+.hero__category-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 0.35rem;
+}
+
+.hero__category-title {
+  display: block;
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.15;
+}
+
+.hero__cta {
+  width: 100%;
+  font-size: 0.95rem;
+  padding: 0.85rem 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Caja 3: detalles azules */
+.hero__stub {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: stretch;
+  gap: 0;
+  padding: 0.5rem 0.85rem;
+  padding-right: 3rem;
+  animation: heroPanelFade 0.45s ease;
+  text-align: left;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+/* Barcode vertical en el borde derecho (rotar un svg horizontal, no estirarlo) */
+.hero__stub-barcode {
+  position: absolute;
+  top: 50%;
+  right: 0.2rem;
+  width: 220px;
+  height: 34px;
+  transform: translate(42%, -50%) rotate(90deg);
+  transform-origin: center;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.hero__details {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+.hero__detail {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.hero__detail:first-child {
+  padding-top: 0;
+}
+
+.hero__detail:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.hero__detail-title {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  color: var(--color-white);
+}
+
+.hero__detail-text {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.hero__detail-emphasis {
+  color: #c4a0ef;
+  font-weight: 700;
+}
+
+@keyframes heroPanelFade {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -174,38 +338,7 @@
   }
 }
 
-/* Etiqueta de categoría (píldora morada, como en los tickets) */
-.hero__category {
-  background: var(--color-accent);
-  color: var(--color-white);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.4rem 1rem;
-  border-radius: 999px;
-}
-
-.hero__cta {
-  font-size: 1.1rem;
-  padding: 1rem 2.5rem;
-}
-
-.hero__terms {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--color-white);
-  opacity: 0.85;
-  border-bottom: 1px solid transparent;
-  transition: opacity var(--transition), border-color var(--transition);
-}
-
-.hero__terms:hover {
-  opacity: 1;
-  border-bottom-color: var(--color-white);
-}
-
-/* ===== Controles del carrusel ===== */
+/* Controles del carrusel */
 .hero__nav {
   position: absolute;
   top: 50%;
@@ -269,13 +402,41 @@
   transform: scale(1.25);
 }
 
-/* En móvil (ticket apilado) el contenido se centra */
 @media (max-width: 720px) {
+  .hero__ticket.ticket--horizontal {
+    height: auto;
+  }
+
   .hero__ticket-main {
+    flex-direction: column;
+    text-align: center;
+    height: auto;
+  }
+
+  .hero__title--pitch {
+    font-size: clamp(2.6rem, 14vw, 3.6rem);
+  }
+
+  .hero__title--competition {
+    font-size: clamp(1.35rem, 7vw, 1.9rem);
+  }
+
+  .hero__category-panel {
+    width: 100%;
+    max-width: 260px;
+    margin-inline: auto;
+  }
+
+  .hero__stub {
+    padding-right: clamp(1.25rem, 3vw, 2rem);
     text-align: center;
   }
 
-  .hero__barcode {
-    margin-inline: auto;
+  .hero__stub-barcode {
+    display: none;
+  }
+
+  .hero__detail-title {
+    font-style: normal;
   }
 }
