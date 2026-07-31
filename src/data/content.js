@@ -14,19 +14,12 @@ export const REGISTER_URL =
 export const INSTAGRAM_URL =
   'https://www.instagram.com/shark.caribe?igsh=a3FiYWx0bTRsMWJv'
 
-/* Inscripción de patrocinadores / muestra comercial.
-   TODO: reemplazar por el destino real (formulario o correo de patrocinios).
-   Por ahora apunta al formulario de Microsoft Forms como respaldo. */
-export const SPONSOR_URL =
-  'https://forms.office.com/pages/responsepage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAYAABGDyKtUNE1ZQ0k1ODhKNjFHMk1UTjhWRk0xSkpBUS4u&route=shorturl'
-
 /* Términos de referencia de la competencia (documento descargable en /public) */
 export const TERMS_URL =
   '/shark%20caribe%20Pitch%20Competition%202026%20t%C3%A9rminos%20de%20referencia%20-%20v1.docx'
 
 /* Modos de inscripción que rotan en las cajas 2 y 3 del hero (el fondo es fijo).
-   - action 'modal'  -> abre el formulario propio (RegisterModal, competidores)
-   - action 'link'   -> abre el formulario (Microsoft Forms) en pestaña nueva */
+   action 'modal' -> abre el formulario del tipo (participante | patrocinador | asistente) */
 export const HERO_MODES = [
   {
     id: 'participante',
@@ -48,8 +41,7 @@ export const HERO_MODES = [
     title: 'Patrocinador',
     cta: 'Inscríbete',
     alt: 'Inscripción de patrocinadores y muestra comercial',
-    action: 'link',
-    url: REGISTER_URL,
+    action: 'modal',
     details: [
       {
         title: 'Elite',
@@ -73,8 +65,7 @@ export const HERO_MODES = [
     title: 'Asistente',
     cta: 'Inscríbete',
     alt: 'Inscripción de asistentes',
-    action: 'link',
-    url: REGISTER_URL,
+    action: 'modal',
     details: [{ title: 'Inscripciones abiertas', text: '80k' }],
   },
 ]
@@ -85,10 +76,11 @@ export const ORGANIZER = { name: 'IS Comunicaciones', logo: '/logos/iss.jpeg' }
 /* Aliados estratégicos (logos en /public/logos). */
 export const ALLIES = [
   { name: 'Universidad Sergio Arboleda', sub: 'Barranquilla', logo: '/logos/sergioarboleda.png' },
-  { name: 'Índice', sub: '', logo: '/logos/indice.png' },
+  { name: 'Prime Business School', sub: 'Universidad Sergio Arboleda', logo: '/logos/prime.png' },
   { name: 'SENA', sub: '', logo: '/logos/sena.png' },
   { name: 'Universidad Autónoma del Caribe', sub: 'Vigilada Mineducación', logo: '/logos/AUTONOMA.png' },
-  { name: 'Prime Business School', sub: 'Universidad Sergio Arboleda', logo: '/logos/prime.png' },
+  { name: 'Índice', sub: '', logo: '/logos/indice.png' },
+  { name: 'FCA', sub: '', logo: '/logos/fca.png' },
 ]
 
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
@@ -160,18 +152,139 @@ export const SECTORS = [
 export const REFERRAL_SOURCES = [
   { value: 'instagram', label: '@shark.caribe' },
   { value: 'sergio_arboleda', label: 'Universidad Sergio Arboleda' },
+  {
+    value: 'universidad_autonoma_del_caribe',
+    label: 'Universidad Autónoma del Caribe',
+  },
   { value: 'sena', label: 'SENA' },
+  { value: 'recomendacion', label: 'Recomendación' },
   { value: 'other', label: 'Otro' },
+]
+
+/* ============================================================
+   FORMULARIO · ASISTENTES
+   Valores alineados con enums de attendee_registrations.
+   ============================================================ */
+
+export const ATTENDEE_REGISTRATION = {
+  title: 'Registro de asistentes',
+  intro:
+    'Compra tu entrada y vive la experiencia Shark Caribe 2026 en el Hotel Dann Carlton. Completa tus datos para apartar tu cupo.',
+  feeLabel: 'Valor de entrada',
+  feeAmount: 'COP $80.000',
+  feeHint:
+    'Al enviar el formulario te confirmamos el registro. Si aplica pago, te indicamos los siguientes pasos por correo o WhatsApp.',
+}
+
+export const ATTENDEE_DOCUMENT_TYPES = [
+  { value: 'CC', label: 'Cédula de Ciudadanía' },
+  { value: 'TI', label: 'Tarjeta de Identidad' },
+  { value: 'CE', label: 'Cédula de Extranjería' },
+  { value: 'passport', label: 'Pasaporte' },
+]
+
+export const ATTENDEE_PROFILES = [
+  { value: 'emprendedor', label: 'Emprendedor' },
+  { value: 'inversionista', label: 'Inversionista / Business Angel' },
+  { value: 'ejecutivo', label: 'Ejecutivo / Empresario' },
+  { value: 'estudiante', label: 'Estudiante Académico' },
+  { value: 'mentor', label: 'Mentor / Consultor' },
+  { value: 'publico_general', label: 'Público General' },
+  { value: 'delegacion_acompanante', label: 'Delegación acompañante' },
+]
+
+export const ATTENDEE_INTERESTS = [
+  {
+    value: 'networking',
+    label: 'Conectar con emprendedores / Networking',
+  },
+  { value: 'inversion', label: 'Buscar oportunidades de inversión' },
+  {
+    value: 'tendencias',
+    label: 'Conocer tendencias e innovación regional',
+  },
+  { value: 'aprender', label: 'Aprender / Inspiración' },
+]
+
+export const ATTENDEE_SEAT_TYPES = [
+  { value: 'preferencial', label: 'Preferencial' },
+  { value: 'general', label: 'General' },
+]
+
+/* ============================================================
+   FORMULARIO · PATROCINADORES Y EXPOSITORES
+   Valores alineados con enums de sponsor_registrations.
+   ============================================================ */
+
+export const SPONSOR_REGISTRATION = {
+  title: 'Registro de patrocinadores y expositores',
+  intro:
+    'Vincula tu marca a Shark Caribe 2026. Completa el formulario y el equipo comercial te contactará para cerrar tu plan.',
+}
+
+export const SPONSOR_PLANS = [
+  {
+    value: 'emprendedor_bronce',
+    label: 'Plan Emprendedor - Bronce ($3.500.000 COP)',
+  },
+  { value: 'silver', label: 'Plan Silver ($6.900.000 COP)' },
+  { value: 'diamond', label: 'Plan Diamond ($11.990.000 COP)' },
+  { value: 'platinum', label: 'Plan Platinum ($25.000.000 COP)' },
+  { value: 'elite', label: 'Plan Élite ($50.000.000 COP)' },
+  {
+    value: 'muestra_comercial',
+    label: 'Muestra Comercial / Stand ($2.300.000 COP)',
+  },
+  {
+    value: 'aliado_institucional',
+    label: 'Aliado Institucional / Co-financiador',
+  },
 ]
 
 export const NAV_LINKS = [
   { label: 'Competidores', href: '#competidores' },
+  // { label: 'Jurados', href: '#jurados' },
+  // { label: 'Emprendimientos', href: '#emprendimientos' },
   { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
-  { label: 'Ediciones', href: '#ediciones' },
+  // { label: 'Ediciones', href: '#ediciones' },
   // { label: 'Testimonios', href: '#testimonios' },
   { label: 'Galería', href: '#galeria' },
   // { label: 'Contacto', href: '#contacto' },
+]
+
+/* Jurados — foto en /public/judges/; instagramUrl = reel o perfil */
+export const JUDGES = [
+  {
+    name: 'Nombre Apellido',
+    title: 'Cargo / empresa',
+    photo: '',
+    instagramUrl: 'https://www.instagram.com/shark.caribe/',
+  },
+  {
+    name: 'Nombre Apellido',
+    title: 'Cargo / empresa',
+    photo: '',
+    instagramUrl: 'https://www.instagram.com/shark.caribe/',
+  },
+  {
+    name: 'Nombre Apellido',
+    title: 'Cargo / empresa',
+    photo: '',
+    instagramUrl: 'https://www.instagram.com/shark.caribe/',
+  },
+]
+
+/* Emprendimientos concursantes — round: 'inscrito' | 'segunda_ronda' */
+export const VENTURES = [
+  { name: 'Costa Tech', sector: 'Base tecnológica', logo: '', round: 'inscrito' },
+  { name: 'Mar y Café', sector: 'Turismo', logo: '', round: 'inscrito' },
+  { name: 'Hilos del Caribe', sector: 'Textiles', logo: '', round: 'inscrito' },
+  { name: 'Arcilla Viva', sector: 'Cerámica', logo: '', round: 'inscrito' },
+  { name: 'Madera Nómada', sector: 'Madera', logo: '', round: 'inscrito' },
+  { name: 'Raíz Sostenible', sector: 'Oficios rurales', logo: '', round: 'segunda_ronda' },
+  { name: 'Piel Atlántica', sector: 'Cuero y calzado', logo: '', round: 'segunda_ronda' },
+  { name: 'Arte Barrial', sector: 'Artes plásticas', logo: '', round: 'segunda_ronda' },
 ]
 
 /* Noticias del evento en medios */

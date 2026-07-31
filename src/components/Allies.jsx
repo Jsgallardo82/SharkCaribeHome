@@ -22,15 +22,15 @@ export default function Allies() {
         <div className="allies__block">
           <p className="allies__label">Aliados estratégicos</p>
           <ul className="allies__list">
-            {ALLIES.map((ally, i) => (
-              <li key={i} className="allies__item">
-                {ally.logo ? (
-                  <img src={ally.logo} alt={ally.name} className="allies__logo" />
-                ) : (
-                  <div className="allies__slot">logo</div>
-                )}
-                <span className="allies__name">{ally.name}</span>
-                {ally.sub && <span className="allies__sub">{ally.sub}</span>}
+            {ALLIES.map((ally) => (
+              <li key={ally.name} className="allies__item">
+                <div className="allies__tile">
+                  {ally.logo ? (
+                    <img src={ally.logo} alt={ally.name} className="allies__logo" />
+                  ) : (
+                    <div className="allies__slot">logo</div>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

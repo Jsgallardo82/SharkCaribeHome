@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { signIn, getSession, isSupabaseConfigured } from '../lib/supabase.js'
+import { useNavigate } from 'react-router-dom'
+import {
+  signIn,
+  getSession,
+  ensureProfile,
+  isSupabaseConfigured,
+} from '../lib/supabase.js'
 import Ticket, { Barcode } from './Ticket.jsx'
 import './Login.css'
 
@@ -15,11 +20,24 @@ export default function Login() {
   /* Si ya hay sesión activa, vamos directo al panel. */
   useEffect(() => {
     let active = true
-    getSession().then((s) => {
-      if (!active) return
-      if (s) navigate('/admin', { replace: true })
-      else setChecking(false)
-    })
+    getSession()
+      .then(async (s) => {
+        if (!active) return
+        if (s) {
+          try {
+            await ensureProfile()
+          } catch {
+            /* Admin también intentará ensureProfile */
+          }
+          if (!active) return
+          navigate('/admin', { replace: true })
+        } else {
+          setChecking(false)
+        }
+      })
+      .catch(() => {
+        if (active) setChecking(false)
+      })
     return () => {
       active = false
     }
@@ -31,6 +49,7 @@ export default function Login() {
     setLoading(true)
     try {
       await signIn(email, password)
+      await ensureProfile()
       navigate('/admin', { replace: true })
     } catch (err) {
       setError(err.message)
@@ -89,10 +108,6 @@ export default function Login() {
                 >
                   {loading ? 'Ingresando…' : 'Ingresar'}
                 </button>
-
-                <p className="login__alt">
-                  ¿No tienes cuenta? <Link to="/registro">Crear cuenta</Link>
-                </p>
               </form>
             )}
           </div>

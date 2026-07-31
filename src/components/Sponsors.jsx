@@ -1,7 +1,6 @@
-import { SPONSOR_URL } from '../data/content.js'
 import './Sponsors.css'
 
-export default function Sponsors() {
+export default function Sponsors({ onRegister }) {
   return (
     <section id="patrocinadores" className="sponsors">
       <div className="sponsors__overlay" aria-hidden="true" />
@@ -18,14 +17,13 @@ export default function Sponsors() {
             Conecta con emprendedores, empresarios e inversionistas del Caribe.
             Sé parte de la cuarta edición como patrocinador.
           </p>
-          <a
-            href={SPONSOR_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
             className="btn btn--primary sponsors__cta"
+            onClick={() => onRegister?.('patrocinador')}
           >
             Inscríbete como patrocinador
-          </a>
+          </button>
         </div>
       </div>
     </section>

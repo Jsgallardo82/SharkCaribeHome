@@ -50,7 +50,7 @@ export default function Competition({ onRegister }) {
             <button
               type="button"
               className="btn btn--primary"
-              onClick={onRegister}
+              onClick={() => onRegister('participante')}
             >
               {COMPETITION.cta}
             </button>

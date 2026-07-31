@@ -79,7 +79,7 @@ export default function Hero({ onRegister }) {
                 <button
                   type="button"
                   className="btn btn--primary hero__cta"
-                  onClick={onRegister}
+                  onClick={() => onRegister(mode.id)}
                 >
                   {mode.cta}
                 </button>

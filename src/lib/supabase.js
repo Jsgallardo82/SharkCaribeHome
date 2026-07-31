@@ -104,6 +104,61 @@ export async function getSession() {
   return data.session
 }
 
+/* Crea el perfil si no existe (role por default en DB: concursante).
+   Primero lee; solo inserta si falta. Evita upsert: muchas políticas RLS
+   permiten SELECT del propio perfil pero no INSERT/UPDATE, y un upsert
+   falla con 403 aunque la fila ya exista (el caso típico de un admin). */
+export async function ensureProfile() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const session = await getSession()
+  if (!session?.user) throw new Error('No hay sesión activa.')
+
+  const existing = await getProfile()
+  if (existing) return existing
+
+  const { id, email } = session.user
+  const { error } = await supabase.from('profiles').insert({
+    id,
+    email: (email || '').trim().toLowerCase(),
+  })
+
+  /* 23505 = unique_violation: otra sesión/trigger ya lo creó. */
+  if (error && error.code !== '23505') {
+    console.error('[Shark Caribe] Error al asegurar perfil:', error)
+    if (error.code === '42501' || error.code === 'PGRST301' || error.status === 403) {
+      throw new Error(
+        'No tienes permiso para crear tu perfil. En Supabase, agrega una política RLS de ' +
+          'INSERT en profiles para usuarios autenticados (id = auth.uid()), ' +
+          'o crea el perfil manualmente / con un trigger en auth.users.'
+      )
+    }
+    throw new Error('No pudimos preparar tu perfil de usuario.')
+  }
+
+  return getProfile()
+}
+
+export async function getProfile() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const session = await getSession()
+  if (!session?.user) return null
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, email, role')
+    .eq('id', session.user.id)
+    .maybeSingle()
+
+  if (error) {
+    console.error('[Shark Caribe] Error al leer perfil:', error)
+    throw new Error('No pudimos leer tu perfil de usuario.')
+  }
+
+  return data
+}
+
 /* Lee las inscripciones de competidores (requiere sesión + política RLS
    de SELECT para usuarios autenticados en la tabla). */
 export async function fetchCompetitorRegistrations() {
@@ -127,6 +182,62 @@ export async function fetchCompetitorRegistrations() {
       detail
         ? `No pudimos cargar las inscripciones: ${detail}`
         : 'No pudimos cargar las inscripciones. Inténtalo de nuevo.'
+    )
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
+export async function fetchAttendeeRegistrations() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const { data, error } = await supabase
+    .from('attendee_registrations')
+    .select(
+      '*, accompanied:competitor_registrations(full_name, venture_name)'
+    )
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('[Shark Caribe] Error al leer asistentes:', error)
+    if (error.code === '42501' || error.code === 'PGRST301') {
+      throw new Error(
+        'No tienes permiso para ver asistentes. Revisa la política RLS de ' +
+          'SELECT en attendee_registrations (rol admin).'
+      )
+    }
+    const detail = [error.message, error.code].filter(Boolean).join(' · ')
+    throw new Error(
+      detail
+        ? `No pudimos cargar los asistentes: ${detail}`
+        : 'No pudimos cargar los asistentes. Inténtalo de nuevo.'
+    )
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
+export async function fetchSponsorRegistrations() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const { data, error } = await supabase
+    .from('sponsor_registrations')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('[Shark Caribe] Error al leer patrocinadores:', error)
+    if (error.code === '42501' || error.code === 'PGRST301') {
+      throw new Error(
+        'No tienes permiso para ver patrocinadores. Revisa la política RLS de ' +
+          'SELECT en sponsor_registrations (rol admin).'
+      )
+    }
+    const detail = [error.message, error.code].filter(Boolean).join(' · ')
+    throw new Error(
+      detail
+        ? `No pudimos cargar los patrocinadores: ${detail}`
+        : 'No pudimos cargar los patrocinadores. Inténtalo de nuevo.'
     )
   }
 
@@ -241,6 +352,85 @@ export async function submitCompetitorRegistration(values) {
 
   if (error) {
     console.error('[Shark Caribe] Error al inscribir:', error)
+    throw new Error(friendlyError(error))
+  }
+}
+
+/* Emprendedores con pago confirmado (vista pública, sin PII sensible). */
+export async function fetchPublicCompetitors() {
+  if (!supabase) return []
+
+  const { data, error } = await supabase
+    .from('public_competitors')
+    .select('id, full_name, venture_name')
+    .order('venture_name', { ascending: true })
+
+  if (error) {
+    console.error('[Shark Caribe] Error al listar emprendedores públicos:', error)
+    return []
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
+export async function submitAttendeeRegistration(values) {
+  if (!supabase) {
+    throw new Error(
+      'El formulario todavía no está conectado a la base de datos. Escríbenos y te inscribimos manualmente.'
+    )
+  }
+
+  const row = {
+    full_name: values.fullName.trim(),
+    document_type: values.documentType,
+    document_number: values.documentNumber.trim(),
+    email: values.email.trim().toLowerCase(),
+    phone: values.phone.trim(),
+    profile: values.profile,
+    organization: values.organization.trim() || null,
+    interest: values.interest,
+    seat_type: values.seatType,
+    accompanied_competitor_id: values.accompaniedCompetitorId || null,
+    referral_source: values.referralSource,
+    referral_source_other:
+      values.referralSource === 'other' ? values.referralSourceOther.trim() : null,
+  }
+
+  const { error } = await supabase.from('attendee_registrations').insert(row)
+
+  if (error) {
+    console.error('[Shark Caribe] Error al inscribir asistente:', error)
+    throw new Error(friendlyError(error))
+  }
+}
+
+export async function submitSponsorRegistration(values) {
+  if (!supabase) {
+    throw new Error(
+      'El formulario todavía no está conectado a la base de datos. Escríbenos y te inscribimos manualmente.'
+    )
+  }
+
+  const row = {
+    company_name: values.companyName.trim(),
+    tax_id: values.taxId.trim(),
+    contact_name: values.contactName.trim(),
+    contact_role: values.contactRole.trim(),
+    email: values.email.trim().toLowerCase(),
+    phone: values.phone.trim(),
+    website: values.website.trim() || null,
+    plan: values.plan,
+    sector: values.sector.trim(),
+    comments: values.comments.trim() || null,
+    referral_source: values.referralSource,
+    referral_source_other:
+      values.referralSource === 'other' ? values.referralSourceOther.trim() : null,
+  }
+
+  const { error } = await supabase.from('sponsor_registrations').insert(row)
+
+  if (error) {
+    console.error('[Shark Caribe] Error al inscribir patrocinador:', error)
     throw new Error(friendlyError(error))
   }
 }

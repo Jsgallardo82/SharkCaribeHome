@@ -58,7 +58,7 @@ export default function Navbar({ onRegister }) {
                 className="btn btn--primary navbar__cta"
                 onClick={() => {
                   setOpen(false)
-                  onRegister()
+                  onRegister('participante')
                 }}
               >
                 Inscríbete
