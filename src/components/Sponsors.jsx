@@ -6,7 +6,7 @@ export default function Sponsors({ onRegister }) {
       <div className="sponsors__overlay" aria-hidden="true" />
       <div className="container sponsors__inner">
         <div className="sponsors__mascot">
-          <img src="/sharky.png" alt="Sharky, la mascota de Shark Caribe" />
+          <img src="/sharkycolor.png" alt="Sharky, la mascota de Shark Caribe" />
         </div>
         <div className="sponsors__content">
           <p className="sponsors__kicker">Patrocinios y muestra comercial</p>

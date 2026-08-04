@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import Competition from './components/Competition.jsx'
-// import Judges from './components/Judges.jsx'
+import Judges from './components/Judges.jsx'
 // import Ventures from './components/Ventures.jsx'
 import About from './components/About.jsx'
 // import Editions from './components/Editions.jsx'
@@ -30,9 +30,9 @@ export default function App() {
       <main>
         <Hero onRegister={openRegister} />
         <Competition onRegister={openRegister} />
-        {/* <Judges /> */}
-        {/* <Ventures /> */}
         <Sponsors onRegister={openRegister} />
+        <Judges />
+        {/* <Ventures /> */}
         <News />
         <About />
         {/* <Editions /> */}

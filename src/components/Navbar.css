@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 70px;
+  min-height: 96px;
 }
 
 .navbar__logo {
@@ -19,7 +19,7 @@
 }
 
 .navbar__logo img {
-  height: 48px;
+  height: 88px;
   width: auto;
   object-fit: contain;
 }

@@ -8,13 +8,6 @@ import './Competition.css'
 export default function Competition({ onRegister }) {
   return (
     <section id="competidores" className="competition">
-      <div
-        className="competition__bg"
-        style={{ backgroundImage: 'url("/album/2024/Imagen15.jpg")' }}
-        aria-hidden="true"
-      />
-      <div className="competition__overlay" aria-hidden="true" />
-
       <div className="container competition__grid">
         <div className="competition__col">
           <p className="competition__eyebrow">{COMPETITION.eyebrow}</p>
@@ -54,8 +47,12 @@ export default function Competition({ onRegister }) {
             >
               {COMPETITION.cta}
             </button>
-            <a href={TERMS_URL} className="competition__terms" download>
-              Descargar términos de referencia
+            <a
+              href={TERMS_URL}
+              className="btn btn--outline competition__terms"
+              download
+            >
+              ↓ Descargar términos de referencia
             </a>
           </div>
         </div>

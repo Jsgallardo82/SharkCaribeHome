@@ -24,6 +24,25 @@
   margin-bottom: 0.35rem;
 }
 
+.judge__photo-link {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.judge__photo-link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
 .judge__photo {
   width: 100%;
   height: 100%;
@@ -76,15 +95,108 @@
 
 .judge__ig {
   margin-top: 0.35rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-primary);
+  cursor: pointer;
   border-bottom: 1px solid transparent;
   transition: border-color var(--transition);
 }
 
 .judge__ig:hover {
   border-bottom-color: var(--color-primary);
+}
+
+/* Modal con embed de Instagram */
+.judge-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(10, 19, 48, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.judge-modal {
+  position: relative;
+  width: min(100%, 420px);
+  max-height: min(92vh, 860px);
+  overflow: auto;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+.judge-modal:focus {
+  outline: none;
+}
+
+.judge-modal__close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.7rem;
+  border: none;
+  background: none;
+  color: var(--color-secondary);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.judge-modal__header {
+  padding-right: 2rem;
+  margin-bottom: 0.85rem;
+}
+
+.judge-modal__header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-secondary);
+}
+
+.judge-modal__header p {
+  margin: 0.25rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.judge-modal__embed-wrap {
+  width: 100%;
+  min-height: 480px;
+  background: #fafafa;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.judge-modal__embed {
+  display: block;
+  width: 100%;
+  height: min(68vh, 640px);
+  border: 0;
+  background: #fafafa;
+}
+
+.judge-modal__fallback-text {
+  margin: 0;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.judge-modal__ig-link {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary);
 }
 
 .judges-ticket__stub {

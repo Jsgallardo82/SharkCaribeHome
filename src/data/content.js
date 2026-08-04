@@ -15,58 +15,24 @@ export const INSTAGRAM_URL =
   'https://www.instagram.com/shark.caribe?igsh=a3FiYWx0bTRsMWJv'
 
 /* Términos de referencia de la competencia (documento descargable en /public) */
-export const TERMS_URL =
-  '/shark%20caribe%20Pitch%20Competition%202026%20t%C3%A9rminos%20de%20referencia%20-%20v1.docx'
+export const TERMS_URL = '/terminos-referencia-shark-caribe-2026.pdf'
 
-/* Modos de inscripción que rotan en las cajas 2 y 3 del hero (el fondo es fijo).
-   action 'modal' -> abre el formulario del tipo (participante | patrocinador | asistente) */
-export const HERO_MODES = [
+/* Carrusel del hero: imágenes a pantalla completa en /public/hero */
+export const HERO_SLIDES = [
   {
-    id: 'participante',
-    title: 'Participante',
-    cta: 'Inscríbete',
-    alt: 'Inscripción de participantes',
-    action: 'modal',
-    details: [
-      {
-        title: 'Shark Caribe 2026',
-        text: 'Donde nacen los próximos grandes negocios',
-      },
-      { title: 'Inscripciones abiertas' },
-      { title: 'Valor', text: '$15.000 COP' },
-    ],
+    id: 'hero0',
+    src: '/hero/hero0.jpeg',
+    alt: 'Shark Caribe 2026',
   },
   {
-    id: 'patrocinador',
-    title: 'Patrocinador',
-    cta: 'Inscríbete',
-    alt: 'Inscripción de patrocinadores y muestra comercial',
-    action: 'modal',
-    details: [
-      {
-        title: 'Elite',
-        text: 'Para las empresas que quieren',
-        emphasis: 'dejar huella.',
-      },
-      {
-        title: 'Platinium',
-        text: 'Para las empresas que quieren',
-        emphasis: 'abrir conversaciones.',
-      },
-      {
-        title: 'Diamond',
-        text: 'Para las empresas que quieren estar donde ocurren las',
-        emphasis: 'oportunidades.',
-      },
-    ],
+    id: 'hero1',
+    src: '/hero/hero1.jpg',
+    alt: 'Shark Caribe 2026',
   },
   {
-    id: 'asistente',
-    title: 'Asistente',
-    cta: 'Inscríbete',
-    alt: 'Inscripción de asistentes',
-    action: 'modal',
-    details: [{ title: 'Inscripciones abiertas', text: '80k' }],
+    id: 'hero2',
+    src: '/hero/hero2.jpg',
+    alt: 'Shark Caribe 2026',
   },
 ]
 
@@ -81,6 +47,10 @@ export const ALLIES = [
   { name: 'Universidad Autónoma del Caribe', sub: 'Vigilada Mineducación', logo: '/logos/AUTONOMA.png' },
   { name: 'Índice', sub: '', logo: '/logos/indice.png' },
   { name: 'FCA', sub: '', logo: '/logos/fca.png' },
+  { name: 'Elena', sub: '', logo: '/logos/elena.jpeg' },
+  { name: 'Mi Red', sub: '', logo: '/logos/mired.png' },
+  { name: 'Space Rock', sub: '', logo: '/logos/spacerock.png' },
+  { name: 'CC Buenavista', sub: '', logo: '/logos/ccbuenavista.png' },
 ]
 
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
@@ -243,7 +213,8 @@ export const SPONSOR_PLANS = [
 
 export const NAV_LINKS = [
   { label: 'Competidores', href: '#competidores' },
-  // { label: 'Jurados', href: '#jurados' },
+  { label: 'Patrocinadores', href: '#patrocinadores' },
+  { label: 'Jurados', href: '#jurados' },
   // { label: 'Emprendimientos', href: '#emprendimientos' },
   { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
@@ -254,24 +225,26 @@ export const NAV_LINKS = [
 ]
 
 /* Jurados — foto en /public/judges/; instagramUrl = reel o perfil */
+/* Jurados — foto en /public/jurados/; instagramUrl = reel o perfil */
 export const JUDGES = [
   {
-    name: 'Nombre Apellido',
-    title: 'Cargo / empresa',
-    photo: '',
-    instagramUrl: 'https://www.instagram.com/shark.caribe/',
+    name: 'Ricardo Insignare',
+    title: 'Gerente Centro Comercial Viva',
+    photo: '/jurados/ricardo.jpeg',
+    instagramUrl:
+      'https://www.instagram.com/reel/DbdXGPrRU2s/?igsh=dDcxeDl1MjFyeG8=',
   },
   {
-    name: 'Nombre Apellido',
-    title: 'Cargo / empresa',
+    name: 'Próximamente',
+    title: 'Jurado por anunciar',
     photo: '',
-    instagramUrl: 'https://www.instagram.com/shark.caribe/',
+    instagramUrl: '',
   },
   {
-    name: 'Nombre Apellido',
-    title: 'Cargo / empresa',
+    name: 'Próximamente',
+    title: 'Jurado por anunciar',
     photo: '',
-    instagramUrl: 'https://www.instagram.com/shark.caribe/',
+    instagramUrl: '',
   },
 ]
 
