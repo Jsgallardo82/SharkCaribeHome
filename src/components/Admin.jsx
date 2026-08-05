@@ -14,6 +14,7 @@ import {
   confirmAttendeePayment,
   confirmSponsorPayment,
   confirmExhibitorPayment,
+  updateCompetitorProgress,
   isSupabaseConfigured,
 } from '../lib/supabase.js'
 import {
@@ -28,6 +29,8 @@ import {
   ATTENDEE_SEAT_TYPES,
   SPONSOR_PLAN_LABELS,
   EXHIBITOR_STAND_TYPES,
+  COMPETITION_STAGES,
+  COMPETITION_STAGE_ORDER,
 } from '../data/content.js'
 import './Admin.css'
 
@@ -40,7 +43,8 @@ const TABS = [
 
 const COMPETITOR_COLUMNS = [
   { key: 'created_at', label: 'Fecha' },
-  { key: 'status', label: 'Estado' },
+  { key: 'status', label: 'Pago' },
+  { key: 'competition_stage', label: 'Avance' },
   { key: 'full_name', label: 'Nombre' },
   { key: 'email', label: 'Correo' },
   { key: 'phone', label: 'Teléfono' },
@@ -156,6 +160,17 @@ function accompaniedLabel(row) {
   return text || null
 }
 
+function competitionStageLabel(value) {
+  if (!value) return 'Pendiente'
+  return labelOf(COMPETITION_STAGES, value) || String(value)
+}
+
+function nextCompetitionStage(current) {
+  const index = COMPETITION_STAGE_ORDER.indexOf(current || 'pendiente')
+  if (index < 0 || index >= COMPETITION_STAGE_ORDER.length - 1) return null
+  return COMPETITION_STAGE_ORDER[index + 1]
+}
+
 function competitorCell(row, key) {
   if (key === 'document') {
     const type = labelOf(DOCUMENT_TYPES, row.document_type) || row.document_type || ''
@@ -164,6 +179,9 @@ function competitorCell(row, key) {
   }
   if (key === 'created_at') return display(formatDateTime(row.created_at))
   if (key === 'status') return statusLabel(row.status)
+  if (key === 'competition_stage') {
+    return display(competitionStageLabel(row.competition_stage))
+  }
   if (key === 'category') return display(labelOf(CATEGORIES, row.category))
   if (key === 'sector') return display(labelOf(SECTORS, row.sector))
   if (key === 'code') return display(row.code)
@@ -215,8 +233,13 @@ function competitorDetails(row) {
       label: 'Términos aceptados',
       value: row.accepted_terms == null ? null : row.accepted_terms ? 'Sí' : 'No',
     },
+    { label: 'Logo (URL)', value: row.logo_url },
+    {
+      label: 'Motivo de rechazo',
+      value: row.rejection_reason,
+      multiline: true,
+    },
     { label: 'Revisado el', value: formatDateTime(row.reviewed_at) },
-    { label: 'Motivo de rechazo', value: row.rejection_reason, multiline: true },
     { label: 'Notas internas', value: row.internal_notes, multiline: true },
     { label: 'Actualizado', value: formatDateTime(row.updated_at) },
     { label: 'ID', value: row.id },
@@ -383,6 +406,10 @@ export default function Admin() {
   const [paymentOkId, setPaymentOkId] = useState(null)
   const [seatFilter, setSeatFilter] = useState('')
   const [standFilter, setStandFilter] = useState('')
+  const [progressDrafts, setProgressDrafts] = useState({})
+  const [progressBusyId, setProgressBusyId] = useState(null)
+  const [progressError, setProgressError] = useState('')
+  const [progressOkId, setProgressOkId] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -477,14 +504,112 @@ export default function Admin() {
     setExpandedId(null)
     setPaymentError('')
     setPaymentOkId(null)
+    setProgressError('')
+    setProgressOkId(null)
     if (next !== 'asistentes') setSeatFilter('')
     if (next !== 'expositores') setStandFilter('')
   }
 
-  const toggleExpand = (rowKey) => {
-    setExpandedId((prev) => (prev === rowKey ? null : rowKey))
+  const seedProgressDraft = (row) => {
+    if (!row?.id) return
+    setProgressDrafts((prev) => ({
+      ...prev,
+      [row.id]: {
+        stage: row.competition_stage || 'pendiente',
+        logoUrl: row.logo_url || '',
+        rejectionReason: row.rejection_reason || '',
+      },
+    }))
+  }
+
+  const toggleExpand = (rowKey, row) => {
+    setExpandedId((prev) => {
+      const next = prev === rowKey ? null : rowKey
+      if (next && row) seedProgressDraft(row)
+      return next
+    })
     setPaymentError('')
     setPaymentOkId(null)
+    setProgressError('')
+    setProgressOkId(null)
+  }
+
+  const updateProgressDraft = (id, field, value) => {
+    setProgressDrafts((prev) => ({
+      ...prev,
+      [id]: {
+        stage: prev[id]?.stage || 'pendiente',
+        logoUrl: prev[id]?.logoUrl || '',
+        rejectionReason: prev[id]?.rejectionReason || '',
+        [field]: value,
+      },
+    }))
+    setProgressError('')
+    setProgressOkId(null)
+  }
+
+  const handleSaveProgress = async (row, overrides = {}) => {
+    const draft = {
+      stage: progressDrafts[row.id]?.stage || row.competition_stage || 'pendiente',
+      logoUrl: progressDrafts[row.id]?.logoUrl ?? row.logo_url ?? '',
+      rejectionReason:
+        progressDrafts[row.id]?.rejectionReason ?? row.rejection_reason ?? '',
+      ...overrides,
+    }
+
+    setProgressError('')
+    setProgressOkId(null)
+    setProgressBusyId(row.id)
+    try {
+      const updated = await updateCompetitorProgress(row.id, {
+        competitionStage: draft.stage,
+        logoUrl: draft.logoUrl,
+        rejectionReason: draft.rejectionReason,
+      })
+      setCompetitorRows((prev) =>
+        prev.map((r) =>
+          r.id === row.id
+            ? {
+                ...r,
+                competition_stage: updated.competition_stage,
+                logo_url: updated.logo_url,
+                rejection_reason: updated.rejection_reason,
+                reviewed_at: updated.reviewed_at,
+                updated_at: updated.updated_at,
+              }
+            : r
+        )
+      )
+      setProgressDrafts((prev) => ({
+        ...prev,
+        [row.id]: {
+          stage: updated.competition_stage || 'pendiente',
+          logoUrl: updated.logo_url || '',
+          rejectionReason: updated.rejection_reason || '',
+        },
+      }))
+      setProgressOkId(row.id)
+    } catch (err) {
+      setProgressError(err?.message || 'No pudimos guardar el avance.')
+    } finally {
+      setProgressBusyId(null)
+    }
+  }
+
+  const handleAdvanceCompetitor = async (row) => {
+    const current =
+      progressDrafts[row.id]?.stage || row.competition_stage || 'pendiente'
+    if (current === 'rechazado') {
+      setProgressError('Un competidor rechazado no puede avanzar. Cambia la etapa primero.')
+      return
+    }
+    const next = nextCompetitionStage(current)
+    if (!next) {
+      setProgressError('Este competidor ya está en la etapa final (ganador).')
+      return
+    }
+    updateProgressDraft(row.id, 'stage', next)
+    await handleSaveProgress(row, { stage: next })
   }
 
   const handleSeatFilter = (value) => {
@@ -570,6 +695,10 @@ export default function Admin() {
       ? `admin__status admin__status--${String(row.status).replace(/\s+/g, '_')}`
       : 'admin__status'
 
+    const stageClass = row.competition_stage
+      ? `admin__status admin__status--stage-${String(row.competition_stage)}`
+      : 'admin__status'
+
     const mainRow = (
       <tr key={rowKey} className={isOpen ? 'admin__row--open' : undefined}>
         <td>
@@ -577,7 +706,7 @@ export default function Admin() {
             type="button"
             className="admin__toggle"
             aria-expanded={isOpen}
-            onClick={() => toggleExpand(rowKey)}
+            onClick={() => toggleExpand(rowKey, row)}
           >
             {isOpen ? 'Ocultar' : 'Ver'}
           </button>
@@ -586,6 +715,8 @@ export default function Admin() {
           <td key={c.key}>
             {c.key === 'status' ? (
               <span className={statusClass}>{config.cellValue(row, c.key)}</span>
+            ) : c.key === 'competition_stage' ? (
+              <span className={stageClass}>{config.cellValue(row, c.key)}</span>
             ) : (
               config.cellValue(row, c.key)
             )}
@@ -598,6 +729,14 @@ export default function Admin() {
 
     const canConfirmPayment =
       config.canConfirmPayment && row.status === 'pending' && row.id
+
+    const progressDraft = progressDrafts[row.id] || {
+      stage: row.competition_stage || 'pendiente',
+      logoUrl: row.logo_url || '',
+      rejectionReason: row.rejection_reason || '',
+    }
+    const advanceTo = nextCompetitionStage(progressDraft.stage)
+    const canManageProgress = tab === 'competidores' && row.id
 
     const detailRow = (
       <tr key={`${rowKey}-detail`} className="admin__detail-row">
@@ -619,6 +758,92 @@ export default function Admin() {
               </div>
             ))}
           </dl>
+
+          {canManageProgress && (
+            <form
+              className="admin__progress"
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleSaveProgress(row)
+              }}
+            >
+              <p className="admin__pay-title">Avance en la competencia</p>
+
+              <label className="admin__pay-field">
+                <span>Etapa</span>
+                <select
+                  value={progressDraft.stage}
+                  onChange={(e) =>
+                    updateProgressDraft(row.id, 'stage', e.target.value)
+                  }
+                  disabled={progressBusyId === row.id}
+                >
+                  {COMPETITION_STAGES.map((stage) => (
+                    <option key={stage.value} value={stage.value}>
+                      {stage.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="admin__pay-field admin__pay-field--wide">
+                <span>URL del logo</span>
+                <input
+                  type="url"
+                  autoComplete="off"
+                  placeholder="https://…"
+                  value={progressDraft.logoUrl}
+                  onChange={(e) =>
+                    updateProgressDraft(row.id, 'logoUrl', e.target.value)
+                  }
+                  disabled={progressBusyId === row.id}
+                />
+              </label>
+
+              {progressDraft.stage === 'rechazado' && (
+                <label className="admin__pay-field admin__pay-field--wide">
+                  <span>Motivo de rechazo *</span>
+                  <textarea
+                    rows={3}
+                    required
+                    placeholder="Explica por qué no continúa en la competencia"
+                    value={progressDraft.rejectionReason}
+                    onChange={(e) =>
+                      updateProgressDraft(row.id, 'rejectionReason', e.target.value)
+                    }
+                    disabled={progressBusyId === row.id}
+                  />
+                </label>
+              )}
+
+              <div className="admin__progress-actions">
+                <button
+                  type="submit"
+                  className="btn btn--primary"
+                  disabled={progressBusyId === row.id}
+                >
+                  {progressBusyId === row.id ? 'Guardando…' : 'Guardar avance'}
+                </button>
+                {advanceTo && (
+                  <button
+                    type="button"
+                    className="btn btn--outline"
+                    disabled={progressBusyId === row.id}
+                    onClick={() => handleAdvanceCompetitor(row)}
+                  >
+                    Avanzar a {competitionStageLabel(advanceTo)}
+                  </button>
+                )}
+              </div>
+
+              {progressError && expandedId === rowKey && (
+                <p className="admin__pay-error">{progressError}</p>
+              )}
+              {progressOkId === row.id && (
+                <p className="admin__pay-ok">Avance guardado.</p>
+              )}
+            </form>
+          )}
 
           {canConfirmPayment && (
             <form

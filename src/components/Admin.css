@@ -282,6 +282,29 @@
   color: #c62828;
 }
 
+.admin__status--stage-pendiente {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.admin__status--stage-aprobado,
+.admin__status--stage-segunda_vuelta,
+.admin__status--stage-tercera_vuelta,
+.admin__status--stage-final {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.admin__status--stage-ganador {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.admin__status--stage-rechazado {
+  background: #fdecea;
+  color: #c62828;
+}
+
 .admin__detail-row > td {
   white-space: normal;
   background: var(--color-bg-alt);
@@ -355,7 +378,9 @@
   color: var(--color-text-muted);
 }
 
-.admin__pay-field input {
+.admin__pay-field input,
+.admin__pay-field select,
+.admin__pay-field textarea {
   width: 100%;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
@@ -365,9 +390,38 @@
   background: var(--color-white);
 }
 
-.admin__pay-field input:focus {
+.admin__pay-field textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.admin__pay-field--wide {
+  width: min(100%, 420px);
+  flex: 1 1 280px;
+}
+
+.admin__pay-field input:focus,
+.admin__pay-field select:focus,
+.admin__pay-field textarea:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 1px;
+}
+
+.admin__progress {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.85rem 1rem;
+}
+
+.admin__progress-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
 }
 
 .admin__pay-error {

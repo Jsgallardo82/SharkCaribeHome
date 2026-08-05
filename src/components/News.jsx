@@ -16,7 +16,11 @@ export default function News() {
           <span className="news__heading-rule" aria-hidden="true" />
           <h2 className="news__title">
             <span className="news__title-solid">{NEWS.titleSolid}</span>
-            <span className="news__title-outline">{NEWS.titleOutline}</span>
+            <img
+              className="news__title-logo"
+              src={NEWS.logo}
+              alt="Shark Caribe"
+            />
           </h2>
           {NEWS.subtitle && <p className="news__subtitle">{NEWS.subtitle}</p>}
         </div>

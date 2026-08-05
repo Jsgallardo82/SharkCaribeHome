@@ -16,13 +16,12 @@
 
 .about-ticket__text p {
   margin-bottom: 1.25rem;
-  color: var(--color-text-muted);
+  font-weight: 400;
+  color: #000;
 }
 
 .about-ticket__text p:last-child {
   margin-bottom: 0;
-  font-weight: 600;
-  color: var(--color-text);
 }
 
 /* Colilla: línea de tiempo de ediciones */

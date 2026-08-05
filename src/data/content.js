@@ -449,8 +449,8 @@ export const VENTURES = [
 /* Noticias del evento en medios */
 export const NEWS = {
   background: '/album/2023/Imagen8.jpg',
-  titleSolid: 'Explora Shark',
-  titleOutline: 'Caribe',
+  titleSolid: 'Explora',
+  logo: '/logo shark caribe fondo blanco.jpeg',
   subtitle: 'Novedades y coberturas del ecosistema Shark Caribe.',
   items: [
     {
@@ -497,6 +497,27 @@ export const HERO = {
 }
 
 /* Sección competidores + calendario (debajo del hero) */
+/* Avance del concurso (enum competitor_competition_stage en Supabase) */
+export const COMPETITION_STAGES = [
+  { value: 'pendiente', label: 'Pendiente' },
+  { value: 'aprobado', label: 'Aprobado' },
+  { value: 'segunda_vuelta', label: 'Segunda vuelta' },
+  { value: 'tercera_vuelta', label: 'Tercera vuelta' },
+  { value: 'final', label: 'Final' },
+  { value: 'ganador', label: 'Ganador' },
+  { value: 'rechazado', label: 'Rechazado' },
+]
+
+/** Orden de avance (sin rechazado). */
+export const COMPETITION_STAGE_ORDER = [
+  'pendiente',
+  'aprobado',
+  'segunda_vuelta',
+  'tercera_vuelta',
+  'final',
+  'ganador',
+]
+
 export const COMPETITION = {
   eyebrow: 'Pitch Competition',
   title: 'Para competidores',
@@ -586,8 +607,8 @@ export const SCHEDULE = {
 export const ABOUT = {
   title: '¿Por qué existe Shark Caribe Pitch Competition?',
   paragraphs: [
-    'Poner a prueba la creatividad e innovación de los emprendedores en etapa de escalabilidad que ofrezcan respuesta a necesidades insatisfechas del mercado, a través de un concurso que otorga a los finalistas un entrenamiento intensivo de preparación para la competencia que culmina con la oportunidad de disputar premios y visibilidad que impulsen el crecimiento de sus negocios. Pero también como una plataforma que impulsa el emprendimiento en el Caribe colombiano, conectando a innovadores y visionarios con empresarios, inversionistas, universidades y aliados estratégicos.',
-    'Desde 2022, este evento de ciudad multipropósito se ha consolidado como un espacio único donde tradición e innovación dialogan, integrando oficios ancestrales con propuestas tecnológicas y turísticas de alto impacto. Demostrando que el talento del Caribe puede transformar la economía regional y proyectarse al mundo, generando valor social, cultural y económico.',
+    'Shark Caribe Pitch Competition existe para poner a prueba la creatividad e innovación de los emprendedores en etapa de escalabilidad que ofrezcan respuesta a necesidades insatisfechas del mercado, a través de un concurso que otorga a los finalistas un entrenamiento intensivo de preparación para la competencia y la oportunidad de disputar premios y visibilidad que impulsen el crecimiento de sus negocios. También existe como una plataforma que impulsa el emprendimiento en el Caribe colombiano, conectando a innovadores y visionarios con empresarios, inversionistas, universidades y aliados estratégicos.',
+    'Desde 2022, este evento de ciudad multipropósito se ha consolidado como un espacio único donde tradición e innovación dialogan, integrando oficios ancestrales con propuestas tecnológicas y turísticas de alto impacto, y demostrando que el talento del Caribe puede transformar la economía regional y proyectarse al mundo, generando valor social, cultural y económico.',
   ],
   stats: [
     { value: '2022', label: 'Primera edición' },

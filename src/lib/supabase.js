@@ -322,6 +322,58 @@ export async function confirmCompetitorPayment(id, paymentCode) {
   return confirmRegistrationPayment('competitor_registrations', id, paymentCode)
 }
 
+/* Actualiza avance en competencia + logo + motivo de rechazo (admin). */
+export async function updateCompetitorProgress(id, values) {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+  if (!id) throw new Error('Falta el id de la inscripción.')
+
+  const stage = String(values.competitionStage || '').trim()
+  if (!stage) throw new Error('Selecciona una etapa de competencia.')
+
+  const rejectionReason = String(values.rejectionReason || '').trim()
+  if (stage === 'rechazado' && !rejectionReason) {
+    throw new Error('Escribe el motivo de rechazo.')
+  }
+
+  const logoUrl = String(values.logoUrl || '').trim()
+
+  const { data, error } = await supabase
+    .from('competitor_registrations')
+    .update({
+      competition_stage: stage,
+      logo_url: logoUrl || null,
+      rejection_reason: stage === 'rechazado' ? rejectionReason : null,
+      reviewed_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select(
+      'id, competition_stage, logo_url, rejection_reason, reviewed_at, updated_at'
+    )
+    .maybeSingle()
+
+  if (error) {
+    console.error('[Shark Caribe] Error al actualizar avance:', error)
+    if (error.code === '42501' || error.code === 'PGRST301') {
+      throw new Error(
+        'No tienes permiso para actualizar competidores. Revisa la política RLS de UPDATE.'
+      )
+    }
+    if (error.code === '22P02') {
+      throw new Error(
+        'La etapa no es válida. Ejecuta el SQL de competitor_competition_stage en Supabase.'
+      )
+    }
+    const detail = [error.message, error.code].filter(Boolean).join(' · ')
+    throw new Error(detail || 'No pudimos guardar el avance. Inténtalo de nuevo.')
+  }
+
+  if (!data) {
+    throw new Error('No se actualizó la inscripción. Verifica que el registro exista.')
+  }
+
+  return data
+}
+
 export async function confirmAttendeePayment(id, paymentCode) {
   return confirmRegistrationPayment('attendee_registrations', id, paymentCode)
 }
