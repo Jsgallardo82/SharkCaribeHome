@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import * as XLSX from 'xlsx'
 import {
   getSession,
   signOut,
@@ -8,7 +9,11 @@ import {
   fetchCompetitorRegistrations,
   fetchAttendeeRegistrations,
   fetchSponsorRegistrations,
+  fetchExhibitorRegistrations,
   confirmCompetitorPayment,
+  confirmAttendeePayment,
+  confirmSponsorPayment,
+  confirmExhibitorPayment,
   isSupabaseConfigured,
 } from '../lib/supabase.js'
 import {
@@ -21,7 +26,8 @@ import {
   ATTENDEE_PROFILES,
   ATTENDEE_INTERESTS,
   ATTENDEE_SEAT_TYPES,
-  SPONSOR_PLANS,
+  SPONSOR_PLAN_LABELS,
+  EXHIBITOR_STAND_TYPES,
 } from '../data/content.js'
 import './Admin.css'
 
@@ -29,6 +35,7 @@ const TABS = [
   { id: 'competidores', label: 'Competidores' },
   { id: 'asistentes', label: 'Asistentes' },
   { id: 'patrocinadores', label: 'Patrocinadores' },
+  { id: 'expositores', label: 'Expositores' },
 ]
 
 const COMPETITOR_COLUMNS = [
@@ -46,6 +53,7 @@ const COMPETITOR_COLUMNS = [
 
 const ATTENDEE_COLUMNS = [
   { key: 'created_at', label: 'Fecha' },
+  { key: 'status', label: 'Estado' },
   { key: 'full_name', label: 'Nombre' },
   { key: 'email', label: 'Correo' },
   { key: 'phone', label: 'Teléfono' },
@@ -58,11 +66,24 @@ const ATTENDEE_COLUMNS = [
 
 const SPONSOR_COLUMNS = [
   { key: 'created_at', label: 'Fecha' },
+  { key: 'status', label: 'Estado' },
   { key: 'company_name', label: 'Empresa / Marca' },
   { key: 'contact_name', label: 'Contacto' },
   { key: 'email', label: 'Correo' },
   { key: 'phone', label: 'Teléfono' },
   { key: 'plan', label: 'Plan' },
+  { key: 'sector', label: 'Sector' },
+  { key: 'tax_id', label: 'NIT' },
+]
+
+const EXHIBITOR_COLUMNS = [
+  { key: 'created_at', label: 'Fecha' },
+  { key: 'status', label: 'Estado' },
+  { key: 'company_name', label: 'Empresa / Marca' },
+  { key: 'contact_name', label: 'Contacto' },
+  { key: 'email', label: 'Correo' },
+  { key: 'phone', label: 'Teléfono' },
+  { key: 'stand_type', label: 'Stand' },
   { key: 'sector', label: 'Sector' },
   { key: 'tax_id', label: 'NIT' },
 ]
@@ -157,6 +178,7 @@ function attendeeCell(row, key) {
     return display(`${type} ${num}`.trim())
   }
   if (key === 'created_at') return display(formatDateTime(row.created_at))
+  if (key === 'status') return statusLabel(row.status)
   if (key === 'profile') return display(labelOf(ATTENDEE_PROFILES, row.profile))
   if (key === 'seat_type') return display(labelOf(ATTENDEE_SEAT_TYPES, row.seat_type))
   if (key === 'interest') return display(labelOf(ATTENDEE_INTERESTS, row.interest))
@@ -166,7 +188,15 @@ function attendeeCell(row, key) {
 
 function sponsorCell(row, key) {
   if (key === 'created_at') return display(formatDateTime(row.created_at))
-  if (key === 'plan') return display(labelOf(SPONSOR_PLANS, row.plan))
+  if (key === 'status') return statusLabel(row.status)
+  if (key === 'plan') return display(labelOf(SPONSOR_PLAN_LABELS, row.plan))
+  return display(row[key])
+}
+
+function exhibitorCell(row, key) {
+  if (key === 'created_at') return display(formatDateTime(row.created_at))
+  if (key === 'status') return statusLabel(row.status)
+  if (key === 'stand_type') return display(labelOf(EXHIBITOR_STAND_TYPES, row.stand_type))
   return display(row[key])
 }
 
@@ -201,6 +231,8 @@ function attendeeDetails(row) {
       value: accompaniedLabel(row) || (row.accompanied_competitor_id ? row.accompanied_competitor_id : 'Ninguno'),
     },
     { label: '¿Cómo nos conoció?', value: referralText(row) },
+    { label: 'Confirmación de pago', value: row.payment_confirmation },
+    { label: 'Revisado el', value: formatDateTime(row.reviewed_at) },
     { label: 'Actualizado', value: formatDateTime(row.updated_at) },
     { label: 'ID', value: row.id },
   ]
@@ -212,6 +244,21 @@ function sponsorDetails(row) {
     { label: 'Sitio web / red social', value: row.website },
     { label: 'Comentarios', value: row.comments, multiline: true },
     { label: '¿Cómo nos conoció?', value: referralText(row) },
+    { label: 'Confirmación de pago', value: row.payment_confirmation },
+    { label: 'Revisado el', value: formatDateTime(row.reviewed_at) },
+    { label: 'Actualizado', value: formatDateTime(row.updated_at) },
+    { label: 'ID', value: row.id },
+  ]
+}
+
+function exhibitorDetails(row) {
+  return [
+    { label: 'Cargo del contacto', value: row.contact_role },
+    { label: 'Sitio web / red social', value: row.website },
+    { label: 'Comentarios', value: row.comments, multiline: true },
+    { label: '¿Cómo nos conoció?', value: referralText(row) },
+    { label: 'Confirmación de pago', value: row.payment_confirmation },
+    { label: 'Revisado el', value: formatDateTime(row.reviewed_at) },
     { label: 'Actualizado', value: formatDateTime(row.updated_at) },
     { label: 'ID', value: row.id },
   ]
@@ -229,7 +276,11 @@ function tabConfig(tab) {
       cellValue: attendeeCell,
       detailFields: attendeeDetails,
       empty: 'Todavía no hay registros de asistentes.',
-      canConfirmPayment: false,
+      canConfirmPayment: true,
+      confirmPayment: confirmAttendeePayment,
+      setRows: 'attendees',
+      exportFile: 'asistentes',
+      exportSheet: 'Asistentes',
     }
   }
   if (tab === 'patrocinadores') {
@@ -239,7 +290,25 @@ function tabConfig(tab) {
       cellValue: sponsorCell,
       detailFields: sponsorDetails,
       empty: 'Todavía no hay registros de patrocinadores.',
-      canConfirmPayment: false,
+      canConfirmPayment: true,
+      confirmPayment: confirmSponsorPayment,
+      setRows: 'sponsors',
+      exportFile: 'patrocinadores',
+      exportSheet: 'Patrocinadores',
+    }
+  }
+  if (tab === 'expositores') {
+    return {
+      title: 'Inscripciones · Expositores',
+      columns: EXHIBITOR_COLUMNS,
+      cellValue: exhibitorCell,
+      detailFields: exhibitorDetails,
+      empty: 'Todavía no hay registros de expositores.',
+      canConfirmPayment: true,
+      confirmPayment: confirmExhibitorPayment,
+      setRows: 'exhibitors',
+      exportFile: 'expositores',
+      exportSheet: 'Expositores',
     }
   }
   return {
@@ -249,7 +318,52 @@ function tabConfig(tab) {
     detailFields: competitorDetails,
     empty: 'Todavía no hay inscripciones de competidores.',
     canConfirmPayment: true,
+    confirmPayment: confirmCompetitorPayment,
+    setRows: 'competitors',
+    exportFile: 'competidores',
+    exportSheet: 'Competidores',
   }
+}
+
+function tabRowCount(itemId, counts) {
+  if (itemId === 'asistentes') return counts.attendees
+  if (itemId === 'patrocinadores') return counts.sponsors
+  if (itemId === 'expositores') return counts.exhibitors
+  return counts.competitors
+}
+
+function excelValue(value) {
+  if (value == null || value === '' || value === '—') return ''
+  return String(value)
+}
+
+function buildExcelRows(rows, columns, cellValue, detailFields) {
+  return rows.map((row) => {
+    const record = {}
+    for (const col of columns) {
+      record[col.label] = excelValue(cellValue(row, col.key))
+    }
+    for (const field of detailFields(row)) {
+      if (Object.prototype.hasOwnProperty.call(record, field.label)) continue
+      record[field.label] = excelValue(display(field.value))
+    }
+    return record
+  })
+}
+
+function downloadExcel(rows, config) {
+  const data = buildExcelRows(
+    rows,
+    config.columns,
+    config.cellValue,
+    config.detailFields
+  )
+  const worksheet = XLSX.utils.json_to_sheet(data)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, config.exportSheet)
+
+  const stamp = new Date().toISOString().slice(0, 10)
+  XLSX.writeFile(workbook, `shark-caribe-${config.exportFile}-${stamp}.xlsx`)
 }
 
 export default function Admin() {
@@ -260,12 +374,15 @@ export default function Admin() {
   const [competitorRows, setCompetitorRows] = useState([])
   const [attendeeRows, setAttendeeRows] = useState([])
   const [sponsorRows, setSponsorRows] = useState([])
+  const [exhibitorRows, setExhibitorRows] = useState([])
   const [error, setError] = useState('')
   const [expandedId, setExpandedId] = useState(null)
   const [paymentCodes, setPaymentCodes] = useState({})
   const [paymentBusyId, setPaymentBusyId] = useState(null)
   const [paymentError, setPaymentError] = useState('')
   const [paymentOkId, setPaymentOkId] = useState(null)
+  const [seatFilter, setSeatFilter] = useState('')
+  const [standFilter, setStandFilter] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -305,7 +422,7 @@ export default function Admin() {
           return
         }
 
-        const [competitors, attendees, sponsors] = await Promise.all([
+        const [competitors, attendees, sponsors, exhibitors] = await Promise.all([
           fetchCompetitorRegistrations(),
           fetchAttendeeRegistrations().catch((err) => {
             console.error('[Shark Caribe] Admin attendees load:', err)
@@ -315,14 +432,19 @@ export default function Admin() {
             console.error('[Shark Caribe] Admin sponsors load:', err)
             return { __error: err }
           }),
+          fetchExhibitorRegistrations().catch((err) => {
+            console.error('[Shark Caribe] Admin exhibitors load:', err)
+            return { __error: err }
+          }),
         ])
         if (cancelled) return
 
         setCompetitorRows(competitors)
         setAttendeeRows(Array.isArray(attendees) ? attendees : [])
         setSponsorRows(Array.isArray(sponsors) ? sponsors : [])
+        setExhibitorRows(Array.isArray(exhibitors) ? exhibitors : [])
 
-        const sideErrors = [attendees, sponsors]
+        const sideErrors = [attendees, sponsors, exhibitors]
           .filter((r) => r && r.__error)
           .map((r) => r.__error?.message)
           .filter(Boolean)
@@ -355,6 +477,8 @@ export default function Admin() {
     setExpandedId(null)
     setPaymentError('')
     setPaymentOkId(null)
+    if (next !== 'asistentes') setSeatFilter('')
+    if (next !== 'expositores') setStandFilter('')
   }
 
   const toggleExpand = (rowKey) => {
@@ -363,14 +487,29 @@ export default function Admin() {
     setPaymentOkId(null)
   }
 
+  const handleSeatFilter = (value) => {
+    setSeatFilter(value)
+    setExpandedId(null)
+    setPaymentError('')
+    setPaymentOkId(null)
+  }
+
+  const handleStandFilter = (value) => {
+    setStandFilter(value)
+    setExpandedId(null)
+    setPaymentError('')
+    setPaymentOkId(null)
+  }
+
   const handleConfirmPayment = async (row) => {
     const code = paymentCodes[row.id] ?? ''
+    const cfg = tabConfig(tab)
     setPaymentError('')
     setPaymentOkId(null)
     setPaymentBusyId(row.id)
     try {
-      const updated = await confirmCompetitorPayment(row.id, code)
-      setCompetitorRows((prev) =>
+      const updated = await cfg.confirmPayment(row.id, code)
+      const patch = (prev) =>
         prev.map((r) =>
           r.id === row.id
             ? {
@@ -382,7 +521,11 @@ export default function Admin() {
               }
             : r
         )
-      )
+      if (cfg.setRows === 'attendees') setAttendeeRows(patch)
+      else if (cfg.setRows === 'sponsors') setSponsorRows(patch)
+      else if (cfg.setRows === 'exhibitors') setExhibitorRows(patch)
+      else setCompetitorRows(patch)
+
       setPaymentCodes((prev) => {
         const next = { ...prev }
         delete next[row.id]
@@ -397,12 +540,28 @@ export default function Admin() {
   }
 
   const config = tabConfig(tab)
-  const rows =
+  const allRows =
     tab === 'asistentes'
       ? attendeeRows
       : tab === 'patrocinadores'
         ? sponsorRows
-        : competitorRows
+        : tab === 'expositores'
+          ? exhibitorRows
+          : competitorRows
+
+  const rows =
+    tab === 'asistentes' && seatFilter
+      ? allRows.filter((row) => row.seat_type === seatFilter)
+      : tab === 'expositores' && standFilter
+        ? allRows.filter((row) => row.stand_type === standFilter)
+        : allRows
+
+  const emptyMessage =
+    tab === 'asistentes' && seatFilter && allRows.length > 0 && rows.length === 0
+      ? 'No hay registros con esta ubicación.'
+      : tab === 'expositores' && standFilter && allRows.length > 0 && rows.length === 0
+        ? 'No hay registros con este tipo de stand.'
+        : config.empty
 
   const tableRows = rows.flatMap((row, index) => {
     const rowKey = rowKeyOf(row, index)
@@ -586,23 +745,89 @@ export default function Admin() {
                 >
                   {item.label}
                   <span className="admin__tab-count">
-                    {item.id === 'asistentes'
-                      ? attendeeRows.length
-                      : item.id === 'patrocinadores'
-                        ? sponsorRows.length
-                        : competitorRows.length}
+                    {tabRowCount(item.id, {
+                      competitors: competitorRows.length,
+                      attendees: attendeeRows.length,
+                      sponsors: sponsorRows.length,
+                      exhibitors: exhibitorRows.length,
+                    })}
                   </span>
                 </button>
               ))}
             </div>
 
+            {tab === 'asistentes' && (
+              <div className="admin__filters" role="group" aria-label="Filtrar por ubicación">
+                <span className="admin__filters-label">Ubicación</span>
+                <button
+                  type="button"
+                  className={`admin__filter ${seatFilter === '' ? 'is-active' : ''}`}
+                  aria-pressed={seatFilter === ''}
+                  onClick={() => handleSeatFilter('')}
+                >
+                  Todas
+                </button>
+                {ATTENDEE_SEAT_TYPES.map((seat) => (
+                  <button
+                    key={seat.value}
+                    type="button"
+                    className={`admin__filter ${seatFilter === seat.value ? 'is-active' : ''}`}
+                    aria-pressed={seatFilter === seat.value}
+                    onClick={() => handleSeatFilter(seat.value)}
+                  >
+                    {seat.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {tab === 'expositores' && (
+              <div className="admin__filters" role="group" aria-label="Filtrar por stand">
+                <span className="admin__filters-label">Stand</span>
+                <button
+                  type="button"
+                  className={`admin__filter ${standFilter === '' ? 'is-active' : ''}`}
+                  aria-pressed={standFilter === ''}
+                  onClick={() => handleStandFilter('')}
+                >
+                  Todas
+                </button>
+                {EXHIBITOR_STAND_TYPES.map((stand) => (
+                  <button
+                    key={stand.value}
+                    type="button"
+                    className={`admin__filter ${standFilter === stand.value ? 'is-active' : ''}`}
+                    aria-pressed={standFilter === stand.value}
+                    onClick={() => handleStandFilter(stand.value)}
+                  >
+                    {stand.dimensions}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {rows.length === 0 ? (
-              <p className="admin__muted">{config.empty}</p>
+              <p className="admin__muted">{emptyMessage}</p>
             ) : (
               <>
-                <p className="admin__count">
-                  {rows.length} registro{rows.length === 1 ? '' : 's'}
-                </p>
+                <div className="admin__toolbar">
+                  <p className="admin__count">
+                    {rows.length} registro{rows.length === 1 ? '' : 's'}
+                    {tab === 'asistentes' && seatFilter
+                      ? ` · ${labelOf(ATTENDEE_SEAT_TYPES, seatFilter)}`
+                      : ''}
+                    {tab === 'expositores' && standFilter
+                      ? ` · ${labelOf(EXHIBITOR_STAND_TYPES, standFilter)}`
+                      : ''}
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn--primary admin__export"
+                    onClick={() => downloadExcel(rows, config)}
+                  >
+                    Descargar Excel
+                  </button>
+                </div>
                 <div className="admin__table-wrap">
                   <table className="admin__table">
                     <thead>

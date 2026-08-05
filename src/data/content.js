@@ -141,9 +141,22 @@ export const ATTENDEE_REGISTRATION = {
   intro:
     'Compra tu entrada y vive la experiencia Shark Caribe 2026 en el Hotel Dann Carlton. Completa tus datos para apartar tu cupo.',
   feeLabel: 'Valor de entrada',
-  feeAmount: 'COP $80.000',
   feeHint:
-    'Al enviar el formulario te confirmamos el registro. Si aplica pago, te indicamos los siguientes pasos por correo o WhatsApp.',
+    'El valor depende de la ubicación elegida (preferencial o general). Al enviar el formulario te confirmamos el registro y los pasos de pago.',
+}
+
+/* Sección visual de entradas (asistentes) */
+export const ENTRADAS = {
+  eyebrow: 'Pitch Competition by Shark Caribe',
+  titleBefore: 'Elige la ',
+  titleHighlight: 'entrada',
+  titleMid: ' ideal para ',
+  titleHighlightEnd: 'ti',
+  subtitle: 'Dos categorías, una experiencia inolvidable.',
+  date: '25 de noviembre de 2026',
+  location: 'Hotel Dann Carlton, Barranquilla',
+  cta: 'Comprar',
+  footerNote: 'Inscripciones abiertas',
 }
 
 export const ATTENDEE_DOCUMENT_TYPES = [
@@ -177,43 +190,216 @@ export const ATTENDEE_INTERESTS = [
 ]
 
 export const ATTENDEE_SEAT_TYPES = [
-  { value: 'preferencial', label: 'Preferencial' },
-  { value: 'general', label: 'General' },
+  {
+    value: 'preferencial',
+    label: 'Preferencial',
+    price: '$79.900',
+    priceLabel: 'COP $79.900',
+    description: 'Acceso preferencial a una experiencia premium.',
+    featured: true,
+  },
+  {
+    value: 'general',
+    label: 'General',
+    price: '$50.000',
+    priceLabel: 'COP $50.000',
+    description: 'Acceso general al evento.',
+    featured: false,
+  },
 ]
 
 /* ============================================================
-   FORMULARIO · PATROCINADORES Y EXPOSITORES
+   FORMULARIO · PATROCINADORES
    Valores alineados con enums de sponsor_registrations.
    ============================================================ */
 
 export const SPONSOR_REGISTRATION = {
-  title: 'Registro de patrocinadores y expositores',
+  title: 'Registro de patrocinadores',
   intro:
     'Vincula tu marca a Shark Caribe 2026. Completa el formulario y el equipo comercial te contactará para cerrar tu plan.',
 }
 
+/* Planes del formulario (alineados con enum sponsor_plan) */
 export const SPONSOR_PLANS = [
   {
-    value: 'emprendedor_bronce',
-    label: 'Plan Emprendedor - Bronce ($3.500.000 COP)',
+    value: 'emprendedor',
+    label: 'Plan Emprendedor',
+    audience:
+      'Ideal para pequeñas empresas, emprendimientos y marcas emergentes.',
+    benefits: [
+      'Logo en el backing multilogo del evento.',
+      'Presencia en la página oficial de Shark Caribe como aliado.',
+      'Difusión en una (1) publicación en redes sociales.',
+      '2 entradas VIP.',
+      'Certificado como aliado estratégico.',
+    ],
+    priceLabel: 'COP $3.500.000 + retenciones',
   },
-  { value: 'silver', label: 'Plan Silver ($6.900.000 COP)' },
-  { value: 'diamond', label: 'Plan Diamond ($11.990.000 COP)' },
-  { value: 'platinum', label: 'Plan Platinum ($25.000.000 COP)' },
-  { value: 'elite', label: 'Plan Élite ($50.000.000 COP)' },
   {
-    value: 'muestra_comercial',
-    label: 'Muestra Comercial / Stand ($2.300.000 COP)',
+    value: 'bronce',
+    label: 'Plan Bronce',
+    audience:
+      'Ideal para empresas locales, PYMES y marcas que desean fortalecer su posicionamiento dentro del ecosistema emprendedor.',
+    benefits: [
+      'Reconocimiento como Aliado Oficial de la IV Shark Caribe Pitch Competition.',
+      'Logo en el backing multilogo del evento.',
+      'Presencia de marca en la página web de Shark Caribe.',
+      'Mención en dos (2) publicaciones en redes sociales oficiales.',
+      'Derecho a instalar un pendón o banner corporativo en la zona de networking.',
+      '4 entradas VIP para el evento.',
+      'Participación en los espacios de networking empresarial.',
+      'Certificado de aporte.',
+      'Placa de reconocimiento como aliado.',
+    ],
+    priceLabel: 'COP $6.900.000 + retenciones',
   },
+  {
+    value: 'silver',
+    label: 'Plan Silver',
+    audience:
+      'Ideal para empresas que buscan mayor posicionamiento de marca y una relación más cercana con el ecosistema de innovación y emprendimiento.',
+    benefits: [
+      'Todos los beneficios del Plan Bronce.',
+      'Espacio comercial de 2 × 2 m en la Galería Empresarial.',
+      'Inclusión del logo en piezas oficiales (pantalla principal, invitación digital, backing multilogo, escarapelas y manillas).',
+      'Publicidad durante un (1) mes en los canales digitales de Shark Caribe (sitio web y redes sociales).',
+      'Mención protocolaria durante el evento como patrocinador Silver.',
+      'Entrevista o cápsula de contenido para redes sociales de Shark Caribe.',
+      'Inclusión de un artículo promocional o muestra de producto en el kit del participante.',
+      '10 entradas VIP para el evento.',
+      'Certificado de patrocinio y placa de reconocimiento.',
+      'Difusión de una pieza audiovisual que resalte el compromiso del patrocinador (material finalizado a entregar por la marca).',
+    ],
+    priceLabel: 'COP $11.990.000 + retenciones',
+  },
+  {
+    value: 'diamond',
+    label: 'Plan Diamond',
+    audience:
+      'Para las marcas que quieren posicionarse donde nacen las próximas grandes oportunidades de negocio.',
+    benefits: [
+      'Espacio para producción y montaje en la Zona de Networking.',
+      '1 mes de publicidad en indicecolombia.com, sharkcaribe.co y @shark.caribe.',
+      '10 boletos de acceso VIP.',
+      'Access publicitario co-branding: zona de networking.',
+      'Branding en las piezas oficiales del evento: escarapelas, manillas, invitación digital, pantalla y backing multilogo impreso.',
+    ],
+    priceLabel: 'COP $25.000.000 + retenciones',
+  },
+  {
+    value: 'platinum',
+    label: 'Plan Platinum',
+    audience:
+      'Para las marcas que desean dejar huella y convertirse en protagonistas del evento.',
+    benefits: [
+      'Cofinanciamiento de ingreso al Bootcamp de Entrenamiento Shark Caribe Tech.',
+      'Curaduría.',
+      'Speaker de 20 minutos durante el módulo de cierre del Bootcamp de Entrenamiento Shark Caribe Tech.',
+      'Jurado calificador durante el evento.',
+    ],
+    extraBenefits: [
+      'Espacio de 3 × 5 m² en la galería empresarial.',
+      '1 mes de publicidad en indicecolombia.com, sharkcaribe.co y @shark.caribe.',
+      '15 boletos de acceso VIP.',
+      'Access publicitario co-branding: zonas de acceso a elevadores – mesa de jurados.',
+      'Branding en las piezas oficiales del evento: escarapelas, manillas, invitación digital, pantalla y backing multilogo impreso.',
+      'Placa de reconocimiento.',
+    ],
+    priceLabel: 'COP $35.000.000 + retenciones',
+  },
+]
+
+/* Etiquetas extra para filas antiguas en admin */
+export const SPONSOR_PLAN_LABELS = [
+  ...SPONSOR_PLANS,
+  {
+    value: 'emprendedor_bronce',
+    label: 'Plan Emprendedor - Bronce (legado)',
+  },
+  { value: 'elite', label: 'Plan Élite' },
+  { value: 'muestra_comercial', label: 'Muestra Comercial (legado)' },
   {
     value: 'aliado_institucional',
     label: 'Aliado Institucional / Co-financiador',
   },
 ]
 
+/* Badges visibles en la sección de patrocinadores */
+export const SPONSOR_BADGES = [
+  { id: 'emprendedor', label: 'Plan Emprendedor' },
+  { id: 'bronce', label: 'Plan Bronce' },
+  { id: 'silver', label: 'Plan Silver' },
+  { id: 'diamond', label: 'Plan Diamond' },
+  { id: 'platinum', label: 'Plan Platinum' },
+]
+
+/* ============================================================
+   FORMULARIO · EXPOSITORES (MUESTRA COMERCIAL)
+   Valores alineados con enums de exhibitor_registrations.
+   ============================================================ */
+
+export const EXHIBITOR_REGISTRATION = {
+  title: 'Registro de expositor · Muestra comercial',
+  intro:
+    'Reserva tu stand en la muestra comercial de Shark Caribe 2026. Completa el formulario y el equipo comercial te contactará para confirmar tu espacio.',
+}
+
+export const MUESTRA_COMERCIAL = {
+  eyebrow: 'Categoría expositores · Pitch Competition by Shark Caribe',
+  title: 'Muestra comercial',
+  intro:
+    'Para las empresas que desean exhibir sus productos y servicios, fortalecer su posicionamiento y generar oportunidades de negocio frente a más de 300 asistentes.',
+  includesLabel: 'Stand dotado con',
+  includes: [
+    'Backing',
+    'Iluminación',
+    'Jardinera',
+    'Punto eléctrico 110v',
+    'Mesa tipo bar',
+    'Dos sillas',
+  ],
+  terms: 'TyC: el diseño del arte es por cuenta del cliente.',
+  venueLabel: 'Salón Los Laureles',
+  venuePlace: 'Hotel Dann Carlton · Barranquilla',
+  cta: 'Reservar stand',
+  closing:
+    'Conviértete en aliado estratégico de Shark Caribe y conecta tu marca con el ecosistema de innovación más importante de la región.',
+}
+
+export const EXHIBITOR_STAND_TYPES = [
+  {
+    value: 'stand_2x2',
+    label: 'Stand 2.0 × 2.0 m ($2.500.000 COP)',
+    shortLabel: 'Stand 2.0 × 2.0 m',
+    dimensions: '2.0 × 2.0 m',
+    price: '$2.500.000',
+    priceLabel: 'COP $2.500.000',
+    featured: true,
+  },
+  {
+    value: 'stand_2x16',
+    label: 'Stand 2.0 × 1.6 m ($1.500.000 COP)',
+    shortLabel: 'Stand 2.0 × 1.6 m',
+    dimensions: '2.0 × 1.6 m',
+    price: '$1.500.000',
+    priceLabel: 'COP $1.500.000',
+    featured: false,
+  },
+]
+
+/* Opciones del menú Inscríbete (Hero y Navbar) */
+export const REGISTER_OPTIONS = [
+  { id: 'participante', label: 'Participante competidor' },
+  { id: 'asistente', label: 'Asistente' },
+  { id: 'patrocinador', label: 'Patrocinador' },
+  { id: 'expositor', label: 'Expositor muestra comercial' },
+]
+
 export const NAV_LINKS = [
   { label: 'Competidores', href: '#competidores' },
+  { label: 'Entradas', href: '#entradas' },
   { label: 'Patrocinadores', href: '#patrocinadores' },
+  { label: 'Muestra comercial', href: '#muestra-comercial' },
   { label: 'Jurados', href: '#jurados' },
   // { label: 'Emprendimientos', href: '#emprendimientos' },
   { label: 'Novedades', href: '#novedades' },
@@ -235,9 +421,9 @@ export const JUDGES = [
       'https://www.instagram.com/reel/DbdXGPrRU2s/?igsh=dDcxeDl1MjFyeG8=',
   },
   {
-    name: 'Próximamente',
-    title: 'Jurado por anunciar',
-    photo: '',
+    name: 'Carlos Enrique De Lavalle Tcherassi',
+    title: 'Gerente General y Fundador, De Lavalle Tcherassi S.A.S.',
+    photo: '/jurados/carlos.jpeg',
     instagramUrl: '',
   },
   {
@@ -330,7 +516,7 @@ export const COMPETITION = {
       description: 'Emprendedores mayores de 50 años que se reinventan.',
     },
   ],
-  sectorsNote: 'Únicamente 9 sectores admitidos:',
+  sectorsNote: '',
   sectors: [
     'Startups de base tecnológica',
     'Turismo',
@@ -343,10 +529,14 @@ export const COMPETITION = {
     'Oficios rurales y sostenibles',
   ],
   requirements: [
-    'Contar con Producto Mínimo Viable (PMV) validado.',
-    'Haber recibido capital semilla u otro estímulo previo.',
-    'Valor de inscripción: $15.000 COP.',
-    'Enviar soportes requeridos y autorización firmada (categoría Junior).',
+    'Contar con producto mínimo viable validado.',
+    'Pertenecer a uno de los sectores definidos.',
+    'Presentar un pitch de máximo 3 a 5 minutos.',
+    'Haber recibido capital semilla u otro estímulo de crecimiento para su negocio.',
+    'Entregar una ficha de caracterización: emprendimiento, problema que resuelve, cliente objetivo, propuesta de valor, ventas o validación, necesidades y proyección.',
+    'Contar con evidencia visual: muestra física, fotos, catálogo, prototipo, video o demostración.',
+    'En la categoría Junior, los postulados deben adjuntar carta de autorización firmada por los padres o adulto responsable.',
+    'Aceptar que el negocio podrá ser divulgado con fines de promoción del evento.',
   ],
   cta: 'Postularme ahora',
 }
@@ -394,9 +584,10 @@ export const SCHEDULE = {
 }
 
 export const ABOUT = {
-  title: '¿Por qué existe Shark Caribe?',
+  title: '¿Por qué existe Shark Caribe Pitch Competition?',
   paragraphs: [
-    'Un evento de ciudad multipropósito que hace cuatro años conecta emprendedores con inversionistas, empresarios, instituciones y aliados estratégicos a través de un concurso que premia la creatividad e innovación de los emprendimientos que respondan a una necesidad insatisfecha del mercado.',
+    'Poner a prueba la creatividad e innovación de los emprendedores en etapa de escalabilidad que ofrezcan respuesta a necesidades insatisfechas del mercado, a través de un concurso que otorga a los finalistas un entrenamiento intensivo de preparación para la competencia que culmina con la oportunidad de disputar premios y visibilidad que impulsen el crecimiento de sus negocios. Pero también como una plataforma que impulsa el emprendimiento en el Caribe colombiano, conectando a innovadores y visionarios con empresarios, inversionistas, universidades y aliados estratégicos.',
+    'Desde 2022, este evento de ciudad multipropósito se ha consolidado como un espacio único donde tradición e innovación dialogan, integrando oficios ancestrales con propuestas tecnológicas y turísticas de alto impacto. Demostrando que el talento del Caribe puede transformar la economía regional y proyectarse al mundo, generando valor social, cultural y económico.',
   ],
   stats: [
     { value: '2022', label: 'Primera edición' },

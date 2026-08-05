@@ -1,12 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { HERO_SLIDES } from '../data/content.js'
+import { HERO_SLIDES, REGISTER_OPTIONS } from '../data/content.js'
 import './Hero.css'
-
-const REGISTER_OPTIONS = [
-  { id: 'participante', label: 'Participante' },
-  { id: 'asistente', label: 'Asistente' },
-  { id: 'patrocinador', label: 'Patrocinador' },
-]
 
 export default function Hero({ onRegister }) {
   const [active, setActive] = useState(0)

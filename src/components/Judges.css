@@ -19,9 +19,14 @@
 
 .judge__photo-wrap {
   position: relative;
-  width: min(100%, 180px);
-  aspect-ratio: 1;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
   margin-bottom: 0.35rem;
+  background: var(--color-bg-alt);
+  border: 3px solid var(--color-border);
 }
 
 .judge__photo-link {
@@ -36,6 +41,7 @@
   color: inherit;
   cursor: pointer;
   text-decoration: none;
+  overflow: hidden;
 }
 
 .judge__photo-link:focus-visible {
@@ -44,12 +50,12 @@
 }
 
 .judge__photo {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   border-radius: 50%;
-  background: var(--color-bg-alt);
-  border: 3px solid var(--color-border);
 }
 
 .judge__photo--placeholder {

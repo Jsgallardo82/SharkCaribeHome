@@ -17,13 +17,16 @@
   );
 }
 
-.sponsors__inner {
+.sponsors__shell {
   position: relative;
   z-index: 1;
+  padding-block: clamp(2.5rem, 6vw, 4rem);
+}
+
+.sponsors__inner {
   display: flex;
   align-items: center;
   gap: clamp(1.5rem, 5vw, 4rem);
-  padding-block: clamp(2.5rem, 6vw, 4rem);
 }
 
 /* Sharky */
@@ -68,6 +71,58 @@
   padding: 1rem 2.25rem;
 }
 
+.sponsors__badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin: clamp(1.75rem, 4vw, 2.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sponsors__badge {
+  padding: 0.55rem 0.95rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.sponsors__badge--emprendedor {
+  color: #0f3d1f;
+  background: linear-gradient(145deg, #8fd99a 0%, #3fbf63 55%, #2a9a4a 100%);
+  border-color: rgba(143, 217, 154, 0.65);
+}
+
+.sponsors__badge--bronce {
+  color: #3a1f0a;
+  background: linear-gradient(145deg, #e0a36a 0%, #b06a2f 55%, #8a4a1a 100%);
+  border-color: rgba(224, 163, 106, 0.7);
+}
+
+.sponsors__badge--silver {
+  color: #1d2433;
+  background: linear-gradient(145deg, #f2f4f7 0%, #c5ccd6 55%, #9aa3b2 100%);
+  border-color: rgba(242, 244, 247, 0.75);
+}
+
+.sponsors__badge--diamond {
+  color: #06263f;
+  background: linear-gradient(145deg, #9ee7ff 0%, #3db7e6 50%, #1a7fb8 100%);
+  border-color: rgba(158, 231, 255, 0.7);
+}
+
+.sponsors__badge--platinum {
+  color: #1a2030;
+  background: linear-gradient(145deg, #ffffff 0%, #e8eef8 45%, #b8c4d8 100%);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
 /* Responsive: apilar en móvil */
 @media (max-width: 760px) {
   .sponsors__inner {
@@ -81,5 +136,14 @@
 
   .sponsors__kicker {
     justify-content: center;
+  }
+
+  .sponsors__badges {
+    gap: 0.5rem;
+  }
+
+  .sponsors__badge {
+    flex: 1 1 calc(50% - 0.5rem);
+    text-align: center;
   }
 }

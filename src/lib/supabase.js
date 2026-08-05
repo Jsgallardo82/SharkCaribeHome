@@ -244,9 +244,36 @@ export async function fetchSponsorRegistrations() {
   return Array.isArray(data) ? data : []
 }
 
+export async function fetchExhibitorRegistrations() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const { data, error } = await supabase
+    .from('exhibitor_registrations')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('[Shark Caribe] Error al leer expositores:', error)
+    if (error.code === '42501' || error.code === 'PGRST301') {
+      throw new Error(
+        'No tienes permiso para ver expositores. Revisa la política RLS de ' +
+          'SELECT en exhibitor_registrations (rol admin).'
+      )
+    }
+    const detail = [error.message, error.code].filter(Boolean).join(' · ')
+    throw new Error(
+      detail
+        ? `No pudimos cargar los expositores: ${detail}`
+        : 'No pudimos cargar los expositores. Inténtalo de nuevo.'
+    )
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
 /* Confirma pago: status → pago + guarda el código en payment_confirmation.
-   Requiere política RLS de UPDATE para authenticated. */
-export async function confirmCompetitorPayment(id, paymentCode) {
+   Requiere política RLS de UPDATE para admin autenticado. */
+async function confirmRegistrationPayment(table, id, paymentCode) {
   if (!supabase) throw new Error('Supabase no está configurado.')
 
   const code = String(paymentCode || '').trim()
@@ -254,7 +281,7 @@ export async function confirmCompetitorPayment(id, paymentCode) {
   if (!code) throw new Error('Escribe el código de pago.')
 
   const { data, error } = await supabase
-    .from('competitor_registrations')
+    .from(table)
     .update({
       status: 'pago',
       payment_confirmation: code,
@@ -266,17 +293,16 @@ export async function confirmCompetitorPayment(id, paymentCode) {
     .maybeSingle()
 
   if (error) {
-    console.error('[Shark Caribe] Error al confirmar pago:', error)
+    console.error(`[Shark Caribe] Error al confirmar pago (${table}):`, error)
     if (error.code === '42501' || error.code === 'PGRST301') {
       throw new Error(
-        'No tienes permiso para actualizar inscripciones. Falta una política RLS de ' +
-          'UPDATE para usuarios autenticados en competitor_registrations.'
+        'No tienes permiso para actualizar inscripciones. Revisa la política RLS de ' +
+          `UPDATE para admin en ${table}.`
       )
     }
     if (error.code === '22P02' || error.message?.includes('pago')) {
       throw new Error(
-        'El estado "pago" no existe en el enum registration_status. ' +
-          'Agrégalo en Supabase con ALTER TYPE … ADD VALUE.'
+        'El estado "pago" no es válido en esta tabla. Revisa el constraint/enum de status.'
       )
     }
     const detail = [error.message, error.code].filter(Boolean).join(' · ')
@@ -290,6 +316,22 @@ export async function confirmCompetitorPayment(id, paymentCode) {
   }
 
   return data
+}
+
+export async function confirmCompetitorPayment(id, paymentCode) {
+  return confirmRegistrationPayment('competitor_registrations', id, paymentCode)
+}
+
+export async function confirmAttendeePayment(id, paymentCode) {
+  return confirmRegistrationPayment('attendee_registrations', id, paymentCode)
+}
+
+export async function confirmSponsorPayment(id, paymentCode) {
+  return confirmRegistrationPayment('sponsor_registrations', id, paymentCode)
+}
+
+export async function confirmExhibitorPayment(id, paymentCode) {
+  return confirmRegistrationPayment('exhibitor_registrations', id, paymentCode)
 }
 
 /* ------------------------------------------------------------
@@ -431,6 +473,37 @@ export async function submitSponsorRegistration(values) {
 
   if (error) {
     console.error('[Shark Caribe] Error al inscribir patrocinador:', error)
+    throw new Error(friendlyError(error))
+  }
+}
+
+export async function submitExhibitorRegistration(values) {
+  if (!supabase) {
+    throw new Error(
+      'El formulario todavía no está conectado a la base de datos. Escríbenos y te inscribimos manualmente.'
+    )
+  }
+
+  const row = {
+    company_name: values.companyName.trim(),
+    tax_id: values.taxId.trim(),
+    contact_name: values.contactName.trim(),
+    contact_role: values.contactRole.trim(),
+    email: values.email.trim().toLowerCase(),
+    phone: values.phone.trim(),
+    website: values.website.trim() || null,
+    stand_type: values.standType,
+    sector: values.sector.trim(),
+    comments: values.comments.trim() || null,
+    referral_source: values.referralSource,
+    referral_source_other:
+      values.referralSource === 'other' ? values.referralSourceOther.trim() : null,
+  }
+
+  const { error } = await supabase.from('exhibitor_registrations').insert(row)
+
+  if (error) {
+    console.error('[Shark Caribe] Error al inscribir expositor:', error)
     throw new Error(friendlyError(error))
   }
 }

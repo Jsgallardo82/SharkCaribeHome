@@ -7,6 +7,7 @@ import {
   ATTENDEE_SEAT_TYPES,
   REFERRAL_SOURCES,
   SUPPORT_EMAIL,
+  REGISTRATION,
 } from '../data/content.js'
 import {
   fetchPublicCompetitors,
@@ -67,8 +68,13 @@ function validate(form) {
   return errors
 }
 
-export default function AttendeeModal({ onClose }) {
-  const [form, setForm] = useState(EMPTY_FORM)
+export default function AttendeeModal({ onClose, initialSeatType = '' }) {
+  const [form, setForm] = useState(() => ({
+    ...EMPTY_FORM,
+    seatType: ATTENDEE_SEAT_TYPES.some((s) => s.value === initialSeatType)
+      ? initialSeatType
+      : '',
+  }))
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -79,6 +85,9 @@ export default function AttendeeModal({ onClose }) {
   const panelRef = useRef(null)
   const submittingRef = useRef(false)
   submittingRef.current = submitting
+
+  const selectedSeat = ATTENDEE_SEAT_TYPES.find((s) => s.value === form.seatType)
+  const feeDisplay = selectedSeat?.priceLabel || 'Según ubicación elegida'
 
   useEffect(() => {
     const previouslyFocused = document.activeElement
@@ -187,13 +196,21 @@ export default function AttendeeModal({ onClose }) {
             </div>
             <h2 id="attendee-title">¡Recibimos tu registro!</h2>
             <p>
-              Tu inscripción como asistente quedó registrada. Si necesitas enviar
-              soportes o tienes dudas, escribe a{' '}
-              <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+              Tu inscripción como asistente quedó registrada en estado{' '}
+              <strong>pendiente</strong>. Para confirmarla:
             </p>
-            <p className="field__hint">
-              Valor de referencia: <strong>{ATTENDEE_REGISTRATION.feeAmount}</strong>.
-            </p>
+            <ol className="modal__steps">
+              <li>
+                Paga <strong>{feeDisplay}</strong> a la {REGISTRATION.paymentKeyLabel}{' '}
+                <code>{REGISTRATION.paymentKey}</code>.
+              </li>
+              <li>
+                Envía el comprobante a{' '}
+                <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> con tu nombre
+                y documento en el asunto. Cuando validemos el pago, tu entrada quedará
+                confirmada.
+              </li>
+            </ol>
             <button type="button" className="btn btn--primary" onClick={handleClose}>
               Cerrar
             </button>
@@ -207,10 +224,14 @@ export default function AttendeeModal({ onClose }) {
 
             <div className="modal__fee">
               <p>
-                <strong>{ATTENDEE_REGISTRATION.feeLabel}:</strong>{' '}
-                {ATTENDEE_REGISTRATION.feeAmount}
+                <strong>{ATTENDEE_REGISTRATION.feeLabel}:</strong> {feeDisplay}
               </p>
               <p className="field__hint">{ATTENDEE_REGISTRATION.feeHint}</p>
+              {selectedSeat && (
+                <p className="field__hint">
+                  {selectedSeat.label}: {selectedSeat.description}
+                </p>
+              )}
             </div>
 
             <div className="field" data-field="fullName">
@@ -357,7 +378,9 @@ export default function AttendeeModal({ onClose }) {
                       checked={form.seatType === seat.value}
                       onChange={(e) => update('seatType', e.target.value)}
                     />
-                    <span>{seat.label}</span>
+                    <span>
+                      {seat.label} · {seat.priceLabel}
+                    </span>
                   </label>
                 ))}
               </div>

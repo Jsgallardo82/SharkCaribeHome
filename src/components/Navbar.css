@@ -16,6 +16,7 @@
 .navbar__logo {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .navbar__logo img {
@@ -24,14 +25,21 @@
   object-fit: contain;
 }
 
+.navbar__nav {
+  min-width: 0;
+}
+
 .navbar__nav ul {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  flex-wrap: nowrap;
+  gap: 0.85rem;
 }
 
 .navbar__nav a {
+  font-size: 0.8rem;
   font-weight: 500;
+  white-space: nowrap;
   color: var(--color-text);
   transition: color var(--transition);
 }
@@ -40,9 +48,65 @@
   color: var(--color-primary);
 }
 
+.navbar__cta-item {
+  position: relative;
+}
+
+.navbar__register {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .navbar__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
   color: var(--color-white) !important;
-  padding: 0.6rem 1.4rem;
+  padding: 0.5rem 1rem;
+}
+
+.navbar__register-caret {
+  font-size: 0.85em;
+  line-height: 1;
+}
+
+.navbar__register-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  min-width: 14rem;
+  padding: 0.4rem;
+  border-radius: var(--radius);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow);
+}
+
+.navbar__register-option {
+  border: none;
+  background: transparent;
+  color: var(--color-secondary);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  border-radius: calc(var(--radius) - 4px);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.navbar__register-option:hover,
+.navbar__register-option:focus-visible {
+  background: var(--color-bg-alt);
+  color: var(--color-primary);
+  outline: none;
 }
 
 .navbar__social {
@@ -82,7 +146,7 @@
 }
 
 /* --- Responsive: móvil / tablet --- */
-@media (max-width: 860px) {
+@media (max-width: 1100px) {
   .navbar__toggle {
     display: flex;
   }
@@ -100,7 +164,8 @@
   }
 
   .navbar__nav.is-open {
-    max-height: 400px;
+    max-height: min(85vh, 720px);
+    overflow-y: auto;
   }
 
   .navbar__nav ul {
@@ -110,13 +175,36 @@
     padding: 1rem var(--container-pad);
   }
 
+  .navbar__nav a {
+    font-size: 1rem;
+  }
+
   .navbar__nav li {
     padding: 0.75rem 0;
   }
 
   .navbar__cta {
-    display: inline-block;
+    font-size: 0.95rem;
+    padding: 0.6rem 1.4rem;
+  }
+
+  .navbar__register {
+    width: 100%;
+  }
+
+  .navbar__cta {
+    width: 100%;
     text-align: center;
+  }
+
+  .navbar__register-menu {
+    position: static;
+    top: auto;
+    right: auto;
+    margin-top: 0.5rem;
+    width: 100%;
+    min-width: 0;
+    box-shadow: none;
   }
 
   /* En el menú móvil mostramos el texto junto al ícono */

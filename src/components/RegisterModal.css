@@ -280,6 +280,120 @@
   color: var(--color-primary);
 }
 
+/* --- Planes de patrocinio (SponsorModal) --- */
+
+.sponsor-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0 0.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.sponsor-plans__title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--color-secondary);
+}
+
+.sponsor-plans__intro {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.sponsor-plans__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.sponsor-plans__item {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg-alt);
+  overflow: hidden;
+}
+
+.sponsor-plans__item.is-selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(43, 87, 255, 0.12);
+}
+
+.sponsor-plans__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--color-secondary);
+  list-style: none;
+}
+
+.sponsor-plans__summary::-webkit-details-marker {
+  display: none;
+}
+
+.sponsor-plans__summary::after {
+  content: '▾';
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.sponsor-plans__item[open] .sponsor-plans__summary::after {
+  content: '▴';
+}
+
+.sponsor-plans__price {
+  width: 100%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.sponsor-plans__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0 1rem 1rem;
+}
+
+.sponsor-plans__audience {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.sponsor-plans__benefits-label {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.sponsor-plans__benefits {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+.sponsor-plans__choose {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
 /* --- Alertas y pie --- */
 
 .modal__alert {

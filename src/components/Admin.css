@@ -138,9 +138,61 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+.admin__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.admin__filters-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-right: 0.25rem;
+}
+
+.admin__filter {
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-secondary);
+  border-radius: var(--radius);
+  padding: 0.4rem 0.75rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition),
+    color var(--transition);
+}
+
+.admin__filter:hover {
+  border-color: var(--color-secondary);
+}
+
+.admin__filter.is-active {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.admin__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
 .admin__count {
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin: 0;
+}
+
+.admin__export {
+  flex-shrink: 0;
 }
 
 .admin__table-wrap {

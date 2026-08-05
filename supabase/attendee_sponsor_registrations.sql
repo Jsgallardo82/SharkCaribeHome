@@ -95,10 +95,12 @@ END $$;
 
 DO $$ BEGIN
   CREATE TYPE public.sponsor_plan AS ENUM (
-    'emprendedor_bronce',
+    'emprendedor',
+    'bronce',
     'silver',
     'diamond',
     'platinum',
+    'emprendedor_bronce',
     'elite',
     'muestra_comercial',
     'aliado_institucional'
