@@ -32,6 +32,25 @@ export default function Footer() {
           </svg>
           <span>@shark.caribe</span>
         </a>
+
+        <div className="footer__legal">
+          <img
+            className="footer__legal-mascot"
+            src="/sharky.png"
+            alt="Sharky, mascota de Shark Caribe"
+            width="88"
+            height="88"
+          />
+          <p className="footer__legal-text">
+            Shark Caribe® es una marca registrada ante la Superintendencia de
+            Industria y Comercio. Su uso no autorizado, reproducción parcial o
+            total, así como la imitación de sus elementos distintivos, constituye
+            una infracción a la legislación vigente en materia de propiedad
+            industrial. Shark Caribe® Pitch Competition es operado
+            exclusivamente por IS Comunicaciones.
+          </p>
+        </div>
+
         <p className="footer__copy">
           © {new Date().getFullYear()} Shark Caribe. Todos los derechos reservados.
         </p>

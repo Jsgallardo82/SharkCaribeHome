@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SPONSOR_BADGES, SPONSOR_PLANS } from '../data/content.js'
 import './Sponsors.css'
 
@@ -28,6 +28,98 @@ export default function Sponsors({ onRegister }) {
     return () => {
       document.removeEventListener('pointerdown', onPointerDown)
       document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [openId])
+
+  /* En móvil: globo fixed al viewport. En desktop: desplaza si se sale del borde. */
+  useLayoutEffect(() => {
+    if (!openId) return undefined
+
+    const balloon = document.getElementById(`sponsor-balloon-${openId}`)
+    const trigger = document.querySelector(
+      `[aria-controls="sponsor-balloon-${openId}"]`
+    )
+    if (!balloon || !trigger) return undefined
+
+    const pad = 12
+    const mobileMq = window.matchMedia('(max-width: 760px)')
+
+    function clearInline() {
+      balloon.style.position = ''
+      balloon.style.left = ''
+      balloon.style.right = ''
+      balloon.style.top = ''
+      balloon.style.bottom = ''
+      balloon.style.width = ''
+      balloon.style.maxWidth = ''
+      balloon.style.transform = ''
+      balloon.style.setProperty('--balloon-shift', '0px')
+      balloon.dataset.placement = 'above'
+    }
+
+    function placeMobile() {
+      const br = trigger.getBoundingClientRect()
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+
+      balloon.style.position = 'fixed'
+      balloon.style.left = `${pad}px`
+      balloon.style.right = `${pad}px`
+      balloon.style.width = 'auto'
+      balloon.style.maxWidth = `${vw - pad * 2}px`
+      balloon.style.transform = 'none'
+      balloon.style.setProperty('--balloon-shift', '0px')
+      balloon.style.bottom = 'auto'
+      balloon.style.top = '0px'
+      balloon.dataset.placement = 'above'
+
+      const height = balloon.getBoundingClientRect().height
+      let top = br.top - height - 10
+      let placement = 'above'
+
+      if (top < pad) {
+        top = br.bottom + 10
+        placement = 'below'
+      }
+      if (top + height > vh - pad) {
+        top = Math.max(pad, vh - pad - height)
+      }
+
+      balloon.dataset.placement = placement
+      balloon.style.top = `${Math.round(top)}px`
+    }
+
+    function placeDesktop() {
+      clearInline()
+      balloon.dataset.placement = 'above'
+
+      const rect = balloon.getBoundingClientRect()
+      const vw = window.innerWidth
+      let shift = 0
+      if (rect.left < pad) shift = pad - rect.left
+      else if (rect.right > vw - pad) shift = vw - pad - rect.right
+      balloon.style.setProperty('--balloon-shift', `${Math.round(shift)}px`)
+
+      const after = balloon.getBoundingClientRect()
+      if (after.top < pad) {
+        balloon.dataset.placement = 'below'
+      }
+    }
+
+    function place() {
+      if (mobileMq.matches) placeMobile()
+      else placeDesktop()
+    }
+
+    place()
+    window.addEventListener('resize', place)
+    window.addEventListener('scroll', place, true)
+    mobileMq.addEventListener('change', place)
+    return () => {
+      clearInline()
+      window.removeEventListener('resize', place)
+      window.removeEventListener('scroll', place, true)
+      mobileMq.removeEventListener('change', place)
     }
   }, [openId])
 

@@ -254,6 +254,12 @@ function attendeeDetails(row) {
       value: accompaniedLabel(row) || (row.accompanied_competitor_id ? row.accompanied_competitor_id : 'Ninguno'),
     },
     { label: '¿Cómo nos conoció?', value: referralText(row) },
+    { label: 'Referencia Wompi', value: row.payment_reference },
+    {
+      label: 'Monto (centavos)',
+      value: row.amount_in_cents == null ? null : String(row.amount_in_cents),
+    },
+    { label: 'ID transacción Wompi', value: row.wompi_transaction_id },
     { label: 'Confirmación de pago', value: row.payment_confirmation },
     { label: 'Revisado el', value: formatDateTime(row.reviewed_at) },
     { label: 'Actualizado', value: formatDateTime(row.updated_at) },

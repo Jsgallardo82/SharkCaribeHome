@@ -23,11 +23,15 @@ const EMPTY_FORM = {
   phone: '',
   email: '',
   ventureName: '',
+  logoFile: null,
   sector: '',
   problemSolved: '',
   referralSource: '',
   referralSourceOther: '',
 }
+
+const LOGO_MAX_BYTES = 2 * 1024 * 1024
+const LOGO_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 
 /* Edad cumplida a día de hoy. Devuelve null si la fecha no sirve. */
 function ageFromBirthDate(value) {
@@ -101,6 +105,14 @@ function validate(form) {
     errors.referralSource = 'Cuéntanos cómo te enteraste.'
   } else if (form.referralSource === 'other' && !form.referralSourceOther.trim()) {
     errors.referralSourceOther = 'Especifica por qué medio te enteraste.'
+  }
+
+  if (form.logoFile) {
+    if (!LOGO_MIME.has(form.logoFile.type)) {
+      errors.logoFile = 'El logo debe ser una imagen JPG, PNG, WEBP o GIF.'
+    } else if (form.logoFile.size > LOGO_MAX_BYTES) {
+      errors.logoFile = 'El logo no puede superar 2 MB.'
+    }
   }
 
   return errors
@@ -467,6 +479,37 @@ export default function RegisterModal({ onClose }) {
               {errors.ventureName && <p className="field__error">{errors.ventureName}</p>}
             </div>
 
+            {/* --- Logo (opcional) --- */}
+            <div className="field" data-field="logoFile">
+              <label className="field__label" htmlFor="reg-logo">
+                Logo de su emprendimiento
+              </label>
+              <input
+                id="reg-logo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={(e) => update('logoFile', e.target.files?.[0] || null)}
+              />
+              <p className="field__hint">
+                Opcional. JPG, PNG, WEBP o GIF · máximo 2 MB
+                {form.logoFile ? ` · ${form.logoFile.name}` : ''}
+              </p>
+              {form.logoFile && (
+                <button
+                  type="button"
+                  className="field__clear-file"
+                  onClick={() => {
+                    update('logoFile', null)
+                    const input = document.getElementById('reg-logo')
+                    if (input) input.value = ''
+                  }}
+                >
+                  Quitar logo
+                </button>
+              )}
+              {errors.logoFile && <p className="field__error">{errors.logoFile}</p>}
+            </div>
+
             {/* --- Sector --- */}
             <div className="field" data-field="sector">
               <label className="field__label" htmlFor="reg-sector">
@@ -559,6 +602,14 @@ export default function RegisterModal({ onClose }) {
               </button>
               <button type="submit" className="btn btn--primary" disabled={submitting}>
                 {submitting ? 'Enviando…' : 'Enviar postulación'}
+              </button>
+              <button
+                type="button"
+                className="btn btn--outline modal__pay-later"
+                disabled
+                title="Pronto disponible"
+              >
+                Inscribirse e ir a pagar
               </button>
             </footer>
           </form>

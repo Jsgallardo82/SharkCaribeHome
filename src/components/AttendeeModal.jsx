@@ -10,9 +10,15 @@ import {
   REGISTRATION,
 } from '../data/content.js'
 import {
+  createAttendeeWompiCheckout,
   fetchPublicCompetitors,
   submitAttendeeRegistration,
 } from '../lib/supabase.js'
+import {
+  isWompiPaymentsEnabled,
+  redirectToWompiCheckout,
+  friendlyWompiError,
+} from '../lib/wompi.js'
 import './RegisterModal.css'
 
 const EMPTY_FORM = {
@@ -79,8 +85,12 @@ export default function AttendeeModal({ onClose, initialSeatType = '' }) {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [done, setDone] = useState(false)
+  const [paidOnline, setPaidOnline] = useState(false)
+  const [paymentStatus, setPaymentStatus] = useState('')
+  const [paymentReference, setPaymentReference] = useState('')
   const [competitors, setCompetitors] = useState([])
   const [competitorsLoading, setCompetitorsLoading] = useState(false)
+  const wompiReady = isWompiPaymentsEnabled()
 
   const panelRef = useRef(null)
   const submittingRef = useRef(false)
@@ -133,9 +143,7 @@ export default function AttendeeModal({ onClose, initialSeatType = '' }) {
     setSubmitError('')
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault()
-
+  function validateOrScroll() {
     const found = validate(form)
     setErrors(found)
     if (Object.keys(found).length > 0) {
@@ -143,18 +151,58 @@ export default function AttendeeModal({ onClose, initialSeatType = '' }) {
       panelRef.current
         ?.querySelector(`[data-field="${firstField}"]`)
         ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      return
+      return false
     }
+    return true
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    if (!validateOrScroll()) return
 
     setSubmitting(true)
     setSubmitError('')
     try {
       await submitAttendeeRegistration(form)
+      setPaidOnline(false)
+      setPaymentStatus('')
+      setPaymentReference('')
       setDone(true)
       panelRef.current?.scrollTo({ top: 0 })
     } catch (error) {
       setSubmitError(error.message)
     } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function handlePayOnline() {
+    if (!validateOrScroll()) return
+    if (!wompiReady) {
+      console.warn('[Shark Caribe][Wompi] Botón pago: falta VITE_WOMPI_PUBLIC_KEY')
+      setSubmitError(
+        'El pago en línea aún no está configurado. Usa “Enviar registro” o escríbenos.'
+      )
+      return
+    }
+
+    setSubmitting(true)
+    setSubmitError('')
+    console.info('[Shark Caribe][Wompi] Flujo pagar iniciado', {
+      seatType: form.seatType,
+      email: form.email,
+    })
+    try {
+      const checkout = await createAttendeeWompiCheckout(form)
+      setPaymentReference(checkout.reference || '')
+      console.info('[Shark Caribe][Wompi] Registro OK, redirigiendo a Wompi…', {
+        reference: checkout.reference,
+      })
+      // Navegación completa a Web Checkout (no vuelve a este finally con éxito)
+      redirectToWompiCheckout(checkout)
+    } catch (error) {
+      console.error('[Shark Caribe][Wompi] Flujo pagar falló', error)
+      setSubmitError(friendlyWompiError(error))
       setSubmitting(false)
     }
   }
@@ -194,23 +242,51 @@ export default function AttendeeModal({ onClose, initialSeatType = '' }) {
             <div className="modal__success-icon" aria-hidden="true">
               ✓
             </div>
-            <h2 id="attendee-title">¡Recibimos tu registro!</h2>
-            <p>
-              Tu inscripción como asistente quedó registrada en estado{' '}
-              <strong>pendiente</strong>. Para confirmarla:
-            </p>
-            <ol className="modal__steps">
-              <li>
-                Paga <strong>{feeDisplay}</strong> a la {REGISTRATION.paymentKeyLabel}{' '}
-                <code>{REGISTRATION.paymentKey}</code>.
-              </li>
-              <li>
-                Envía el comprobante a{' '}
-                <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> con tu nombre
-                y documento en el asunto. Cuando validemos el pago, tu entrada quedará
-                confirmada.
-              </li>
-            </ol>
+            {paidOnline ? (
+              <>
+                <h2 id="attendee-title">
+                  {paymentStatus === 'APPROVED'
+                    ? '¡Pago recibido!'
+                    : 'Registro y pago en proceso'}
+                </h2>
+                <p>
+                  {paymentStatus === 'APPROVED'
+                    ? 'Tu entrada quedó registrada. La confirmación final llega cuando Wompi nos notifica el pago (suele ser inmediato).'
+                    : 'Guardamos tu inscripción y recibimos el resultado del checkout. Si el pago fue aprobado, tu entrada se confirmará automáticamente en breve.'}
+                </p>
+                {paymentReference && (
+                  <p className="field__hint">
+                    Referencia: <code>{paymentReference}</code>
+                  </p>
+                )}
+                {paymentStatus && paymentStatus !== 'APPROVED' && (
+                  <p className="field__hint">
+                    Estado Wompi: <strong>{paymentStatus}</strong>. Si fue rechazado,
+                    puedes intentar de nuevo desde Entradas.
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <h2 id="attendee-title">¡Recibimos tu registro!</h2>
+                <p>
+                  Tu inscripción como asistente quedó registrada en estado{' '}
+                  <strong>pendiente</strong>. Para confirmarla:
+                </p>
+                <ol className="modal__steps">
+                  <li>
+                    Paga <strong>{feeDisplay}</strong> a la {REGISTRATION.paymentKeyLabel}{' '}
+                    <code>{REGISTRATION.paymentKey}</code>.
+                  </li>
+                  <li>
+                    Envía el comprobante a{' '}
+                    <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> con tu nombre
+                    y documento en el asunto. Cuando validemos el pago, tu entrada quedará
+                    confirmada.
+                  </li>
+                </ol>
+              </>
+            )}
             <button type="button" className="btn btn--primary" onClick={handleClose}>
               Cerrar
             </button>
@@ -469,6 +545,17 @@ export default function AttendeeModal({ onClose, initialSeatType = '' }) {
               <button type="submit" className="btn btn--primary" disabled={submitting}>
                 {submitting ? 'Enviando…' : 'Enviar registro'}
               </button>
+              {wompiReady && (
+                <button
+                  type="button"
+                  className="btn btn--outline modal__pay-later"
+                  onClick={handlePayOnline}
+                  disabled={submitting}
+                  title="Registra tu entrada y paga con Wompi"
+                >
+                  {submitting ? 'Abriendo pago…' : 'Inscribirse e ir a pagar'}
+                </button>
+              )}
             </footer>
           </form>
         )}

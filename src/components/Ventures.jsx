@@ -1,10 +1,43 @@
-import { VENTURES } from '../data/content.js'
+import { useEffect, useState } from 'react'
 import Ticket, { Barcode } from './Ticket.jsx'
+import { SECTORS } from '../data/content.js'
+import { fetchPublicVentures } from '../lib/supabase.js'
 import './Ventures.css'
 
+function formatSector(value) {
+  if (!value) return ''
+  const known = SECTORS.find((s) => s.value === value)
+  if (known) return known.label
+  return String(value).replaceAll('_', ' ')
+}
+
+/* Secciones públicas alineadas con competitor_competition_stage (sin rechazado). */
 const SECTIONS = [
-  { id: 'inscrito', label: 'Inscritos' },
-  { id: 'segunda_ronda', label: 'Segunda ronda' },
+  {
+    id: 'inscritos',
+    label: 'Inscritos',
+    stages: ['pendiente', 'aprobado'],
+  },
+  {
+    id: 'segunda_ronda',
+    label: 'Segunda ronda',
+    stages: ['segunda_vuelta'],
+  },
+  {
+    id: 'tercera_ronda',
+    label: 'Tercera ronda',
+    stages: ['tercera_vuelta'],
+  },
+  {
+    id: 'finalistas',
+    label: 'Finalistas',
+    stages: ['final'],
+  },
+  {
+    id: 'ganadores',
+    label: 'Ganadores',
+    stages: ['ganador'],
+  },
 ]
 
 function initials(name) {
@@ -26,7 +59,7 @@ function VentureGrid({ items }) {
   return (
     <ul className="ventures__grid">
       {items.map((venture) => (
-        <li key={`${venture.round}-${venture.name}`} className="venture">
+        <li key={venture.id || `${venture.stage}-${venture.name}`} className="venture">
           <div className="venture__logo">
             {venture.logo ? (
               <img src={venture.logo} alt="" loading="lazy" />
@@ -37,7 +70,9 @@ function VentureGrid({ items }) {
             )}
           </div>
           <p className="venture__name">{venture.name}</p>
-          {venture.sector && <p className="venture__sector">{venture.sector}</p>}
+          {venture.sector && (
+            <p className="venture__sector">{formatSector(venture.sector)}</p>
+          )}
         </li>
       ))}
     </ul>
@@ -45,6 +80,40 @@ function VentureGrid({ items }) {
 }
 
 export default function Ventures() {
+  const [ventures, setVentures] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setLoadError('')
+
+    fetchPublicVentures()
+      .then((rows) => {
+        if (!cancelled) setVentures(rows)
+      })
+      .catch((err) => {
+        console.error('[Shark Caribe] Ventures:', err)
+        if (!cancelled) {
+          setVentures([])
+          setLoadError('No pudimos cargar los emprendimientos. Inténtalo más tarde.')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const visibleSections = SECTIONS.map((section) => ({
+    ...section,
+    items: ventures.filter((v) => section.stages.includes(v.stage)),
+  })).filter((section) => section.items.length > 0)
+
   return (
     <section id="emprendimientos" className="section">
       <div className="container">
@@ -63,20 +132,35 @@ export default function Ventures() {
               Proyectos inscritos y quienes avanzan a la siguiente ronda.
             </p>
 
-            <div className="ventures__sections">
-              {SECTIONS.map((section) => {
-                const items = VENTURES.filter((v) => v.round === section.id)
-                return (
+            {loading && (
+              <p className="ventures__empty">Cargando emprendimientos…</p>
+            )}
+
+            {loadError && (
+              <p className="ventures__empty" role="alert">
+                {loadError}
+              </p>
+            )}
+
+            {!loading && !loadError && ventures.length === 0 && (
+              <p className="ventures__empty">
+                Pronto verás aquí a los emprendimientos con inscripción confirmada.
+              </p>
+            )}
+
+            {!loading && !loadError && ventures.length > 0 && (
+              <div className="ventures__sections">
+                {visibleSections.map((section) => (
                   <div key={section.id} className="ventures__block">
                     <h3 className="ventures__heading">
                       {section.label}
-                      <span className="ventures__count">{items.length}</span>
+                      <span className="ventures__count">{section.items.length}</span>
                     </h3>
-                    <VentureGrid items={items} />
+                    <VentureGrid items={section.items} />
                   </div>
-                )
-              })}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </Ticket>
       </div>

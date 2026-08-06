@@ -410,6 +410,79 @@ function friendlyError(error) {
   return 'No pudimos guardar tu inscripción. Revisa tu conexión e inténtalo de nuevo.'
 }
 
+const LOGO_BUCKET = 'logos'
+const LOGO_MAX_BYTES = 2 * 1024 * 1024
+const LOGO_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+
+function sanitizeLogoFileName(name) {
+  return String(name || 'logo')
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80) || 'logo'
+}
+
+function extensionForLogo(file) {
+  const fromName = String(file.name || '').split('.').pop()?.toLowerCase()
+  if (fromName && ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(fromName)) {
+    return fromName === 'jpeg' ? 'jpg' : fromName
+  }
+  if (file.type === 'image/png') return 'png'
+  if (file.type === 'image/webp') return 'webp'
+  if (file.type === 'image/gif') return 'gif'
+  return 'jpg'
+}
+
+/* Sube el logo al bucket público y devuelve la URL pública. */
+export async function uploadCompetitorLogo(file) {
+  if (!supabase) {
+    throw new Error(
+      'El formulario todavía no está conectado a la base de datos. Escríbenos y te inscribimos manualmente.'
+    )
+  }
+  if (!file) return null
+
+  if (!LOGO_MIME.has(file.type)) {
+    throw new Error('El logo debe ser una imagen JPG, PNG, WEBP o GIF.')
+  }
+  if (file.size > LOGO_MAX_BYTES) {
+    throw new Error('El logo no puede superar 2 MB.')
+  }
+
+  const ext = extensionForLogo(file)
+  const stamp = Date.now()
+  const random = Math.random().toString(36).slice(2, 8)
+  const base = sanitizeLogoFileName(file.name.replace(/\.[^.]+$/, ''))
+  const path = `competidores/${stamp}-${random}-${base}.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from(LOGO_BUCKET)
+    .upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type,
+    })
+
+  if (uploadError) {
+    console.error('[Shark Caribe] Error al subir logo:', uploadError)
+    if (
+      uploadError.message?.includes('Bucket not found') ||
+      uploadError.message?.includes('not found')
+    ) {
+      throw new Error(
+        'El almacenamiento de logos aún no está configurado. Ejecuta logos_bucket.sql en Supabase.'
+      )
+    }
+    throw new Error(
+      'No pudimos subir el logo. Revisa el archivo e inténtalo de nuevo.'
+    )
+  }
+
+  const { data } = supabase.storage.from(LOGO_BUCKET).getPublicUrl(path)
+  return data?.publicUrl || null
+}
+
 /* ------------------------------------------------------------
    Inserta una postulación de competidor.
 
@@ -422,6 +495,11 @@ export async function submitCompetitorRegistration(values) {
     throw new Error(
       'El formulario todavía no está conectado a la base de datos. Escríbenos y te inscribimos manualmente.'
     )
+  }
+
+  let logoUrl = null
+  if (values.logoFile) {
+    logoUrl = await uploadCompetitorLogo(values.logoFile)
   }
 
   const row = {
@@ -440,6 +518,7 @@ export async function submitCompetitorRegistration(values) {
     referral_source: values.referralSource,
     referral_source_other:
       values.referralSource === 'other' ? values.referralSourceOther.trim() : null,
+    logo_url: logoUrl,
   }
 
   const { error } = await supabase.from('competitor_registrations').insert(row)
@@ -465,6 +544,64 @@ export async function fetchPublicCompetitors() {
   }
 
   return Array.isArray(data) ? data : []
+}
+
+function mapPublicVentureRow(row) {
+  return {
+    id: row.id,
+    name: row.venture_name || 'Emprendimiento',
+    sector: row.sector || '',
+    logo: row.logo_url || '',
+    stage: row.competition_stage || 'aprobado',
+  }
+}
+
+/**
+ * Emprendimientos para la sección pública Ventures.
+ * Ideal: vista public_competitors con sector, logo_url y competition_stage
+ * (supabase/public_competitors_ventures.sql).
+ * Si la vista aún es la antigua, hace fallback a columnas básicas.
+ */
+export async function fetchPublicVentures() {
+  if (!supabase) return []
+
+  const full = await supabase
+    .from('public_competitors')
+    .select('id, venture_name, sector, logo_url, competition_stage')
+    .order('venture_name', { ascending: true })
+
+  if (!full.error && Array.isArray(full.data)) {
+    return full.data.map(mapPublicVentureRow)
+  }
+
+  console.warn(
+    '[Shark Caribe] Vista public_competitors incompleta. ' +
+      'Ejecuta supabase/public_competitors_ventures.sql. Detalle:',
+    {
+      message: full.error?.message,
+      code: full.error?.code,
+      details: full.error?.details,
+      hint: full.error?.hint,
+    }
+  )
+
+  const basic = await supabase
+    .from('public_competitors')
+    .select('id, venture_name')
+    .order('venture_name', { ascending: true })
+
+  if (basic.error) {
+    console.error('[Shark Caribe] Error al listar emprendimientos públicos:', {
+      message: basic.error.message,
+      code: basic.error.code,
+      details: basic.error.details,
+      hint: basic.error.hint,
+    })
+    return []
+  }
+
+  if (!Array.isArray(basic.data)) return []
+  return basic.data.map(mapPublicVentureRow)
 }
 
 export async function submitAttendeeRegistration(values) {
@@ -496,6 +633,86 @@ export async function submitAttendeeRegistration(values) {
     console.error('[Shark Caribe] Error al inscribir asistente:', error)
     throw new Error(friendlyError(error))
   }
+}
+
+/**
+ * Registra al asistente y obtiene params firmados para el Widget Wompi.
+ * Usa RPC de Postgres (evita CloudFront 403 en /functions/v1 desde el browser).
+ */
+export async function createAttendeeWompiCheckout(values) {
+  if (!supabase) {
+    throw new Error(
+      'El formulario todavía no está conectado a la base de datos. Escríbenos y te inscribimos manualmente.'
+    )
+  }
+
+  const publicKey = import.meta.env.VITE_WOMPI_PUBLIC_KEY
+  if (!publicKey) {
+    throw new Error(
+      'Falta VITE_WOMPI_PUBLIC_KEY en .env.local. Sin ella no se puede abrir el checkout.'
+    )
+  }
+
+  const payload = {
+    fullName: values.fullName,
+    documentType: values.documentType,
+    documentNumber: values.documentNumber,
+    email: values.email,
+    phone: values.phone,
+    profile: values.profile,
+    organization: values.organization,
+    interest: values.interest,
+    seatType: values.seatType,
+    accompaniedCompetitorId: values.accompaniedCompetitorId || null,
+    referralSource: values.referralSource,
+    referralSourceOther: values.referralSourceOther,
+  }
+
+  const redirectOrigin =
+    typeof window !== 'undefined' ? window.location.origin : null
+
+  console.info('[Shark Caribe][Wompi] Invocando RPC create_attendee_wompi_checkout…', {
+    seatType: payload.seatType,
+    email: payload.email,
+    origin: redirectOrigin,
+  })
+
+  const { data, error } = await supabase.rpc('create_attendee_wompi_checkout', {
+    payload,
+  })
+
+  if (error) {
+    console.error('[Shark Caribe][Wompi] Falló RPC checkout', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    })
+    throw new Error(
+      error.message || 'No pudimos iniciar el pago. Inténtalo de nuevo.'
+    )
+  }
+
+  if (!data?.reference || !data?.signatureIntegrity) {
+    console.error('[Shark Caribe][Wompi] Respuesta incompleta:', data)
+    throw new Error('La respuesta de pago está incompleta. Inténtalo de nuevo.')
+  }
+
+  const checkout = {
+    ...data,
+    publicKey,
+    redirectUrl: redirectOrigin ? `${redirectOrigin}/pago/resultado` : null,
+    customerData: data.customerData || undefined,
+  }
+
+  console.info('[Shark Caribe][Wompi] Checkout listo (RPC)', {
+    registrationId: checkout.registrationId,
+    reference: checkout.reference,
+    amountInCents: checkout.amountInCents,
+    redirectUrl: checkout.redirectUrl,
+  })
+
+  return checkout
 }
 
 export async function submitSponsorRegistration(values) {

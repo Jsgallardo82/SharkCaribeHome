@@ -1,0 +1,8 @@
+# Config mínima para Edge Functions de Wompi.
+# El webhook debe aceptar POST sin JWT de Supabase.
+
+[functions.wompi-webhook]
+verify_jwt = false
+
+[functions.create-wompi-checkout]
+verify_jwt = false

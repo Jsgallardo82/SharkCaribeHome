@@ -51,6 +51,7 @@ export const ALLIES = [
   { name: 'Mi Red', sub: '', logo: '/logos/mired.png' },
   { name: 'Space Rock', sub: '', logo: '/logos/spacerock.png' },
   { name: 'CC Buenavista', sub: '', logo: '/logos/ccbuenavista.png' },
+  { name: 'Reformada', sub: '', logo: '/logos/reformada.png' },
 ]
 
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
@@ -401,7 +402,7 @@ export const NAV_LINKS = [
   { label: 'Patrocinadores', href: '#patrocinadores' },
   { label: 'Muestra comercial', href: '#muestra-comercial' },
   { label: 'Jurados', href: '#jurados' },
-  // { label: 'Emprendimientos', href: '#emprendimientos' },
+  { label: 'Emprendimientos', href: '#emprendimientos' },
   { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
   // { label: 'Ediciones', href: '#ediciones' },
@@ -450,7 +451,7 @@ export const VENTURES = [
 export const NEWS = {
   background: '/album/2023/Imagen8.jpg',
   titleSolid: 'Explora',
-  logo: '/logo shark caribe fondo blanco.jpeg',
+  logo: '/sharkcirculo.jpeg',
   subtitle: 'Novedades y coberturas del ecosistema Shark Caribe.',
   items: [
     {

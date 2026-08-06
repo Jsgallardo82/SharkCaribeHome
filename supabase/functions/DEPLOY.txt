@@ -1,0 +1,15 @@
+# Despliegue Wompi
+#
+# Checkout (crear pago): ya NO usa Edge Function desde el browser.
+# Ejecuta en SQL Editor:
+#   supabase/wompi_attendee_payment.sql   (columnas)
+#   supabase/wompi_checkout_rpc.sql       (RPC + secreto integrity)
+#
+# Webhook (Wompi → marcar pago): sí usa Edge Function
+#   wompi-webhook  (Verify JWT = OFF)
+#   URL en Wompi: https://<PROJECT_REF>.supabase.co/functions/v1/wompi-webhook
+#
+# Secrets Edge (solo webhook necesita events):
+#   WOMPI_EVENTS_SECRET
+#
+# El secreto de integridad del Widget va en private.wompi_secrets (SQL).

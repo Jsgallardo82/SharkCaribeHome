@@ -434,6 +434,14 @@ export default function SponsorModal({ onClose }) {
               <button type="submit" className="btn btn--primary" disabled={submitting}>
                 {submitting ? 'Enviando…' : 'Enviar solicitud'}
               </button>
+              <button
+                type="button"
+                className="btn btn--outline modal__pay-later"
+                disabled
+                title="Pronto disponible"
+              >
+                Inscribirse e ir a pagar
+              </button>
             </footer>
           </form>
         )}

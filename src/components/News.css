@@ -75,9 +75,11 @@
 .news__title-logo {
   display: block;
   width: min(100%, 220px);
+  aspect-ratio: 1;
   height: auto;
   margin-top: 0.35rem;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .news__subtitle {
