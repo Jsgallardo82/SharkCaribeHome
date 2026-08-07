@@ -402,7 +402,7 @@ export const NAV_LINKS = [
   { label: 'Patrocinadores', href: '#patrocinadores' },
   { label: 'Muestra comercial', href: '#muestra-comercial' },
   { label: 'Jurados', href: '#jurados' },
-  { label: 'Emprendimientos', href: '#emprendimientos' },
+  // { label: 'Emprendimientos', href: '#emprendimientos' },
   { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
   // { label: 'Ediciones', href: '#ediciones' },
