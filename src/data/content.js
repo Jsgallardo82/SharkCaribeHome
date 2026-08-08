@@ -21,7 +21,7 @@ export const TERMS_URL = '/terminos-referencia-shark-caribe-2026.pdf'
 export const HERO_SLIDES = [
   {
     id: 'hero0',
-    src: '/hero/hero0.jpeg',
+    src: '/hero/hero0.jpg',
     alt: 'Shark Caribe 2026',
   },
   {
