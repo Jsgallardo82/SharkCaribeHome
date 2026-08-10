@@ -52,6 +52,7 @@ export const ALLIES = [
   { name: 'Space Rock', sub: '', logo: '/logos/spacerock.png' },
   { name: 'CC Buenavista', sub: '', logo: '/logos/ccbuenavista.png' },
   { name: 'Reformada', sub: '', logo: '/logos/reformada.png' },
+  { name: 'Universidad del Atlántico', sub: 'Vigilada Mineducación', logo: '/logos/UA.png' },
 ]
 
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
