@@ -434,7 +434,7 @@ export const NAV_LINKS = [
 export const JUDGES = [
   {
     name: 'Ricardo Insignare',
-    title: 'Gerente Centro Comercial Viva',
+    title: 'Gerente Centro Comercial Buenavista',
     photo: '/jurados/ricardo.jpeg',
     instagramUrl:
       'https://www.instagram.com/reel/DbdXGPrRU2s/?igsh=dDcxeDl1MjFyeG8=',
