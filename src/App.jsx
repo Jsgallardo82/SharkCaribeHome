@@ -14,9 +14,11 @@ import News from './components/News.jsx'
 import Allies from './components/Allies.jsx'
 import Footer from './components/Footer.jsx'
 import RegisterModal from './components/RegisterModal.jsx'
+import ClosedCompetitorModal from './components/ClosedCompetitorModal.jsx'
 import AttendeeModal from './components/AttendeeModal.jsx'
 import SponsorModal from './components/SponsorModal.jsx'
 import ExhibitorModal from './components/ExhibitorModal.jsx'
+import { isCompetitorRegistrationOpen } from './data/content.js'
 
 export default function App() {
   const [registerKind, setRegisterKind] = useState(null)
@@ -31,6 +33,14 @@ export default function App() {
       'expositor',
     ])
     const next = allowed.has(kind) ? kind : 'participante'
+
+    if (next === 'participante' && !isCompetitorRegistrationOpen()) {
+      setAttendeeSeatType('')
+      setExhibitorStandType('')
+      setRegisterKind('participante-cerrado')
+      return
+    }
+
     setAttendeeSeatType(next === 'asistente' ? options.seatType || '' : '')
     setExhibitorStandType(next === 'expositor' ? options.standType || '' : '')
     setRegisterKind(next)
@@ -63,6 +73,9 @@ export default function App() {
       <Footer />
       {registerKind === 'participante' && (
         <RegisterModal onClose={closeRegister} />
+      )}
+      {registerKind === 'participante-cerrado' && (
+        <ClosedCompetitorModal onClose={closeRegister} />
       )}
       {registerKind === 'asistente' && (
         <AttendeeModal

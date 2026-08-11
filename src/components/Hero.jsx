@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { HERO_SLIDES, REGISTER_OPTIONS } from '../data/content.js'
+import {
+  HERO_SLIDES,
+  REGISTER_OPTIONS,
+  COMPETITOR_REGISTRATION_CLOSED,
+  isCompetitorRegistrationOpen,
+} from '../data/content.js'
 import './Hero.css'
 
 export default function Hero({ onRegister }) {
@@ -7,6 +12,7 @@ export default function Hero({ onRegister }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
   const count = HERO_SLIDES.length
+  const competitorOpen = isCompetitorRegistrationOpen()
 
   useEffect(() => {
     if (count <= 1 || menuOpen) return undefined
@@ -40,6 +46,13 @@ export default function Hero({ onRegister }) {
   const choose = (kind) => {
     setMenuOpen(false)
     onRegister?.(kind)
+  }
+
+  const optionLabel = (opt) => {
+    if (opt.id === 'participante' && !competitorOpen) {
+      return `${opt.label} · ${COMPETITOR_REGISTRATION_CLOSED.ctaLabel}`
+    }
+    return opt.label
   }
 
   return (
@@ -79,7 +92,7 @@ export default function Hero({ onRegister }) {
                 className="hero__register-option"
                 onClick={() => choose(opt.id)}
               >
-                {opt.label}
+                {optionLabel(opt)}
               </button>
             ))}
           </div>

@@ -4,6 +4,7 @@
    ============================================================ */
 
 import { createClient } from '@supabase/supabase-js'
+import { isCompetitorRegistrationOpen } from '../data/content.js'
 
 /* Acepta ambos esquemas de nombres (los antiguos y los VITE_PUBLIC_*). */
 const url =
@@ -395,6 +396,11 @@ function friendlyError(error) {
      escritas en español (ej. "Con 47 años la categoría..."). */
   if (error.code === 'P0001' && error.message) return error.message
 
+  const msg = String(error.message || '')
+  if (/convocatoria.*cerr/i.test(msg)) {
+    return 'La convocatoria de competidores ya cerró.'
+  }
+
   if (error.code === '23505') {
     return 'Ya existe una inscripción con ese correo o ese número de documento.'
   }
@@ -495,6 +501,10 @@ export async function submitCompetitorRegistration(values) {
     throw new Error(
       'El formulario todavía no está conectado a la base de datos. Escríbenos y te inscribimos manualmente.'
     )
+  }
+
+  if (!isCompetitorRegistrationOpen()) {
+    throw new Error('La convocatoria de competidores ya cerró.')
   }
 
   let logoUrl = null

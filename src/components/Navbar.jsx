@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
-import { NAV_LINKS, INSTAGRAM_URL, REGISTER_OPTIONS } from '../data/content.js'
+import {
+  NAV_LINKS,
+  INSTAGRAM_URL,
+  REGISTER_OPTIONS,
+  COMPETITOR_REGISTRATION_CLOSED,
+  isCompetitorRegistrationOpen,
+} from '../data/content.js'
 import './Navbar.css'
 
 export default function Navbar({ onRegister }) {
   const [open, setOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
+  const competitorOpen = isCompetitorRegistrationOpen()
 
   useEffect(() => {
     if (!menuOpen) return undefined
@@ -32,6 +39,13 @@ export default function Navbar({ onRegister }) {
     setMenuOpen(false)
     setOpen(false)
     onRegister?.(kind)
+  }
+
+  const optionLabel = (opt) => {
+    if (opt.id === 'participante' && !competitorOpen) {
+      return `${opt.label} · ${COMPETITOR_REGISTRATION_CLOSED.ctaLabel}`
+    }
+    return opt.label
   }
 
   return (
@@ -108,7 +122,7 @@ export default function Navbar({ onRegister }) {
                         className="navbar__register-option"
                         onClick={() => choose(opt.id)}
                       >
-                        {opt.label}
+                        {optionLabel(opt)}
                       </button>
                     ))}
                   </div>

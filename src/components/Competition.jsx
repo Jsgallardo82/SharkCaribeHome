@@ -1,11 +1,15 @@
 import {
   COMPETITION,
+  COMPETITOR_REGISTRATION_CLOSED,
   SCHEDULE,
   TERMS_URL,
+  isCompetitorRegistrationOpen,
 } from '../data/content.js'
 import './Competition.css'
 
 export default function Competition({ onRegister }) {
+  const competitorOpen = isCompetitorRegistrationOpen()
+
   return (
     <section id="competidores" className="competition">
       <div className="container competition__grid">
@@ -45,7 +49,9 @@ export default function Competition({ onRegister }) {
               className="btn btn--primary"
               onClick={() => onRegister('participante')}
             >
-              {COMPETITION.cta}
+              {competitorOpen
+                ? COMPETITION.cta
+                : COMPETITOR_REGISTRATION_CLOSED.ctaLabel}
             </button>
             <a
               href={TERMS_URL}

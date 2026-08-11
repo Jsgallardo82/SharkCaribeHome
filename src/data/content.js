@@ -58,6 +58,23 @@ export const ALLIES = [
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
 export const SUPPORT_EMAIL = 'eventos@shark.caribe.co'
 
+/* Cierre de inscripción de competidores (medianoche Colombia).
+   Debe coincidir con el trigger en supabase/competitor_registration_deadline.sql */
+export const COMPETITOR_REGISTRATION_CLOSES_AT = '2026-08-11T00:00:00-05:00'
+
+export function isCompetitorRegistrationOpen(now = new Date()) {
+  return now.getTime() < new Date(COMPETITOR_REGISTRATION_CLOSES_AT).getTime()
+}
+
+export const COMPETITOR_REGISTRATION_CLOSED = {
+  title: 'Convocatoria cerrada',
+  message:
+    'Las inscripciones para competidores de Shark Caribe 2026 ya no están disponibles.',
+  contactHint: 'Si tienes dudas o un caso especial, escríbenos a',
+  email: SUPPORT_EMAIL,
+  ctaLabel: 'Convocatoria cerrada',
+}
+
 /* ============================================================
    FORMULARIO DE INSCRIPCIÓN · COMPETIDORES
    Las opciones (value) deben coincidir EXACTAMENTE con los enums
