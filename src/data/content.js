@@ -433,7 +433,7 @@ export const NAV_LINKS = [
 /* Jurados — foto en /public/jurados/; instagramUrl = reel o perfil */
 export const JUDGES = [
   {
-    name: 'Ricardo Insignare',
+    name: 'Ricardo Insignares',
     title: 'Gerente Centro Comercial Buenavista',
     photo: '/jurados/ricardo.jpeg',
     instagramUrl:
