@@ -429,8 +429,8 @@ export const NAV_LINKS = [
   // { label: 'Contacto', href: '#contacto' },
 ]
 
-/* Jurados — foto en /public/judges/; instagramUrl = reel o perfil */
-/* Jurados — foto en /public/jurados/; instagramUrl = reel o perfil */
+/* Jurados — foto en /public/jurados/; el nombre va en la foto.
+   name se usa solo para accesibilidad (alt / aria). */
 export const JUDGES = [
   {
     name: 'Ricardo Insignares',
@@ -440,15 +440,16 @@ export const JUDGES = [
       'https://www.instagram.com/reel/DbdXGPrRU2s/?igsh=dDcxeDl1MjFyeG8=',
   },
   {
-    name: 'Carlos Enrique De Lavalle Tcherassi',
+    name: 'Kike De Lavalle Tcherassi',
     title: 'Gerente General y Fundador, De Lavalle Tcherassi S.A.S.',
-    photo: '/jurados/carlos.jpeg',
+    photo: '/jurados/kike.jpeg',
     instagramUrl: '',
   },
   {
-    name: 'Próximamente',
-    title: 'Jurado por anunciar',
-    photo: '',
+    name: 'César Prada',
+    title:
+      'CEO de Prago International con sedes en Colombia, Ecuador, Peru & Chile.',
+    photo: '/jurados/cesar.jpeg',
     instagramUrl: '',
   },
 ]

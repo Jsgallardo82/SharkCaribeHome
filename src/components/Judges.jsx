@@ -113,12 +113,40 @@ function InstagramModal({ judge, onClose }) {
 
 export default function Judges() {
   const [activeJudge, setActiveJudge] = useState(null)
+  const [revealed, setRevealed] = useState(false)
+  const gridRef = useRef(null)
+
+  useEffect(() => {
+    const node = gridRef.current
+    if (!node) return undefined
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (reduceMotion.matches) {
+      setRevealed(true)
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setRevealed(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <section id="jurados" className="section">
-      <div className="container">
+    <section id="jurados" className="judges">
+      <div className="judges__glow" aria-hidden="true" />
+      <div className="container judges__inner">
         <Ticket
           className="ticket--section judges-ticket"
+          notchBg="#070d22"
           stub={
             <div className="judges-ticket__stub">
               <span className="judges-ticket__stub-label">El jurado</span>
@@ -127,11 +155,11 @@ export default function Judges() {
           }
         >
           <div className="judges-ticket__main">
-            <h2 className="section__title">Jurados</h2>
-            <p className="section__subtitle">
-              Voces que evalúan talento, innovación e impacto en el Caribe.
-            </p>
-            <div className="judges__grid">
+            <h2 className="judges-ticket__title">Jurados</h2>
+            <div
+              ref={gridRef}
+              className={`judges__grid ${revealed ? 'is-revealed' : ''}`}
+            >
               {JUDGES.map((judge, i) => {
                 const photo = judge.photo ? (
                   <img
@@ -141,13 +169,20 @@ export default function Judges() {
                     loading="lazy"
                   />
                 ) : (
-                  <div className="judge__photo judge__photo--placeholder" aria-hidden="true">
+                  <div
+                    className="judge__photo judge__photo--placeholder"
+                    aria-hidden="true"
+                  >
                     {initials(judge.name)}
                   </div>
                 )
 
                 return (
-                  <article key={`${judge.name}-${i}`} className="judge">
+                  <article
+                    key={`${judge.name}-${i}`}
+                    className="judge"
+                    style={{ '--judge-delay': `${i * 120}ms` }}
+                  >
                     <div className="judge__photo-wrap">
                       {judge.instagramUrl ? (
                         <button
@@ -165,8 +200,9 @@ export default function Judges() {
                         photo
                       )}
                     </div>
-                    <h3 className="judge__name">{judge.name}</h3>
-                    <p className="judge__title">{judge.title}</p>
+                    {judge.title && (
+                      <p className="judge__title">{judge.title}</p>
+                    )}
                     {judge.instagramUrl && (
                       <button
                         type="button"
@@ -180,12 +216,19 @@ export default function Judges() {
                 )
               })}
             </div>
+            <p className="judges-ticket__closing">
+              Voces que evaluarán el talento, innovación e impacto de los
+              competidores
+            </p>
           </div>
         </Ticket>
       </div>
 
       {activeJudge && (
-        <InstagramModal judge={activeJudge} onClose={() => setActiveJudge(null)} />
+        <InstagramModal
+          judge={activeJudge}
+          onClose={() => setActiveJudge(null)}
+        />
       )}
     </section>
   )
