@@ -419,13 +419,13 @@ export const REGISTER_OPTIONS = [
 
 export const NAV_LINKS = [
   { label: 'Emprendimientos', href: '#emprendimientos' },
-  { label: '1ª Ronda', href: '#primera-ronda' },
+  { label: '2ª Ronda', href: '#segunda-ronda' },
   { label: 'Premios', href: '#premios' },
+  { label: 'Jurados', href: '#jurados' },
   { label: 'Competidores', href: '#competidores' },
   { label: 'Entradas', href: '#entradas' },
   { label: 'Patrocinadores', href: '#patrocinadores' },
   { label: 'Muestra comercial', href: '#muestra-comercial' },
-  { label: 'Jurados', href: '#jurados' },
   { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
   // { label: 'Ediciones', href: '#ediciones' },
@@ -434,10 +434,10 @@ export const NAV_LINKS = [
   // { label: 'Contacto', href: '#contacto' },
 ]
 
-/* Anuncio 1ª ronda pitch presencial */
+/* Anuncio 2ª ronda pitch presencial */
 export const PITCH_ROUND = {
   eyebrow: 'Próximo hito',
-  badge: '1RA RONDA',
+  badge: '2DA RONDA',
   title: 'Pitch presencial ante jueces',
   dateLabel: 'Martes 18 de agosto',
   timeLabel: '8:00 a. m. – 5:00 p. m.',
@@ -447,13 +447,36 @@ export const PITCH_ROUND = {
   mapsEmbedUrl:
     'https://maps.google.com/maps?q=Hotel+Ibis+Barranquilla+Calle+86+%23+50-66&z=16&output=embed',
   mapsCta: 'Abrir en Google Maps',
+  hotelLogo: '/logoibis.png',
   sharky: '/sharkycolor.png',
   judgesTitle: 'Jurados evaluadores',
   judges: [
-    'Ricardo Insignares',
-    'Christian Carvajalino',
-    'Jonathan Quant',
-    'Isa Severiche Roca',
+    {
+      name: 'Juan Manuel Calero',
+      title: 'Gestor de Emprendimiento SENA',
+      photo: '/2ronda/calero.jpeg',
+    },
+    {
+      name: 'Jonathan Quant',
+      title: 'Magíster en Gobierno de Tecnología Informática',
+      photo: '/2ronda/quant.jpeg',
+    },
+    {
+      name: 'Isa Severiche',
+      title: 'Publicista · CEO Shark Caribe Pitch Competition',
+      photo: '/2ronda/isa.jpeg',
+    },
+    {
+      name: 'Ricardo Insignares',
+      title:
+        'Arquitecto y gerente del Centro Comercial Buenavista por 25 años.',
+      photo: '/2ronda/ricardo.jpeg',
+    },
+    {
+      name: 'Christian Carvajalino',
+      title: 'Decano Prime Business School',
+      photo: '/2ronda/chris.jpeg',
+    },
   ],
 }
 
@@ -462,7 +485,7 @@ export const PRIZES = {
   eyebrow: 'Gran Final',
   badge: 'Pitch Competition',
   title: 'Premios',
-  dateLabel: '25 de noviembre',
+  dateLabel: '25 de noviembre de 2026',
   sharky: '/sharky.png',
   podium: [
     {

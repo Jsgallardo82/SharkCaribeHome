@@ -56,8 +56,8 @@
 .pitch-round__inner {
   position: relative;
   z-index: 1;
-  width: min(100%, 860px);
-  max-width: 860px;
+  width: min(100%, 980px);
+  max-width: 980px;
   margin-inline: auto;
   text-align: center;
   box-sizing: border-box;
@@ -158,7 +158,7 @@
   width: min(100%, 280px);
   height: auto;
   filter: drop-shadow(0 18px 40px rgba(43, 87, 255, 0.45));
-  animation: pitch-sharky-bob 3.2s ease-in-out infinite;
+  animation: pitch-sharky 3.4s ease-in-out infinite;
 }
 
 .pitch-round__meta {
@@ -179,14 +179,6 @@
   opacity: 0;
   transform: translateY(22px) scale(0.98);
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.pitch-round.is-visible .pitch-round__card--when {
-  animation: pitch-rise-scale 0.65s ease 0.32s forwards;
-}
-
-.pitch-round.is-visible .pitch-round__card--place {
-  animation: pitch-rise-scale 0.65s ease 0.45s forwards;
 }
 
 .pitch-round__card:hover {
@@ -244,16 +236,39 @@
 }
 
 .pitch-round__card--place {
-  text-align: center;
+  text-align: left;
+}
+
+.pitch-round__place-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.15rem;
+  align-items: stretch;
+}
+
+.pitch-round__place-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .pitch-round__place-head {
   display: flex;
   align-items: flex-start;
-  justify-content: center;
   gap: 0.85rem;
-  margin-bottom: 1rem;
   text-align: left;
+}
+
+.pitch-round__hotel-logo {
+  display: block;
+  width: min(100%, 200px);
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.65rem 0.85rem;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
 }
 
 .pitch-round__map-wrap {
@@ -261,12 +276,13 @@
   overflow: hidden;
   border-radius: 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  width: min(100%, 420px);
-  margin-inline: auto;
-  aspect-ratio: 16 / 10;
-  max-height: 200px;
+  width: 100%;
+  min-height: 200px;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 260px;
   background: #0a1330;
-  margin-bottom: 1rem;
+  margin: 0;
 }
 
 .pitch-round__map {
@@ -305,7 +321,8 @@
 }
 
 .pitch-round__judges {
-  padding: 1.4rem 1.25rem 1.5rem;
+  margin: 0 0 1.75rem;
+  padding: 1.4rem 1rem 1.5rem;
   border-radius: 1.25rem;
   background: rgba(13, 26, 61, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -314,48 +331,81 @@
 }
 
 .pitch-round.is-visible .pitch-round__judges {
-  animation: pitch-rise 0.65s ease 0.62s forwards;
+  animation: pitch-rise 0.65s ease 0.28s forwards;
 }
 
 .pitch-round__judges-title {
-  margin: 0 0 1rem;
+  margin: 0 0 1.15rem;
   font-size: clamp(1rem, 2.4vw, 1.2rem);
   font-weight: 900;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.pitch-round__judges-list {
+.pitch-round__judges-grid {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.pitch-round__judge-card {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.65rem;
-}
-
-.pitch-round__judge {
-  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.55rem 0.9rem;
-  border-radius: 999px;
-  background: rgba(43, 87, 255, 0.22);
-  border: 1px solid rgba(91, 140, 255, 0.35);
-  font-size: 0.92rem;
-  font-weight: 700;
+  text-align: center;
+  gap: 0.45rem;
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(12px);
 }
 
-.pitch-round.is-visible .pitch-round__judge {
+.pitch-round.is-visible .pitch-round__judge-card {
   animation: pitch-rise 0.5s ease forwards;
-  animation-delay: calc(0.72s + var(--judge-i) * 0.08s);
+  animation-delay: calc(0.36s + var(--judge-i) * 0.07s);
 }
 
-.pitch-round__judge-emoji {
-  font-size: 0.95rem;
+.pitch-round__judge-photo-wrap {
+  width: 100%;
+  max-width: 132px;
+  aspect-ratio: 3 / 4;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  border: 2px solid rgba(91, 140, 255, 0.45);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pitch-round__judge-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.pitch-round__judge-name {
+  margin: 0.2rem 0 0;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.pitch-round__judge-role {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 11.5rem;
+}
+
+.pitch-round.is-visible .pitch-round__card--when {
+  animation: pitch-rise-scale 0.65s ease 0.72s forwards;
+}
+
+.pitch-round.is-visible .pitch-round__card--place {
+  animation: pitch-rise-scale 0.65s ease 0.82s forwards;
 }
 
 @keyframes pitch-glow-shift {
@@ -374,9 +424,9 @@
   100% { transform: scale(1.25); opacity: 0; }
 }
 
-@keyframes pitch-sharky-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+@keyframes pitch-sharky {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
 }
 
 @keyframes pitch-rise {
@@ -393,6 +443,12 @@
   }
 }
 
+@media (max-width: 900px) {
+  .pitch-round__judges-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 720px) {
   .pitch-round__hero {
     grid-template-columns: 1fr;
@@ -401,6 +457,15 @@
 
   .pitch-round__lead {
     margin-inline: auto;
+  }
+
+  .pitch-round__judges-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 0.75rem;
+  }
+
+  .pitch-round__judge-photo-wrap {
+    max-width: 150px;
   }
 
   .pitch-round__when {
@@ -413,10 +478,32 @@
     height: 1px;
   }
 
+  .pitch-round__place-split {
+    grid-template-columns: 1fr;
+  }
+
+  .pitch-round__place-info {
+    align-items: center;
+    text-align: center;
+  }
+
+  .pitch-round__place-head {
+    justify-content: center;
+  }
+
   .pitch-round__map-wrap {
-    width: min(100%, 360px);
+    width: min(100%, 100%);
     aspect-ratio: 16 / 10;
-    max-height: 180px;
+    max-height: 200px;
+    min-height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pitch-round__judges-grid {
+    grid-template-columns: 1fr;
+    max-width: 220px;
+    margin-inline: auto;
   }
 }
 
@@ -433,7 +520,7 @@
   .pitch-round__hero,
   .pitch-round__card,
   .pitch-round__judges,
-  .pitch-round__judge {
+  .pitch-round__judge-card {
     opacity: 1;
     transform: none;
     animation: none;

@@ -33,7 +33,7 @@ export default function PitchRound() {
 
   return (
     <section
-      id="primera-ronda"
+      id="segunda-ronda"
       ref={sectionRef}
       className={`pitch-round ${visible ? 'is-visible' : ''}`}
     >
@@ -80,6 +80,32 @@ export default function PitchRound() {
           </div>
         </div>
 
+        <div className="pitch-round__judges">
+          <h3 className="pitch-round__judges-title">
+            <span aria-hidden="true">👨‍⚖️</span> {PITCH_ROUND.judgesTitle}
+          </h3>
+          <ul className="pitch-round__judges-grid">
+            {PITCH_ROUND.judges.map((judge, i) => (
+              <li
+                key={judge.name}
+                className="pitch-round__judge-card"
+                style={{ '--judge-i': i }}
+              >
+                <div className="pitch-round__judge-photo-wrap">
+                  <img
+                    src={judge.photo}
+                    alt={judge.name}
+                    className="pitch-round__judge-photo"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="pitch-round__judge-name">{judge.name}</p>
+                <p className="pitch-round__judge-role">{judge.title}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="pitch-round__meta">
           <article className="pitch-round__card pitch-round__card--when">
             <span className="pitch-round__card-emoji" aria-hidden="true">
@@ -99,61 +125,51 @@ export default function PitchRound() {
           </article>
 
           <article className="pitch-round__card pitch-round__card--place">
-            <div className="pitch-round__place-head">
-              <span className="pitch-round__card-emoji" aria-hidden="true">
-                📍
-              </span>
-              <div>
-                <p className="pitch-round__card-label">Lugar</p>
-                <p className="pitch-round__card-value">{PITCH_ROUND.venue}</p>
-                <p className="pitch-round__card-sub">{PITCH_ROUND.address}</p>
+            <div className="pitch-round__place-split">
+              <div className="pitch-round__place-info">
+                <div className="pitch-round__place-head">
+                  <span className="pitch-round__card-emoji" aria-hidden="true">
+                    📍
+                  </span>
+                  <div>
+                    <p className="pitch-round__card-label">Lugar</p>
+                    <p className="pitch-round__card-value">{PITCH_ROUND.venue}</p>
+                    <p className="pitch-round__card-sub">{PITCH_ROUND.address}</p>
+                  </div>
+                </div>
+
+                <img
+                  src={PITCH_ROUND.hotelLogo}
+                  alt="Hotel IBIS Barranquilla"
+                  className="pitch-round__hotel-logo"
+                />
+
+                <a
+                  className="pitch-round__maps"
+                  href={PITCH_ROUND.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span aria-hidden="true">🗺️</span>
+                  {PITCH_ROUND.mapsCta}
+                  <span className="pitch-round__maps-arrow" aria-hidden="true">
+                    →
+                  </span>
+                </a>
+              </div>
+
+              <div className="pitch-round__map-wrap">
+                <iframe
+                  className="pitch-round__map"
+                  title="Ubicación Hotel IBIS Barranquilla · Salón Nexus"
+                  src={PITCH_ROUND.mapsEmbedUrl}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
               </div>
             </div>
-
-            <div className="pitch-round__map-wrap">
-              <iframe
-                className="pitch-round__map"
-                title="Ubicación Hotel IBIS Barranquilla · Salón Nexus"
-                src={PITCH_ROUND.mapsEmbedUrl}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
-            </div>
-
-            <a
-              className="pitch-round__maps"
-              href={PITCH_ROUND.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span aria-hidden="true">🗺️</span>
-              {PITCH_ROUND.mapsCta}
-              <span className="pitch-round__maps-arrow" aria-hidden="true">
-                →
-              </span>
-            </a>
           </article>
-        </div>
-
-        <div className="pitch-round__judges">
-          <h3 className="pitch-round__judges-title">
-            <span aria-hidden="true">👨‍⚖️</span> {PITCH_ROUND.judgesTitle}
-          </h3>
-          <ul className="pitch-round__judges-list">
-            {PITCH_ROUND.judges.map((name, i) => (
-              <li
-                key={name}
-                className="pitch-round__judge"
-                style={{ '--judge-i': i }}
-              >
-                <span className="pitch-round__judge-emoji" aria-hidden="true">
-                  ⭐
-                </span>
-                {name}
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>

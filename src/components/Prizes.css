@@ -62,16 +62,23 @@
   padding-inline: 0.25rem;
 }
 
-.prizes__eyebrow {
-  margin: 0 0 1rem;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 230, 170, 0.88);
+.prizes__header {
+  margin-bottom: 1.75rem;
+  text-align: center;
 }
 
-.prizes:not(.is-visible) .prizes__eyebrow,
+.prizes__eyebrow {
+  margin: 0 0 0.55rem;
+  font-size: clamp(2.2rem, 7vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.05;
+  color: rgba(255, 230, 170, 0.98);
+  text-shadow: 0 8px 28px rgba(240, 180, 41, 0.35);
+}
+
+.prizes:not(.is-visible) .prizes__header,
 .prizes:not(.is-visible) .prizes__hero,
 .prizes:not(.is-visible) .prizes__place,
 .prizes:not(.is-visible) .prizes__allies,
@@ -81,8 +88,21 @@
   transform: translateY(16px);
 }
 
-.prizes.is-visible .prizes__eyebrow {
+.prizes.is-visible .prizes__header {
   animation: prizes-rise 0.6s ease forwards;
+}
+
+.prizes__date {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font-size: clamp(1.15rem, 3vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .prizes__hero {
@@ -143,18 +163,6 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-.prizes__date {
-  margin: 0 0 0.75rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.92);
 }
 
 .prizes__lead {
@@ -424,7 +432,7 @@
     animation: none;
   }
 
-  .prizes__eyebrow,
+  .prizes__header,
   .prizes__hero,
   .prizes__place,
   .prizes__allies,

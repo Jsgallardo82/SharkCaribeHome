@@ -65,9 +65,14 @@ export default function Prizes() {
       </div>
 
       <div className="container prizes__inner">
-        <p className="prizes__eyebrow">
-          <span aria-hidden="true">🏆</span> {PRIZES.eyebrow}
-        </p>
+        <header className="prizes__header">
+          <p className="prizes__eyebrow">
+            <span aria-hidden="true">🏆</span> {PRIZES.eyebrow}
+          </p>
+          <p className="prizes__date">
+            <span aria-hidden="true">📅</span> {PRIZES.dateLabel}
+          </p>
+        </header>
 
         <div className="prizes__hero">
           <div className="prizes__hero-copy">
@@ -78,9 +83,6 @@ export default function Prizes() {
               </span>
             </div>
             <h2 className="prizes__title">{PRIZES.title}</h2>
-            <p className="prizes__date">
-              <span aria-hidden="true">📅</span> {PRIZES.dateLabel}
-            </p>
             <p className="prizes__lead">
               La noche donde el Caribe corona a sus emprendedores.
             </p>
