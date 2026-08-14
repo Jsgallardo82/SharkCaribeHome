@@ -5,3 +5,7 @@ dist-ssr
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+
+# Cargas manuales con datos personales de concursantes (no versionar)
+supabase/import_competitors*.sql
+supabase/**/import_competitors*.sql

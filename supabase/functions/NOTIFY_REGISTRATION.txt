@@ -1,0 +1,20 @@
+# Notificación de inscripciones por correo (Resend)
+#
+# Modalidades: asistente, patrocinador, expositor.
+# Destinatarios: correo del inscrito + administrativo@sharkcaribe.co
+#
+# 1) Crea cuenta en https://resend.com y verifica un dominio (o usa onboarding).
+#
+# 2) Secrets en Supabase (Project Settings → Edge Functions → Secrets):
+#    RESEND_API_KEY=re_xxx
+#    RESEND_FROM=Shark Caribe <noreply@tudominio.com>
+#    NOTIFY_ADMIN_EMAIL=administrativo@sharkcaribe.co   (opcional)
+#
+# 3) Despliega la función:
+#    supabase functions deploy notify-registration
+#
+# 4) En el Dashboard, deja Verify JWT en OFF para notify-registration
+#    (igual que wompi-webhook), o usa el config.toml del repo.
+#
+# El front ya invoca la función tras un insert exitoso.
+# Si el correo falla, la inscripción igual queda guardada.

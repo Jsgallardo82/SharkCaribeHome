@@ -58,6 +58,9 @@ export const ALLIES = [
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
 export const SUPPORT_EMAIL = 'eventos@shark.caribe.co'
 
+/* Correo administrativo (avisos y convocatoria cerrada) */
+export const ADMIN_EMAIL = 'administrativo@sharkcaribe.co'
+
 /* Cierre de inscripción de competidores (medianoche Colombia).
    Debe coincidir con el trigger en supabase/competitor_registration_deadline.sql */
 export const COMPETITOR_REGISTRATION_CLOSES_AT = '2026-08-11T00:00:00-05:00'
@@ -71,7 +74,7 @@ export const COMPETITOR_REGISTRATION_CLOSED = {
   message:
     'Las inscripciones para competidores de Shark Caribe 2026 ya no están disponibles.',
   contactHint: 'Si tienes dudas o un caso especial, escríbenos a',
-  email: SUPPORT_EMAIL,
+  email: ADMIN_EMAIL,
   ctaLabel: 'Convocatoria cerrada',
 }
 
@@ -415,12 +418,14 @@ export const REGISTER_OPTIONS = [
 ]
 
 export const NAV_LINKS = [
+  { label: 'Emprendimientos', href: '#emprendimientos' },
+  { label: '1ª Ronda', href: '#primera-ronda' },
+  { label: 'Premios', href: '#premios' },
   { label: 'Competidores', href: '#competidores' },
   { label: 'Entradas', href: '#entradas' },
   { label: 'Patrocinadores', href: '#patrocinadores' },
   { label: 'Muestra comercial', href: '#muestra-comercial' },
   { label: 'Jurados', href: '#jurados' },
-  // { label: 'Emprendimientos', href: '#emprendimientos' },
   { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
   // { label: 'Ediciones', href: '#ediciones' },
@@ -428,6 +433,70 @@ export const NAV_LINKS = [
   { label: 'Galería', href: '#galeria' },
   // { label: 'Contacto', href: '#contacto' },
 ]
+
+/* Anuncio 1ª ronda pitch presencial */
+export const PITCH_ROUND = {
+  eyebrow: 'Próximo hito',
+  badge: '1RA RONDA',
+  title: 'Pitch presencial ante jueces',
+  dateLabel: 'Martes 18 de agosto',
+  timeLabel: '8:00 a. m. – 5:00 p. m.',
+  venue: 'Salón Nexus · Hotel IBIS Barranquilla',
+  address: 'Calle 86 No. 50-66',
+  mapsUrl: 'https://maps.app.goo.gl/Gc66AaaKXvH6i7cVA',
+  mapsEmbedUrl:
+    'https://maps.google.com/maps?q=Hotel+Ibis+Barranquilla+Calle+86+%23+50-66&z=16&output=embed',
+  mapsCta: 'Abrir en Google Maps',
+  sharky: '/sharkycolor.png',
+  judgesTitle: 'Jurados evaluadores',
+  judges: [
+    'Ricardo Insignares',
+    'Christian Carvajalino',
+    'Jonathan Quant',
+    'Isa Severiche Roca',
+  ],
+}
+
+/* Premios Gran Final */
+export const PRIZES = {
+  eyebrow: 'Gran Final',
+  badge: 'Pitch Competition',
+  title: 'Premios',
+  dateLabel: '25 de noviembre',
+  sharky: '/sharky.png',
+  podium: [
+    {
+      place: '1er lugar',
+      amount: '$5 M',
+      detail: 'de pesos en efectivo',
+      emoji: '🥇',
+      tier: 'gold',
+    },
+    {
+      place: '2do lugar',
+      amount: '$2 M',
+      detail: 'de pesos en efectivo',
+      emoji: '🥈',
+      tier: 'silver',
+    },
+    {
+      place: '3er lugar',
+      amount: '$1 M',
+      detail: 'de pesos en efectivo',
+      emoji: '🥉',
+      tier: 'bronze',
+    },
+  ],
+  alliesNote: 'Más premios de las entidades aliadas',
+  mentionsTitle: 'Menciones especiales',
+  mentions: [
+    { label: 'Innovación', emoji: '💡' },
+    { label: 'Sostenibilidad', emoji: '🌱' },
+    { label: 'Tradición', emoji: '🧵' },
+    { label: 'Turismo', emoji: '🌴' },
+    { label: 'Impacto social', emoji: '🤝' },
+  ],
+}
 
 /* Jurados — foto en /public/jurados/; el nombre va en la foto.
    name se usa solo para accesibilidad (alt / aria). */

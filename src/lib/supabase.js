@@ -570,6 +570,7 @@ function mapPublicVentureRow(row) {
  * Emprendimientos para la sección pública Ventures.
  * Ideal: vista public_competitors con sector, logo_url y competition_stage
  * (supabase/public_competitors_ventures.sql).
+ * Incluye pending y pago; excluye rechazados.
  * Si la vista aún es la antigua, hace fallback a columnas básicas.
  */
 export async function fetchPublicVentures() {
@@ -614,6 +615,21 @@ export async function fetchPublicVentures() {
   return basic.data.map(mapPublicVentureRow)
 }
 
+/* Aviso por correo (inscrito + admin). No debe tumbar el registro si falla. */
+async function notifyRegistration(kind, record) {
+  if (!supabase) return
+  try {
+    const { error } = await supabase.functions.invoke('notify-registration', {
+      body: { kind, record },
+    })
+    if (error) {
+      console.error('[Shark Caribe] Aviso por correo no enviado:', error)
+    }
+  } catch (err) {
+    console.error('[Shark Caribe] Aviso por correo no enviado:', err)
+  }
+}
+
 export async function submitAttendeeRegistration(values) {
   if (!supabase) {
     throw new Error(
@@ -643,6 +659,8 @@ export async function submitAttendeeRegistration(values) {
     console.error('[Shark Caribe] Error al inscribir asistente:', error)
     throw new Error(friendlyError(error))
   }
+
+  await notifyRegistration('asistente', row)
 }
 
 /**
@@ -722,6 +740,19 @@ export async function createAttendeeWompiCheckout(values) {
     redirectUrl: checkout.redirectUrl,
   })
 
+  await notifyRegistration('asistente', {
+    full_name: values.fullName?.trim(),
+    document_type: values.documentType,
+    document_number: values.documentNumber?.trim(),
+    email: values.email?.trim().toLowerCase(),
+    phone: values.phone?.trim(),
+    profile: values.profile,
+    organization: values.organization?.trim() || null,
+    interest: values.interest,
+    seat_type: values.seatType,
+    referral_source: values.referralSource,
+  })
+
   return checkout
 }
 
@@ -754,6 +785,8 @@ export async function submitSponsorRegistration(values) {
     console.error('[Shark Caribe] Error al inscribir patrocinador:', error)
     throw new Error(friendlyError(error))
   }
+
+  await notifyRegistration('patrocinador', row)
 }
 
 export async function submitExhibitorRegistration(values) {
@@ -785,4 +818,6 @@ export async function submitExhibitorRegistration(values) {
     console.error('[Shark Caribe] Error al inscribir expositor:', error)
     throw new Error(friendlyError(error))
   }
+
+  await notifyRegistration('expositor', row)
 }

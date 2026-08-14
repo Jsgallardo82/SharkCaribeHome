@@ -2,6 +2,24 @@
   padding: clamp(1.75rem, 5vw, 3rem);
 }
 
+.ventures-ticket__main .section__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.ventures__title-sub {
+  display: block;
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  color: inherit;
+  text-transform: inherit;
+}
+
 .ventures__sections {
   display: flex;
   flex-direction: column;

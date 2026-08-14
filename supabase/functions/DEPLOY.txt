@@ -13,3 +13,7 @@
 #   WOMPI_EVENTS_SECRET
 #
 # El secreto de integridad del Widget va en private.wompi_secrets (SQL).
+#
+# Correos de inscripción (asistente / patrocinador / expositor):
+#   ver supabase/functions/NOTIFY_REGISTRATION.txt
+#   función: notify-registration

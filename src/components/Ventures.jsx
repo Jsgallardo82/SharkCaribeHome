@@ -127,7 +127,12 @@ export default function Ventures() {
           }
         >
           <div className="ventures-ticket__main">
-            <h2 className="section__title">Emprendimientos en competencia</h2>
+            <h2 className="section__title">
+              Ellos siguen en la competencia
+              <span className="ventures__title-sub">
+                Competidores Clasificados - Reto 2
+              </span>
+            </h2>
 
             {loading && (
               <p className="ventures__empty">Cargando emprendimientos…</p>

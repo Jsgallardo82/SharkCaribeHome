@@ -6,3 +6,6 @@ verify_jwt = false
 
 [functions.create-wompi-checkout]
 verify_jwt = false
+
+[functions.notify-registration]
+verify_jwt = false

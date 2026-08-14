@@ -36,12 +36,16 @@ export default function Competition({ onRegister }) {
             ))}
           </ul>
 
-          <h3 className="competition__heading">Requisitos</h3>
-          <ul className="competition__bullets">
-            {COMPETITION.requirements.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
+          {competitorOpen && (
+            <>
+              <h3 className="competition__heading">Requisitos</h3>
+              <ul className="competition__bullets">
+                {COMPETITION.requirements.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </>
+          )}
 
           <div className="competition__actions">
             <button

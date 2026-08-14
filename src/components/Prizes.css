@@ -1,0 +1,441 @@
+.prizes {
+  position: relative;
+  overflow: hidden;
+  overflow-x: clip;
+  color: var(--color-white);
+  background: #070912;
+  padding-block: clamp(3.5rem, 8vw, 6rem);
+  max-width: 100%;
+}
+
+.prizes__glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(42% 38% at 50% 0%, rgba(255, 196, 60, 0.28), transparent 70%),
+    radial-gradient(40% 42% at 15% 70%, rgba(43, 87, 255, 0.35), transparent 70%),
+    radial-gradient(38% 40% at 90% 55%, rgba(255, 120, 40, 0.18), transparent 70%);
+  animation: prizes-glow 11s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.prizes__sparkles {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 12% 22%, rgba(255, 220, 120, 0.55) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 78% 18%, rgba(255, 255, 255, 0.45) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 64% 72%, rgba(255, 196, 60, 0.5) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 28% 80%, rgba(255, 255, 255, 0.35) 0 1px, transparent 2px);
+  animation: prizes-twinkle 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.prizes__floats {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.prizes__float {
+  position: absolute;
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  opacity: 0.3;
+  animation: prizes-float 7.5s ease-in-out infinite;
+}
+
+.prizes__float--1 { top: 10%; left: 8%; }
+.prizes__float--2 { top: 16%; right: 9%; animation-delay: 1s; }
+.prizes__float--3 { bottom: 24%; left: 10%; animation-delay: 0.5s; }
+.prizes__float--4 { bottom: 14%; right: 11%; animation-delay: 1.6s; }
+.prizes__float--5 { top: 46%; left: 6%; animation-delay: 2.2s; }
+.prizes__float--6 { top: 52%; right: 7%; animation-delay: 0.8s; }
+
+.prizes__inner {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 860px);
+  max-width: 860px;
+  margin-inline: auto;
+  text-align: center;
+  box-sizing: border-box;
+  padding-inline: 0.25rem;
+}
+
+.prizes__eyebrow {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 230, 170, 0.88);
+}
+
+.prizes:not(.is-visible) .prizes__eyebrow,
+.prizes:not(.is-visible) .prizes__hero,
+.prizes:not(.is-visible) .prizes__place,
+.prizes:not(.is-visible) .prizes__allies,
+.prizes:not(.is-visible) .prizes__mentions,
+.prizes:not(.is-visible) .prizes__mention {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.prizes.is-visible .prizes__eyebrow {
+  animation: prizes-rise 0.6s ease forwards;
+}
+
+.prizes__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: center;
+  justify-items: center;
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+  max-width: 760px;
+  margin-inline: auto;
+  margin-bottom: 2.25rem;
+  text-align: center;
+}
+
+.prizes.is-visible .prizes__hero {
+  animation: prizes-rise 0.65s ease 0.1s forwards;
+}
+
+.prizes__badge {
+  position: relative;
+  display: inline-flex;
+  margin-bottom: 1rem;
+}
+
+.prizes__badge-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  background: rgba(255, 196, 60, 0.35);
+  animation: prizes-pulse 1.9s ease-out infinite;
+}
+
+.prizes__badge-text {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f0b429, #d4890f);
+  color: #1a1205;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 10px 28px rgba(240, 180, 41, 0.35);
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.prizes__title {
+  margin: 0 0 0.65rem;
+  font-size: clamp(2.1rem, 6vw, 3.4rem);
+  line-height: 1.05;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: linear-gradient(120deg, #fff6d6 10%, #ffd76a 45%, #fff 70%, #ffc94a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.prizes__date {
+  margin: 0 0 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.prizes__lead {
+  margin: 0 auto;
+  max-width: 28rem;
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.prizes__hero-art {
+  display: flex;
+  justify-content: center;
+}
+
+.prizes__sharky {
+  width: min(100%, 290px);
+  height: auto;
+  filter: drop-shadow(0 18px 42px rgba(240, 180, 41, 0.35));
+  animation: prizes-sharky 3.4s ease-in-out infinite;
+}
+
+.prizes__podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  align-items: end;
+  margin-bottom: 1.35rem;
+}
+
+.prizes__place {
+  position: relative;
+  padding: 1.35rem 1rem 1.45rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.prizes.is-visible .prizes__place {
+  animation: prizes-rise-scale 0.65s ease forwards;
+  animation-delay: calc(0.28s + var(--place-i) * 0.1s);
+}
+
+.prizes__place--gold {
+  padding-block: 1.85rem 1.6rem;
+  border-color: rgba(255, 208, 90, 0.55);
+  background:
+    linear-gradient(180deg, rgba(255, 210, 90, 0.28), rgba(255, 255, 255, 0.05));
+  box-shadow:
+    0 18px 44px rgba(240, 180, 41, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.prizes.is-visible .prizes__place--gold {
+  transform: none;
+}
+
+.prizes__place--silver {
+  border-color: rgba(190, 205, 230, 0.4);
+  background: linear-gradient(180deg, rgba(190, 205, 230, 0.2), rgba(255, 255, 255, 0.04));
+}
+
+.prizes__place--bronze {
+  border-color: rgba(210, 140, 90, 0.45);
+  background: linear-gradient(180deg, rgba(210, 140, 90, 0.22), rgba(255, 255, 255, 0.04));
+}
+
+.prizes__place:hover {
+  border-color: rgba(255, 220, 120, 0.55);
+}
+
+.prizes__place-emoji {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.45rem;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+}
+
+.prizes__place-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.prizes__place-amount {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.35rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.prizes__place--gold .prizes__place-amount {
+  background: linear-gradient(120deg, #fff6d6, #ffd76a, #fff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.prizes__place-detail {
+  margin: 0.45rem 0 0;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.prizes__allies {
+  margin: 0 auto 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(43, 87, 255, 0.22);
+  border: 1px solid rgba(91, 140, 255, 0.35);
+  font-weight: 700;
+}
+
+.prizes.is-visible .prizes__allies {
+  animation: prizes-rise 0.55s ease 0.55s forwards;
+}
+
+.prizes__mentions {
+  padding: 1.4rem 1.25rem 1.5rem;
+  border-radius: 1.25rem;
+  background: rgba(13, 26, 61, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.prizes.is-visible .prizes__mentions {
+  animation: prizes-rise 0.6s ease 0.65s forwards;
+}
+
+.prizes__mentions-title {
+  margin: 0 0 0.55rem;
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.prizes__mentions-intro {
+  margin: 0 auto 1rem;
+  max-width: 36rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.prizes__mentions-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+}
+
+.prizes__mention {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(240, 180, 41, 0.14);
+  border: 1px solid rgba(255, 208, 90, 0.35);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.prizes.is-visible .prizes__mention {
+  animation: prizes-rise 0.5s ease forwards;
+  animation-delay: calc(0.75s + var(--mention-i) * 0.07s);
+}
+
+@keyframes prizes-glow {
+  from { transform: scale(1); }
+  to { transform: scale(1.04); }
+}
+
+@keyframes prizes-twinkle {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes prizes-float {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-14px) rotate(6deg); }
+}
+
+@keyframes prizes-pulse {
+  0% { transform: scale(0.92); opacity: 0.65; }
+  70% { transform: scale(1.28); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes prizes-sharky {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+@keyframes prizes-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes prizes-rise-scale {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.prizes.is-visible .prizes__place--gold {
+  animation-name: prizes-rise-gold;
+}
+
+@keyframes prizes-rise-gold {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .prizes__hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .prizes__lead {
+    margin-inline: auto;
+  }
+
+  .prizes__podium {
+    grid-template-columns: 1fr;
+    max-width: 320px;
+    margin-inline: auto;
+  }
+
+  .prizes__place--gold {
+    order: -1;
+  }
+
+  .prizes.is-visible .prizes__place--gold {
+    transform: none;
+  }
+
+  @keyframes prizes-rise-gold {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prizes__glow,
+  .prizes__sparkles,
+  .prizes__float,
+  .prizes__badge-pulse,
+  .prizes__sharky {
+    animation: none;
+  }
+
+  .prizes__eyebrow,
+  .prizes__hero,
+  .prizes__place,
+  .prizes__allies,
+  .prizes__mentions,
+  .prizes__mention {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .prizes__place--gold {
+    transform: none;
+  }
+}

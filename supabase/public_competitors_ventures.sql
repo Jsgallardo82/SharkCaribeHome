@@ -1,7 +1,7 @@
 -- ============================================================
 -- Shark Caribe 2026 · Vista pública de emprendimientos (Ventures)
 -- Ejecutar en el SQL Editor de Supabase.
--- Expone datos no sensibles de competidores con pago confirmado.
+-- Muestra inscritos con o sin pago confirmado (oculta rechazados).
 -- ============================================================
 
 CREATE OR REPLACE VIEW public.public_competitors
@@ -15,11 +15,11 @@ SELECT
   logo_url,
   competition_stage
 FROM public.competitor_registrations
-WHERE status = 'pago'
+WHERE status IN ('pending', 'pago')
   AND competition_stage IS DISTINCT FROM 'rechazado'
 ORDER BY venture_name ASC NULLS LAST, full_name ASC;
 
 GRANT SELECT ON public.public_competitors TO anon, authenticated;
 
 COMMENT ON VIEW public.public_competitors IS
-  'Listado público de emprendimientos con pago confirmado (sin PII sensible).';
+  'Listado público de emprendimientos inscritos (pending o pago), sin rechazados.';
