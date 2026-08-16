@@ -1,171 +1,188 @@
-import { useEffect, useState } from 'react'
-import Ticket, { Barcode } from './Ticket.jsx'
-import { SECTORS } from '../data/content.js'
-import { fetchPublicVentures } from '../lib/supabase.js'
+import { useEffect, useRef, useState } from 'react'
+import { fetchPublicVentures, isSupabaseConfigured } from '../lib/supabase'
 import './Ventures.css'
 
-function formatSector(value) {
-  if (!value) return ''
-  const known = SECTORS.find((s) => s.value === value)
-  if (known) return known.label
-  return String(value).replaceAll('_', ' ')
-}
+function VentureModal({ venture, onClose }) {
+  const panelRef = useRef(null)
 
-/* Secciones públicas alineadas con competitor_competition_stage (sin rechazado). */
-const SECTIONS = [
-  {
-    id: 'inscritos',
-    label: 'Inscritos',
-    stages: ['pendiente', 'aprobado'],
-  },
-  {
-    id: 'segunda_ronda',
-    label: 'Segunda ronda',
-    stages: ['segunda_vuelta'],
-  },
-  {
-    id: 'tercera_ronda',
-    label: 'Tercera ronda',
-    stages: ['tercera_vuelta'],
-  },
-  {
-    id: 'finalistas',
-    label: 'Finalistas',
-    stages: ['final'],
-  },
-  {
-    id: 'ganadores',
-    label: 'Ganadores',
-    stages: ['ganador'],
-  },
-]
+  useEffect(() => {
+    const previouslyFocused = document.activeElement
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    panelRef.current?.focus()
 
-function initials(name) {
-  return String(name || '')
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() || '')
-    .join('')
-}
+    function onKeyDown(event) {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
 
-function VentureGrid({ items }) {
-  if (items.length === 0) {
-    return (
-      <p className="ventures__empty">Aún no hay emprendimientos en esta lista.</p>
-    )
-  }
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = originalOverflow
+      if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus()
+    }
+  }, [onClose])
 
   return (
-    <ul className="ventures__grid">
-      {items.map((venture) => (
-        <li key={venture.id || `${venture.stage}-${venture.name}`} className="venture">
-          <div className="venture__logo">
+    <div
+      className="venture-modal__backdrop"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
+      <div
+        className="venture-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="venture-modal-title"
+        ref={panelRef}
+        tabIndex={-1}
+      >
+        <button
+          type="button"
+          className="venture-modal__close"
+          onClick={onClose}
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+
+        <header className="venture-modal__header">
+          <h2 id="venture-modal-title">{venture.name}</h2>
+          {venture.sector ? <p>{venture.sector}</p> : null}
+        </header>
+
+        <div className="venture-modal__media">
+          {venture.photo ? (
+            <div className="venture-modal__photo">
+              <img
+                src={encodeURI(venture.photo)}
+                alt={`Equipo de ${venture.name}`}
+              />
+            </div>
+          ) : null}
+          <div className="venture-modal__logo">
             {venture.logo ? (
-              <img src={venture.logo} alt="" loading="lazy" />
+              <img src={venture.logo} alt={`Logo de ${venture.name}`} />
             ) : (
-              <span className="venture__placeholder" aria-hidden="true">
-                {initials(venture.name)}
+              <span className="venture__logo-fallback" aria-hidden="true">
+                {venture.name.slice(0, 1)}
               </span>
             )}
           </div>
-          <p className="venture__name">{venture.name}</p>
-          {venture.sector && (
-            <p className="venture__sector">{formatSector(venture.sector)}</p>
-          )}
-        </li>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function VentureGrid({ ventures, onOpen }) {
+  return (
+    <div className="ventures__grid">
+      {ventures.map((venture) => (
+        <article key={venture.id} className="venture">
+          <div
+            className={`venture__media${venture.photo ? '' : ' venture__media--logo-only'}`}
+          >
+            {venture.photo ? (
+              <button
+                type="button"
+                className="venture__photo"
+                onClick={() => onOpen(venture)}
+                aria-label={`Ver foto y logo de ${venture.name}`}
+              >
+                <img
+                  src={encodeURI(venture.photo)}
+                  alt={`Equipo de ${venture.name}`}
+                  loading="lazy"
+                />
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className="venture__logo"
+              onClick={() => onOpen(venture)}
+              aria-label={`Ver detalle de ${venture.name}`}
+            >
+              {venture.logo ? (
+                <img src={venture.logo} alt={`Logo de ${venture.name}`} loading="lazy" />
+              ) : (
+                <span className="venture__logo-fallback" aria-hidden="true">
+                  {venture.name.slice(0, 1)}
+                </span>
+              )}
+            </button>
+          </div>
+          <h3>{venture.name}</h3>
+          {venture.sector ? <p className="venture__meta">{venture.sector}</p> : null}
+        </article>
       ))}
-    </ul>
+    </div>
   )
 }
 
 export default function Ventures() {
   const [ventures, setVentures] = useState([])
   const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState('')
+  const [error, setError] = useState('')
+  const [activeVenture, setActiveVenture] = useState(null)
 
   useEffect(() => {
     let cancelled = false
-    setLoading(true)
-    setLoadError('')
 
-    fetchPublicVentures()
-      .then((rows) => {
-        if (!cancelled) setVentures(rows)
-      })
-      .catch((err) => {
-        console.error('[Shark Caribe] Ventures:', err)
+    async function loadVentures() {
+      if (!isSupabaseConfigured) {
         if (!cancelled) {
-          setVentures([])
-          setLoadError('No pudimos cargar los emprendimientos. Inténtalo más tarde.')
+          setError('Supabase no está configurado.')
+          setLoading(false)
         }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
+        return
+      }
 
+      try {
+        const data = await fetchPublicVentures()
+        if (!cancelled) {
+          setVentures(data)
+          setError('')
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.message || 'No pudimos cargar los emprendimientos.')
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    loadVentures()
     return () => {
       cancelled = true
     }
   }, [])
 
-  const visibleSections = SECTIONS.map((section) => ({
-    ...section,
-    items: ventures.filter((v) => section.stages.includes(v.stage)),
-  })).filter((section) => section.items.length > 0)
-
   return (
-    <section id="emprendimientos" className="section">
+    <section id="emprendimientos" className="section ventures">
       <div className="container">
-        <Ticket
-          className="ticket--section ventures-ticket"
-          stub={
-            <div className="ventures-ticket__stub">
-              <span className="ventures-ticket__stub-label">Concursantes</span>
-              <Barcode variant="light" className="ventures-ticket__barcode" />
-            </div>
-          }
-        >
-          <div className="ventures-ticket__main">
-            <h2 className="section__title">
-              Ellos siguen en la competencia
-              <span className="ventures__title-sub">
-                Competidores Clasificados - Reto 2
-              </span>
-            </h2>
+        <header className="section__header ventures__header">
+          <h2 className="ventures__title">
+            <span className="ventures__title-line">Ellos siguen en la competencia</span>
+            <span className="ventures__title-line">Competidores Clasificados - Reto 2</span>
+          </h2>
+        </header>
 
-            {loading && (
-              <p className="ventures__empty">Cargando emprendimientos…</p>
-            )}
-
-            {loadError && (
-              <p className="ventures__empty" role="alert">
-                {loadError}
-              </p>
-            )}
-
-            {!loading && !loadError && ventures.length === 0 && (
-              <p className="ventures__empty">
-                Pronto verás aquí a los emprendimientos con inscripción confirmada.
-              </p>
-            )}
-
-            {!loading && !loadError && ventures.length > 0 && (
-              <div className="ventures__sections">
-                {visibleSections.map((section) => (
-                  <div key={section.id} className="ventures__block">
-                    <h3 className="ventures__heading">
-                      {section.label}
-                      <span className="ventures__count">{section.items.length}</span>
-                    </h3>
-                    <VentureGrid items={section.items} />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </Ticket>
+        {loading && <p className="ventures__status">Cargando emprendimientos…</p>}
+        {!loading && error && <p className="ventures__status ventures__status--error">{error}</p>}
+        {!loading && !error && ventures.length === 0 && (
+          <p className="ventures__status">Pronto verás aquí a los emprendimientos clasificados.</p>
+        )}
+        {!loading && !error && ventures.length > 0 && (
+          <VentureGrid ventures={ventures} onOpen={setActiveVenture} />
+        )}
       </div>
+
+      {activeVenture ? (
+        <VentureModal venture={activeVenture} onClose={() => setActiveVenture(null)} />
+      ) : null}
     </section>
   )
 }

@@ -480,6 +480,30 @@ export const PITCH_ROUND = {
   ],
 }
 
+/* Fotos de concursantes (public/concursantes) emparejadas por nombre del emprendimiento */
+export const COMPETITOR_PHOTOS = [
+  { match: /nobaq/i, photo: '/concursantes/Nobaq (1).jpeg' },
+  { match: /ayuda\s*dom[eé]stica|\btad\b/i, photo: '/concursantes/tad.jpeg' },
+  { match: /oportunitic/i, photo: '/concursantes/OportuniTIC.jpeg' },
+  { match: /hey\s*eva|eva\s*native/i, photo: '/concursantes/HeyEvaNative.jpeg' },
+  {
+    match: /taller\s*de\s*ingrid|accesorios\s*el\s*taller/i,
+    photo: '/concursantes/EltallerdeIngrid.jpeg',
+  },
+  { match: /gastro|optimai?zer/i, photo: '/concursantes/Gastro Optimaizer.jpeg' },
+  { match: /legal[\s-]*ia/i, photo: '/concursantes/LegalIA.jpeg' },
+  { match: /\bmito\b/i, photo: '/concursantes/mito.jpeg' },
+  { match: /comp[aá]s|cv\s*car|cvcar|cv\s*card|cvcard/i, photo: '/concursantes/Cvcar.jpeg' },
+  { match: /sweet\s*liz|sweetliz/i, photo: '/concursantes/SweetLiz.jpeg' },
+  { match: /menu\s*be|menube/i, photo: '/concursantes/menube.jpeg' },
+]
+
+export function resolveCompetitorPhoto(ventureName = '') {
+  const name = String(ventureName)
+  const hit = COMPETITOR_PHOTOS.find((entry) => entry.match.test(name))
+  return hit?.photo || ''
+}
+
 /* Premios Gran Final */
 export const PRIZES = {
   eyebrow: 'Gran Final',

@@ -4,7 +4,10 @@
    ============================================================ */
 
 import { createClient } from '@supabase/supabase-js'
-import { isCompetitorRegistrationOpen } from '../data/content.js'
+import {
+  isCompetitorRegistrationOpen,
+  resolveCompetitorPhoto,
+} from '../data/content.js'
 
 /* Acepta ambos esquemas de nombres (los antiguos y los VITE_PUBLIC_*). */
 const url =
@@ -557,12 +560,14 @@ export async function fetchPublicCompetitors() {
 }
 
 function mapPublicVentureRow(row) {
+  const name = row.venture_name || 'Emprendimiento'
   return {
     id: row.id,
-    name: row.venture_name || 'Emprendimiento',
+    name,
     sector: row.sector || '',
     logo: row.logo_url || '',
     stage: row.competition_stage || 'aprobado',
+    photo: resolveCompetitorPhoto(name),
   }
 }
 
