@@ -124,6 +124,61 @@ export const CATEGORIES = [
   { value: 'silver', label: 'Silver', range: '50 años o más', min: 50, max: 130 },
 ]
 
+/* Roles de cuenta en public.profiles.role */
+export const USER_ROLES = {
+  admin: 'admin',
+  patrocinador: 'patrocinador',
+  asistente: 'asistente',
+  concursante: 'concursante',
+  jurado: 'jurado',
+}
+
+export const USER_ROLE_LABELS = [
+  { value: 'admin', label: 'Administrador' },
+  { value: 'patrocinador', label: 'Patrocinador' },
+  { value: 'asistente', label: 'Asistente' },
+  { value: 'concursante', label: 'Concursante' },
+  { value: 'jurado', label: 'Jurado' },
+]
+
+/* Portal del jurado */
+export const JURY_PORTAL = {
+  roleLabel: 'Jurado',
+  competitionTitle: 'IV Shark Caribe Pitch Competition 2026',
+}
+
+/* Criterios de calificación · 2ª ronda (puntaje 1–5 c/u) */
+export const JURY_ROUND2_CRITERIA = [
+  {
+    key: 'viabilidad_financiera',
+    label: 'Viabilidad financiera',
+    hint: 'Solidez del modelo de ingresos, sostenibilidad y proyecciones realistas.',
+  },
+  {
+    key: 'estrategia_comercial',
+    label: 'Estrategia comercial',
+    hint: 'Claridad en la propuesta de ventas B2B/B2C, canales y métricas iniciales.',
+  },
+  {
+    key: 'preparacion_inversion',
+    label: 'Preparación para inversión',
+    hint: 'Argumentos sólidos para levantar capital, escalabilidad y uso eficiente de recursos.',
+  },
+  {
+    key: 'presencia_ejecutiva',
+    label: 'Presencia ejecutiva',
+    hint: 'Liderazgo, confianza y capacidad de transmitir visión empresarial.',
+  },
+  {
+    key: 'innovacion_aplicada',
+    label: 'Innovación aplicada',
+    hint: 'Uso creativo de metodologías, tecnología o aprendizajes del bootcamp.',
+  },
+]
+
+export const JURY_ROUND2_SCORE_MIN = 1
+export const JURY_ROUND2_SCORE_MAX = 5
+
 export const CONTACT_METHODS = [
   { value: 'email', label: 'Correo electrónico' },
   { value: 'whatsapp', label: 'Celular / WhatsApp' },
@@ -496,12 +551,27 @@ export const COMPETITOR_PHOTOS = [
   { match: /comp[aá]s|cv\s*car|cvcar|cv\s*card|cvcard/i, photo: '/concursantes/Cvcar.jpeg' },
   { match: /sweet\s*liz|sweetliz/i, photo: '/concursantes/SweetLiz.jpeg' },
   { match: /menu\s*be|menube/i, photo: '/concursantes/menube.jpeg' },
+  {
+    match: /origen\s*quillero|quillero/i,
+    photos: ['/concursantes/quillero.jpeg'],
+  },
+  {
+    match: /ferreia/i,
+    photos: ['/concursantes/ferreia.jpeg'],
+  },
 ]
 
-export function resolveCompetitorPhoto(ventureName = '') {
+export function resolveCompetitorPhotos(ventureName = '') {
   const name = String(ventureName)
   const hit = COMPETITOR_PHOTOS.find((entry) => entry.match.test(name))
-  return hit?.photo || ''
+  if (!hit) return []
+  if (Array.isArray(hit.photos) && hit.photos.length) return hit.photos
+  return hit.photo ? [hit.photo] : []
+}
+
+/** @deprecated Prefer resolveCompetitorPhotos */
+export function resolveCompetitorPhoto(ventureName = '') {
+  return resolveCompetitorPhotos(ventureName)[0] || ''
 }
 
 /* Premios Gran Final */

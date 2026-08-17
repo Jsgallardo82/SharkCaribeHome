@@ -32,6 +32,7 @@ import {
   COMPETITION_STAGES,
   COMPETITION_STAGE_ORDER,
 } from '../data/content.js'
+import JuryRound2Results from './JuryRound2Results.jsx'
 import './Admin.css'
 
 const TABS = [
@@ -39,6 +40,7 @@ const TABS = [
   { id: 'asistentes', label: 'Asistentes' },
   { id: 'patrocinadores', label: 'Patrocinadores' },
   { id: 'expositores', label: 'Expositores' },
+  { id: 'resultados-2ronda', label: 'Resultados 2ª ronda' },
 ]
 
 const COMPETITOR_COLUMNS = [
@@ -298,6 +300,20 @@ function rowKeyOf(row, index) {
 }
 
 function tabConfig(tab) {
+  if (tab === 'resultados-2ronda') {
+    return {
+      title: 'Resultados · 2ª ronda',
+      columns: [],
+      cellValue: () => '',
+      detailFields: () => [],
+      empty: '',
+      canConfirmPayment: false,
+      confirmPayment: null,
+      setRows: null,
+      exportFile: 'resultados-2ronda',
+      exportSheet: 'Resultados',
+    }
+  }
   if (tab === 'asistentes') {
     return {
       title: 'Inscripciones · Asistentes',
@@ -355,6 +371,7 @@ function tabConfig(tab) {
 }
 
 function tabRowCount(itemId, counts) {
+  if (itemId === 'resultados-2ronda') return '·'
   if (itemId === 'asistentes') return counts.attendees
   if (itemId === 'patrocinadores') return counts.sponsors
   if (itemId === 'expositores') return counts.exhibitors
@@ -451,6 +468,10 @@ export default function Admin() {
         if (cancelled) return
 
         if (!profile || profile.role !== 'admin') {
+          if (profile?.role === 'jurado') {
+            navigate('/jurado', { replace: true })
+            return
+          }
           setStatus('forbidden')
           return
         }
@@ -987,6 +1008,10 @@ export default function Admin() {
               ))}
             </div>
 
+            {tab === 'resultados-2ronda' ? (
+              <JuryRound2Results />
+            ) : (
+              <>
             {tab === 'asistentes' && (
               <div className="admin__filters" role="group" aria-label="Filtrar por ubicación">
                 <span className="admin__filters-label">Ubicación</span>
@@ -1072,6 +1097,8 @@ export default function Admin() {
                     <tbody>{tableRows}</tbody>
                   </table>
                 </div>
+              </>
+            )}
               </>
             )}
           </>

@@ -4,6 +4,11 @@ import './Ventures.css'
 
 function VentureModal({ venture, onClose }) {
   const panelRef = useRef(null)
+  const photos = venture.photos?.length
+    ? venture.photos
+    : venture.photo
+      ? [venture.photo]
+      : []
 
   useEffect(() => {
     const previouslyFocused = document.activeElement
@@ -23,6 +28,12 @@ function VentureModal({ venture, onClose }) {
     }
   }, [onClose])
 
+  const category = String(venture.category || '').toLowerCase()
+  const categoryClass =
+    category === 'silver' || category === 'prime' || category === 'junior'
+      ? `venture-modal--${category}`
+      : ''
+
   return (
     <div
       className="venture-modal__backdrop"
@@ -31,7 +42,7 @@ function VentureModal({ venture, onClose }) {
       }}
     >
       <div
-        className="venture-modal"
+        className={`venture-modal${categoryClass ? ` ${categoryClass}` : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="venture-modal-title"
@@ -48,17 +59,45 @@ function VentureModal({ venture, onClose }) {
         </button>
 
         <header className="venture-modal__header">
-          <h2 id="venture-modal-title">{venture.name}</h2>
-          {venture.sector ? <p>{venture.sector}</p> : null}
+          <div className="venture-modal__title-row">
+            <h2 id="venture-modal-title">{venture.name}</h2>
+            {venture.categoryLabel ? (
+              <span
+                className={`venture-modal__badge${
+                  category ? ` venture-modal__badge--${category}` : ''
+                }`}
+              >
+                {venture.categoryLabel}
+              </span>
+            ) : null}
+          </div>
+          {venture.sectorLabel ? (
+            <p className="venture-modal__sector">{venture.sectorLabel}</p>
+          ) : null}
+          {venture.fullName ? (
+            <p className="venture-modal__person">{venture.fullName}</p>
+          ) : null}
         </header>
 
-        <div className="venture-modal__media">
-          {venture.photo ? (
-            <div className="venture-modal__photo">
-              <img
-                src={encodeURI(venture.photo)}
-                alt={`Equipo de ${venture.name}`}
-              />
+        <div
+          className={`venture-modal__media${
+            photos.length > 1 ? ' venture-modal__media--multi' : ''
+          }`}
+        >
+          {photos.length > 0 ? (
+            <div
+              className={`venture-modal__photos${
+                photos.length > 1 ? ' venture-modal__photos--multi' : ''
+              }`}
+            >
+              {photos.map((src) => (
+                <div key={src} className="venture-modal__photo">
+                  <img
+                    src={encodeURI(src)}
+                    alt={`Equipo de ${venture.name}`}
+                  />
+                </div>
+              ))}
             </div>
           ) : null}
           <div className="venture-modal__logo">
@@ -79,44 +118,71 @@ function VentureModal({ venture, onClose }) {
 function VentureGrid({ ventures, onOpen }) {
   return (
     <div className="ventures__grid">
-      {ventures.map((venture) => (
-        <article key={venture.id} className="venture">
-          <div
-            className={`venture__media${venture.photo ? '' : ' venture__media--logo-only'}`}
-          >
-            {venture.photo ? (
+      {ventures.map((venture) => {
+        const photos = venture.photos?.length
+          ? venture.photos
+          : venture.photo
+            ? [venture.photo]
+            : []
+        const hasPhotos = photos.length > 0
+        const multi = photos.length > 1
+
+        return (
+          <article key={venture.id} className="venture">
+            <div
+              className={`venture__media${
+                hasPhotos ? '' : ' venture__media--logo-only'
+              }${multi ? ' venture__media--multi' : ''}`}
+            >
+              {hasPhotos ? (
+                <div
+                  className={`venture__photos${
+                    multi ? ' venture__photos--multi' : ''
+                  }`}
+                >
+                  {photos.map((src) => (
+                    <button
+                      key={src}
+                      type="button"
+                      className="venture__photo"
+                      onClick={() => onOpen(venture)}
+                      aria-label={`Ver fotos y logo de ${venture.name}`}
+                    >
+                      <img
+                        src={encodeURI(src)}
+                        alt={`Equipo de ${venture.name}`}
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
               <button
                 type="button"
-                className="venture__photo"
+                className="venture__logo"
                 onClick={() => onOpen(venture)}
-                aria-label={`Ver foto y logo de ${venture.name}`}
+                aria-label={`Ver detalle de ${venture.name}`}
               >
-                <img
-                  src={encodeURI(venture.photo)}
-                  alt={`Equipo de ${venture.name}`}
-                  loading="lazy"
-                />
+                {venture.logo ? (
+                  <img
+                    src={venture.logo}
+                    alt={`Logo de ${venture.name}`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="venture__logo-fallback" aria-hidden="true">
+                    {venture.name.slice(0, 1)}
+                  </span>
+                )}
               </button>
+            </div>
+            <h3>{venture.name}</h3>
+            {venture.sectorLabel ? (
+              <p className="venture__meta">{venture.sectorLabel}</p>
             ) : null}
-            <button
-              type="button"
-              className="venture__logo"
-              onClick={() => onOpen(venture)}
-              aria-label={`Ver detalle de ${venture.name}`}
-            >
-              {venture.logo ? (
-                <img src={venture.logo} alt={`Logo de ${venture.name}`} loading="lazy" />
-              ) : (
-                <span className="venture__logo-fallback" aria-hidden="true">
-                  {venture.name.slice(0, 1)}
-                </span>
-              )}
-            </button>
-          </div>
-          <h3>{venture.name}</h3>
-          {venture.sector ? <p className="venture__meta">{venture.sector}</p> : null}
-        </article>
-      ))}
+          </article>
+        )
+      })}
     </div>
   )
 }

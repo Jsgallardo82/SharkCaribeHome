@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import {
   signIn,
   getSession,
+  getProfile,
   ensureProfile,
+  homePathForRole,
   isSupabaseConfigured,
 } from '../lib/supabase.js'
 import Ticket, { Barcode } from './Ticket.jsx'
@@ -17,7 +19,13 @@ export default function Login() {
   const [error, setError] = useState('')
   const [checking, setChecking] = useState(true)
 
-  /* Si ya hay sesión activa, vamos directo al panel. */
+  async function redirectByRole() {
+    await ensureProfile()
+    const profile = await getProfile()
+    navigate(homePathForRole(profile?.role), { replace: true })
+  }
+
+  /* Si ya hay sesión activa, vamos al panel correspondiente. */
   useEffect(() => {
     let active = true
     getSession()
@@ -25,12 +33,10 @@ export default function Login() {
         if (!active) return
         if (s) {
           try {
-            await ensureProfile()
+            await redirectByRole()
           } catch {
-            /* Admin también intentará ensureProfile */
+            if (active) navigate('/admin', { replace: true })
           }
-          if (!active) return
-          navigate('/admin', { replace: true })
         } else {
           setChecking(false)
         }
@@ -49,8 +55,7 @@ export default function Login() {
     setLoading(true)
     try {
       await signIn(email, password)
-      await ensureProfile()
-      navigate('/admin', { replace: true })
+      await redirectByRole()
     } catch (err) {
       setError(err.message)
       setLoading(false)
@@ -63,7 +68,7 @@ export default function Login() {
         <Ticket className="login__ticket" notchBg="#0b1533">
           <div className="login__main">
             <Barcode variant="dark" className="login__barcode" />
-            <p className="login__kicker">Shark Caribe · Administración</p>
+            <p className="login__kicker">Shark Caribe · Acceso</p>
             <h1 className="login__title">Iniciar sesión</h1>
 
             {checking ? (
@@ -118,7 +123,7 @@ export default function Login() {
           className="login__back"
           onClick={() => navigate('/')}
         >
-          ← Volver al inicio
+          ← Volver al sitio
         </button>
       </div>
     </div>

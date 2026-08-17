@@ -1,0 +1,129 @@
+.jury {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(120% 80% at 50% 120%, rgba(43, 87, 255, 0.25), transparent 60%),
+    linear-gradient(160deg, #0a1330 0%, #0d1a3d 45%, #0a1230 100%);
+}
+
+.jury--gate {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.jury__signout-top {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 5;
+  padding: 0.55rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.jury__signout-top:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.jury__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 4.5rem 1rem 2.5rem;
+}
+
+.jury__welcome {
+  width: 100%;
+  max-width: 480px;
+}
+
+.jury__inner {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.jury__ticket {
+  width: 100%;
+}
+
+.jury__main {
+  padding: clamp(1.75rem, 5vw, 2.75rem);
+  color: var(--color-secondary);
+  text-align: center;
+}
+
+.jury__barcode {
+  height: 36px;
+  max-width: 240px;
+  margin: 0 auto 1.5rem;
+}
+
+.jury__kicker {
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--color-primary);
+  text-wrap: balance;
+}
+
+.jury__role {
+  display: inline-flex;
+  margin: 0 0 0.75rem;
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #3d6bff, #1e3fd6);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.jury__name {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.7rem, 5vw, 2.35rem);
+  color: var(--color-secondary);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.jury__hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.98rem;
+}
+
+.jury__muted {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.jury__error {
+  margin: 0 0 1.25rem;
+  color: #b42318;
+  font-size: 0.95rem;
+}
+
+.jury .footer {
+  margin-top: auto;
+}

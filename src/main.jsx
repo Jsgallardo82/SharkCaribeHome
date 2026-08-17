@@ -6,6 +6,7 @@ import App from './App.jsx'
 import Login from './components/Login.jsx'
 import Signup from './components/Signup.jsx'
 import Admin from './components/Admin.jsx'
+import Jury from './components/Jury.jsx'
 import PaymentResult from './components/PaymentResult.jsx'
 import './styles/theme.css'
 import './styles/global.css'
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Signup />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/jurado" element={<Jury />} />
       </Routes>
       <Analytics />
     </BrowserRouter>

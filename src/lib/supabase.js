@@ -6,7 +6,9 @@
 import { createClient } from '@supabase/supabase-js'
 import {
   isCompetitorRegistrationOpen,
-  resolveCompetitorPhoto,
+  resolveCompetitorPhotos,
+  CATEGORIES,
+  SECTORS,
 } from '../data/content.js'
 
 /* Acepta ambos esquemas de nombres (los antiguos y los VITE_PUBLIC_*). */
@@ -109,6 +111,8 @@ export async function getSession() {
 }
 
 /* Crea el perfil si no existe (role por default en DB: concursante).
+   Roles: admin | patrocinador | asistente | concursante | jurado
+   (ver supabase/profiles_role_jurado.sql).
    Primero lee; solo inserta si falta. Evita upsert: muchas políticas RLS
    permiten SELECT del propio perfil pero no INSERT/UPDATE, y un upsert
    falla con 403 aunque la fila ya exista (el caso típico de un admin). */
@@ -161,6 +165,144 @@ export async function getProfile() {
   }
 
   return data
+}
+
+/** Ruta de inicio según rol de profiles.role */
+export function homePathForRole(role) {
+  if (role === 'admin') return '/admin'
+  if (role === 'jurado') return '/jurado'
+  return '/'
+}
+
+export function displayNameFromSession(session, profile) {
+  const meta = session?.user?.user_metadata || {}
+  const fromMeta = meta.full_name || meta.name || meta.display_name
+  if (fromMeta && String(fromMeta).trim()) return String(fromMeta).trim()
+
+  if (profile?.full_name && String(profile.full_name).trim()) {
+    return String(profile.full_name).trim()
+  }
+
+  const email = profile?.email || session?.user?.email || ''
+  if (!email) return 'Jurado'
+  const local = email.split('@')[0] || email
+  return local
+    .replace(/[._-]+/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+/* ---------- Jurado · 2ª ronda ---------- */
+
+export async function fetchJuryRound2Competitors() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const { data, error } = await supabase
+    .from('jury_round2_competitors')
+    .select('id, full_name, venture_name, sector, category, logo_url')
+    .order('venture_name', { ascending: true })
+
+  if (error) {
+    console.error('[Shark Caribe] Error al listar concursantes 2ª ronda:', error)
+    throw new Error(
+      error.message?.includes('jury_round2_competitors') || error.code === '42P01'
+        ? 'Falta ejecutar supabase/jury_scores_round2.sql en Supabase.'
+        : `No pudimos cargar los concursantes: ${error.message}`
+    )
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
+export async function fetchMyJuryScoresRound2() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const session = await getSession()
+  if (!session?.user) throw new Error('No hay sesión activa.')
+
+  const { data, error } = await supabase
+    .from('jury_scores_round2')
+    .select(
+      'id, competitor_id, viabilidad_financiera, estrategia_comercial, preparacion_inversion, presencia_ejecutiva, innovacion_aplicada, total, observaciones, updated_at'
+    )
+    .eq('juror_id', session.user.id)
+
+  if (error) {
+    console.error('[Shark Caribe] Error al leer mis calificaciones:', error)
+    throw new Error(
+      error.message?.includes('jury_scores_round2') || error.code === '42P01'
+        ? 'Falta ejecutar supabase/jury_scores_round2.sql en Supabase.'
+        : `No pudimos cargar tus calificaciones: ${error.message}`
+    )
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
+export async function upsertJuryScoreRound2(values) {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const session = await getSession()
+  if (!session?.user) throw new Error('No hay sesión activa.')
+
+  const row = {
+    juror_id: session.user.id,
+    competitor_id: values.competitorId,
+    viabilidad_financiera: Number(values.viabilidad_financiera),
+    estrategia_comercial: Number(values.estrategia_comercial),
+    preparacion_inversion: Number(values.preparacion_inversion),
+    presencia_ejecutiva: Number(values.presencia_ejecutiva),
+    innovacion_aplicada: Number(values.innovacion_aplicada),
+    observaciones: values.observaciones?.trim()
+      ? values.observaciones.trim()
+      : null,
+  }
+
+  const { data, error } = await supabase
+    .from('jury_scores_round2')
+    .upsert(row, { onConflict: 'juror_id,competitor_id' })
+    .select(
+      'id, competitor_id, viabilidad_financiera, estrategia_comercial, preparacion_inversion, presencia_ejecutiva, innovacion_aplicada, total, observaciones, updated_at'
+    )
+    .single()
+
+  if (error) {
+    console.error('[Shark Caribe] Error al guardar calificación:', error)
+    throw new Error(
+      error.message || 'No pudimos guardar la calificación. Inténtalo de nuevo.'
+    )
+  }
+
+  return data
+}
+
+export async function fetchAllJuryScoresRound2() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const withCompetitor = await supabase
+    .from('jury_scores_round2')
+    .select(
+      `id, juror_id, competitor_id,
+       viabilidad_financiera, estrategia_comercial, preparacion_inversion,
+       presencia_ejecutiva, innovacion_aplicada, total, observaciones,
+       created_at, updated_at,
+       competitor:competitor_registrations(id, venture_name, full_name, category, sector)`
+    )
+    .order('updated_at', { ascending: false })
+
+  if (withCompetitor.error) {
+    console.error(
+      '[Shark Caribe] Error al leer calificaciones (admin):',
+      withCompetitor.error
+    )
+    throw new Error(
+      withCompetitor.error.message?.includes('jury_scores_round2') ||
+        withCompetitor.error.code === '42P01'
+        ? 'Falta ejecutar supabase/jury_scores_round2.sql en Supabase.'
+        : `No pudimos cargar los resultados: ${withCompetitor.error.message}`
+    )
+  }
+
+  return Array.isArray(withCompetitor.data) ? withCompetitor.data : []
 }
 
 /* Lee las inscripciones de competidores (requiere sesión + política RLS
@@ -559,21 +701,34 @@ export async function fetchPublicCompetitors() {
   return Array.isArray(data) ? data : []
 }
 
+function labelOf(list, value) {
+  if (!value) return ''
+  const fromList = list.find((item) => item.value === value)?.label
+  if (fromList) return fromList
+  return String(value).replaceAll('_', ' ')
+}
+
 function mapPublicVentureRow(row) {
   const name = row.venture_name || 'Emprendimiento'
+  const photos = resolveCompetitorPhotos(name)
   return {
     id: row.id,
     name,
+    fullName: row.full_name || '',
     sector: row.sector || '',
+    sectorLabel: labelOf(SECTORS, row.sector),
+    category: row.category || '',
+    categoryLabel: labelOf(CATEGORIES, row.category),
     logo: row.logo_url || '',
     stage: row.competition_stage || 'aprobado',
-    photo: resolveCompetitorPhoto(name),
+    photos,
+    photo: photos[0] || '',
   }
 }
 
 /**
  * Emprendimientos para la sección pública Ventures.
- * Ideal: vista public_competitors con sector, logo_url y competition_stage
+ * Ideal: vista public_competitors con sector, category, logo_url y competition_stage
  * (supabase/public_competitors_ventures.sql).
  * Incluye pending y pago; excluye rechazados.
  * Si la vista aún es la antigua, hace fallback a columnas básicas.
@@ -583,7 +738,7 @@ export async function fetchPublicVentures() {
 
   const full = await supabase
     .from('public_competitors')
-    .select('id, venture_name, sector, logo_url, competition_stage')
+    .select('id, full_name, venture_name, sector, category, logo_url, competition_stage')
     .order('venture_name', { ascending: true })
 
   if (!full.error && Array.isArray(full.data)) {
@@ -600,6 +755,15 @@ export async function fetchPublicVentures() {
       hint: full.error?.hint,
     }
   )
+
+  const withSector = await supabase
+    .from('public_competitors')
+    .select('id, full_name, venture_name, sector, logo_url, competition_stage')
+    .order('venture_name', { ascending: true })
+
+  if (!withSector.error && Array.isArray(withSector.data)) {
+    return withSector.data.map(mapPublicVentureRow)
+  }
 
   const basic = await supabase
     .from('public_competitors')

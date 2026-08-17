@@ -2,9 +2,15 @@
 -- Shark Caribe 2026 · Vista pública de emprendimientos (Ventures)
 -- Ejecutar en el SQL Editor de Supabase.
 -- Muestra inscritos con o sin pago confirmado (oculta rechazados).
+--
+-- IMPORTANTE: hay que DROP + CREATE (no solo REPLACE) si se
+-- insertan columnas en medio; PostgreSQL no permite renombrar
+-- columnas de una vista con CREATE OR REPLACE.
 -- ============================================================
 
-CREATE OR REPLACE VIEW public.public_competitors
+DROP VIEW IF EXISTS public.public_competitors;
+
+CREATE VIEW public.public_competitors
 WITH (security_invoker = false)
 AS
 SELECT
@@ -12,6 +18,7 @@ SELECT
   full_name,
   venture_name,
   sector,
+  category,
   logo_url,
   competition_stage
 FROM public.competitor_registrations

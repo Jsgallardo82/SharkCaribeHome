@@ -5,14 +5,16 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="container footer__inner">
-        <a href="#inicio" className="footer__logo">
+        <a href="/#inicio" className="footer__logo">
           Shark<span>Caribe</span>
         </a>
         <nav className="footer__nav">
           <ul>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
+                <a href={link.href.startsWith('#') ? `/${link.href}` : link.href}>
+                  {link.label}
+                </a>
               </li>
             ))}
           </ul>
