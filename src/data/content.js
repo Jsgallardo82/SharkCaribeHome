@@ -475,11 +475,11 @@ export const REGISTER_OPTIONS = [
 export const NAV_LINKS = [
   { label: 'Emprendimientos', href: '#emprendimientos' },
   { label: '2ª Ronda', href: '#segunda-ronda' },
+  { label: 'Patrocinadores', href: '#patrocinadores' },
   { label: 'Premios', href: '#premios' },
   { label: 'Jurados', href: '#jurados' },
-  { label: 'Competidores', href: '#competidores' },
+  // { label: 'Competidores', href: '#competidores' },
   { label: 'Entradas', href: '#entradas' },
-  { label: 'Patrocinadores', href: '#patrocinadores' },
   { label: 'Muestra comercial', href: '#muestra-comercial' },
   { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
