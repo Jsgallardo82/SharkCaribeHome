@@ -61,10 +61,10 @@ export default function App() {
         <Ventures />
         <PitchRound />
         <Sponsors onRegister={openRegister} />
+        <MuestraComercial onRegister={openRegister} />
         <Prizes />
         <Judges />
         {/* <Competition onRegister={openRegister} /> */}
-        <MuestraComercial onRegister={openRegister} />
         <Entradas onRegister={openRegister} />
         <News />
         <About />
