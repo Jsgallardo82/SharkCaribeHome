@@ -302,7 +302,42 @@ export async function fetchAllJuryScoresRound2() {
     )
   }
 
-  return Array.isArray(withCompetitor.data) ? withCompetitor.data : []
+  const rows = Array.isArray(withCompetitor.data) ? withCompetitor.data : []
+  const jurorIds = [...new Set(rows.map((r) => r.juror_id).filter(Boolean))]
+
+  let profileById = {}
+  if (jurorIds.length) {
+    const profilesRes = await supabase
+      .from('profiles')
+      .select('id, email')
+      .in('id', jurorIds)
+
+    if (profilesRes.error) {
+      console.warn(
+        '[Shark Caribe] No se pudieron leer perfiles de jurados:',
+        profilesRes.error
+      )
+    } else if (Array.isArray(profilesRes.data)) {
+      profileById = Object.fromEntries(
+        profilesRes.data.map((p) => [p.id, p])
+      )
+    }
+  }
+
+  return rows.map((row) => {
+    const profile = profileById[row.juror_id]
+    const email = profile?.email || ''
+    return {
+      ...row,
+      jurorEmail: email,
+      jurorName: email
+        ? email
+            .split('@')[0]
+            .replace(/[._-]+/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase())
+        : '',
+    }
+  })
 }
 
 /* Lee las inscripciones de competidores (requiere sesión + política RLS

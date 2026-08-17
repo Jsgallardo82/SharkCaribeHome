@@ -112,9 +112,12 @@ export default function Juicio2Ronda() {
     const existing = scoresByCompetitor[selectedId]
     setFormScores(scoresFromRow(existing))
     setObservaciones(existing?.observaciones || '')
+  }, [selectedId, scoresByCompetitor])
+
+  useEffect(() => {
     setOkMsg('')
     setError('')
-  }, [selectedId, scoresByCompetitor])
+  }, [selectedId])
 
   const selected = useMemo(
     () => competitors.find((c) => c.id === selectedId) || null,
@@ -169,7 +172,14 @@ export default function Juicio2Ronda() {
         observaciones,
       })
       setScoresByCompetitor((prev) => ({ ...prev, [selectedId]: saved }))
-      setOkMsg('Calificación guardada.')
+      setOkMsg('Calificación guardada correctamente.')
+      // Deja ver el aviso aunque el panel sea largo
+      requestAnimationFrame(() => {
+        document.getElementById('juicio2-save-feedback')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        })
+      })
     } catch (err) {
       setError(err?.message || 'No pudimos guardar la calificación.')
     } finally {
@@ -309,8 +319,21 @@ export default function Juicio2Ronda() {
                   />
                 </label>
 
-                {error ? <p className="juicio2__error">{error}</p> : null}
-                {okMsg ? <p className="juicio2__ok">{okMsg}</p> : null}
+                {error ? (
+                  <p className="juicio2__error" role="alert">
+                    {error}
+                  </p>
+                ) : null}
+                {okMsg ? (
+                  <p
+                    id="juicio2-save-feedback"
+                    className="juicio2__ok"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {okMsg}
+                  </p>
+                ) : null}
 
                 <button
                   type="submit"

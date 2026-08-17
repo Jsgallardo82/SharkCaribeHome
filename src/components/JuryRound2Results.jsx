@@ -172,7 +172,9 @@ export default function JuryRound2Results() {
                               <li key={score.id}>
                                 <div className="jury-results__score-head">
                                   <span>
-                                    Jurado · {String(score.juror_id).slice(0, 8)}…
+                                    {score.jurorName ||
+                                      score.jurorEmail ||
+                                      `Jurado · ${String(score.juror_id).slice(0, 8)}…`}
                                   </span>
                                   <strong>Total {score.total}/25</strong>
                                 </div>

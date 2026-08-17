@@ -333,8 +333,12 @@
 
 .juicio2__ok {
   margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid #abefc6;
+  background: #ecfdf3;
   color: #027a48;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 700;
 }
 
