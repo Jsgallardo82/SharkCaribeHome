@@ -340,6 +340,30 @@ export async function fetchAllJuryScoresRound2() {
   })
 }
 
+export async function fetchLiveJuryRound2Ranking() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const { data, error } = await supabase
+    .from('jury_round2_live_ranking')
+    .select(
+      `competitor_id, venture_name, full_name, category, logo_url, jury_count,
+       avg_viabilidad_financiera, avg_estrategia_comercial, avg_preparacion_inversion,
+       avg_presencia_ejecutiva, avg_innovacion_aplicada, avg_total`
+    )
+    .order('avg_total', { ascending: false })
+
+  if (error) {
+    console.error('[Shark Caribe] Error al leer ranking en vivo:', error)
+    throw new Error(
+      error.message?.includes('jury_round2_live_ranking') || error.code === '42P01'
+        ? 'Falta ejecutar supabase/jury_round2_live_ranking.sql en Supabase.'
+        : `No pudimos cargar el ranking en vivo: ${error.message}`
+    )
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
 /* Lee las inscripciones de competidores (requiere sesión + política RLS
    de SELECT para usuarios autenticados en la tabla). */
 export async function fetchCompetitorRegistrations() {

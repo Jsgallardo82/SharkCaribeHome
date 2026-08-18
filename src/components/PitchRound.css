@@ -148,6 +148,28 @@
   color: rgba(255, 255, 255, 0.78);
 }
 
+.pitch-round__live-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1.35rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #2b57ff, #1e3fd6);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(43, 87, 255, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.pitch-round__live-cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 14px 32px rgba(43, 87, 255, 0.45);
+}
+
 .pitch-round__hero-art {
   display: flex;
   justify-content: center;

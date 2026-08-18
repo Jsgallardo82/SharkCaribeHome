@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { PITCH_ROUND } from '../data/content.js'
 import './PitchRound.css'
 
@@ -70,6 +71,10 @@ export default function PitchRound() {
               Los competidores suben al escenario. Los jueces deciden quién
               avanza.
             </p>
+            <Link to="/resultados-vivo" className="pitch-round__live-cta">
+              Ver ranking en vivo
+              <span aria-hidden="true">→</span>
+            </Link>
           </div>
           <div className="pitch-round__hero-art">
             <img
