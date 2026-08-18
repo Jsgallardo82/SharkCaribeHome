@@ -5,6 +5,8 @@ import {
   JURY_ROUND2_CRITERIA,
   JURY_PORTAL,
   CATEGORIES,
+  getLiveRankingCountdown,
+  isLiveRankingVisible,
 } from '../data/content.js'
 import './LiveRound2Results.css'
 
@@ -32,7 +34,13 @@ function avgForCriterion(row, key) {
   return row[`avg_${key}`]
 }
 
+function pad2(n) {
+  return String(n).padStart(2, '0')
+}
+
 export default function LiveRound2Results() {
+  const [revealed, setRevealed] = useState(() => isLiveRankingVisible())
+  const [countdown, setCountdown] = useState(() => getLiveRankingCountdown())
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -40,6 +48,20 @@ export default function LiveRound2Results() {
   const [secondsAgo, setSecondsAgo] = useState(0)
 
   useEffect(() => {
+    const tick = window.setInterval(() => {
+      const next = getLiveRankingCountdown()
+      setCountdown(next)
+      if (next.done) setRevealed(true)
+    }, 250)
+    return () => window.clearInterval(tick)
+  }, [])
+
+  useEffect(() => {
+    if (!revealed) {
+      setLoading(false)
+      return undefined
+    }
+
     let cancelled = false
     let timer
 
@@ -60,6 +82,7 @@ export default function LiveRound2Results() {
       }
     }
 
+    setLoading(true)
     load()
     timer = window.setInterval(load, POLL_MS)
 
@@ -67,15 +90,65 @@ export default function LiveRound2Results() {
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [])
+  }, [revealed])
 
   useEffect(() => {
-    if (!updatedAt) return undefined
+    if (!updatedAt || !revealed) return undefined
     const tick = window.setInterval(() => {
       setSecondsAgo(Math.max(0, Math.floor((Date.now() - updatedAt) / 1000)))
     }, 1000)
     return () => window.clearInterval(tick)
-  }, [updatedAt])
+  }, [updatedAt, revealed])
+
+  if (!revealed) {
+    return (
+      <div className="live-r2 live-r2--countdown">
+        <header className="live-r2__header">
+          <div className="live-r2__header-top">
+            <p className="live-r2__eyebrow">{JURY_PORTAL.competitionTitle}</p>
+            <Link to="/" className="live-r2__home">
+              ← Sitio
+            </Link>
+          </div>
+          <h1 className="live-r2__title">Resultados en vivo · 2ª ronda</h1>
+          <p className="live-r2__countdown-lead">
+            El ranking se revela el <strong>18 de agosto a las 8:30 a. m.</strong>
+          </p>
+        </header>
+
+        <div className="live-r2__countdown-stage">
+          <div className="live-r2__countdown" aria-live="polite">
+            <div className="live-r2__countdown-unit">
+              <strong>{pad2(countdown.hours)}</strong>
+              <span>Horas</span>
+            </div>
+            <span className="live-r2__countdown-sep" aria-hidden="true">
+              :
+            </span>
+            <div className="live-r2__countdown-unit">
+              <strong>{pad2(countdown.minutes)}</strong>
+              <span>Minutos</span>
+            </div>
+            <span className="live-r2__countdown-sep" aria-hidden="true">
+              :
+            </span>
+            <div className="live-r2__countdown-unit">
+              <strong>{pad2(countdown.seconds)}</strong>
+              <span>Segundos</span>
+            </div>
+          </div>
+
+          <div className="live-r2__countdown-art" aria-hidden="true">
+            <img
+              src="/sharkycolor.png"
+              alt=""
+              className="live-r2__sharky"
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const top3 = rows.slice(0, 3)
   const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean)

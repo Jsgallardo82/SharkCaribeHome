@@ -10,6 +10,8 @@ import {
   JURY_ROUND2_SCORE_MIN,
   CATEGORIES,
   SECTORS,
+  sortJuryRound2Competitors,
+  resolveCompetitorPhotos,
 } from '../data/content.js'
 import './Juicio2Ronda.css'
 
@@ -89,10 +91,11 @@ export default function Juicio2Ronda() {
         const map = {}
         for (const row of mine) map[row.competitor_id] = row
 
-        setCompetitors(list)
+        const ordered = sortJuryRound2Competitors(list)
+        setCompetitors(ordered)
         setScoresByCompetitor(map)
-        if (list.length && !selectedId) {
-          setSelectedId(list[0].id)
+        if (ordered.length && !selectedId) {
+          setSelectedId(ordered[0].id)
         }
       } catch (err) {
         if (!cancelled) setError(err?.message || 'No pudimos cargar el juicio.')
@@ -128,6 +131,11 @@ export default function Juicio2Ronda() {
     if (!selectedId) return -1
     return competitors.findIndex((c) => c.id === selectedId)
   }, [competitors, selectedId])
+
+  const selectedPhotos = useMemo(
+    () => (selected ? resolveCompetitorPhotos(selected.venture_name) : []),
+    [selected]
+  )
 
   const liveTotal = useMemo(() => {
     let sum = 0
@@ -251,15 +259,21 @@ export default function Juicio2Ronda() {
           {selected ? (
             <>
               <div className="juicio2__venture">
-                {selected.logo_url ? (
-                  <img
-                    className="juicio2__logo"
-                    src={selected.logo_url}
-                    alt=""
-                    loading="lazy"
-                  />
-                ) : null}
-                <div>
+                <div className="juicio2__logo-wrap">
+                  {selected.logo_url ? (
+                    <img
+                      className="juicio2__logo"
+                      src={selected.logo_url}
+                      alt={`Logo de ${selected.venture_name}`}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span className="juicio2__logo-fallback" aria-hidden="true">
+                      {(selected.venture_name || '?').slice(0, 1)}
+                    </span>
+                  )}
+                </div>
+                <div className="juicio2__venture-copy">
                   <h3>
                     {selectedIndex >= 0 ? (
                       <span className="juicio2__venture-num">{selectedIndex + 1}</span>
@@ -274,6 +288,23 @@ export default function Juicio2Ronda() {
                     <SectorBadge sector={selected.sector} />
                   </div>
                 </div>
+                {selectedPhotos.length > 0 ? (
+                  <div
+                    className={`juicio2__photos${
+                      selectedPhotos.length > 1 ? ' juicio2__photos--multi' : ''
+                    }`}
+                  >
+                    {selectedPhotos.map((src) => (
+                      <div key={src} className="juicio2__photo">
+                        <img
+                          src={encodeURI(src)}
+                          alt={`Foto de ${selected.venture_name}`}
+                          loading="lazy"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </div>
 
               <form className="juicio2__form" onSubmit={handleSubmit} noValidate>

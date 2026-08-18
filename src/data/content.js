@@ -179,6 +179,70 @@ export const JURY_ROUND2_CRITERIA = [
 export const JURY_ROUND2_SCORE_MIN = 1
 export const JURY_ROUND2_SCORE_MAX = 5
 
+/* Ranking en vivo: visible desde esta hora (Colombia, UTC-5) */
+export const LIVE_RANKING_REVEALS_AT = '2026-08-18T08:30:00-05:00'
+
+export function isLiveRankingVisible(now = new Date()) {
+  return now.getTime() >= new Date(LIVE_RANKING_REVEALS_AT).getTime()
+}
+
+export function getLiveRankingCountdown(now = new Date()) {
+  const target = new Date(LIVE_RANKING_REVEALS_AT).getTime()
+  const diff = Math.max(0, target - now.getTime())
+  const totalSeconds = Math.floor(diff / 1000)
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+  return { diff, totalSeconds, hours, minutes, seconds, done: diff <= 0 }
+}
+
+/* Orden fijo de pitch para el panel del jurado (2ª ronda).
+   “Sistema de hidroponía” queda fuera del concurso. */
+export const JURY_ROUND2_EXCLUDED = [/hidropo/i, /hidropon/i]
+
+export const JURY_ROUND2_PITCH_ORDER = [
+  /hey\s*eva|eva\s*native/i,
+  /gastro|optimai?zer/i,
+  /origen\s*quillero/i,
+  /cv\s*card|cvcard|cvcar/i,
+  /menu\s*be|menube/i,
+  /ferrel\s*a|ferrela|ferreia/i,
+  /ayuda\s*dom[eé]stica|\btad\b/i,
+  /oportunitic/i,
+  /nobaq/i,
+  /legal/i,
+  /\bmito\b/i,
+  /sweet\s*liz|sweetliz/i,
+  /artecano/i,
+  /taller\s*(de\s*)?ingrid|accesorios\s*el\s*taller/i,
+]
+
+export function sortJuryRound2Competitors(list = []) {
+  const filtered = list.filter((c) => {
+    const name = String(c?.venture_name || '')
+    return !JURY_ROUND2_EXCLUDED.some((rx) => rx.test(name))
+  })
+
+  const ranked = []
+  const used = new Set()
+
+  for (const match of JURY_ROUND2_PITCH_ORDER) {
+    const hit = filtered.find(
+      (c) => !used.has(c.id) && match.test(String(c.venture_name || ''))
+    )
+    if (hit) {
+      ranked.push(hit)
+      used.add(hit.id)
+    }
+  }
+
+  for (const c of filtered) {
+    if (!used.has(c.id)) ranked.push(c)
+  }
+
+  return ranked
+}
+
 export const CONTACT_METHODS = [
   { value: 'email', label: 'Correo electrónico' },
   { value: 'whatsapp', label: 'Celular / WhatsApp' },
@@ -556,7 +620,7 @@ export const COMPETITOR_PHOTOS = [
     photos: ['/concursantes/quillero.jpeg'],
   },
   {
-    match: /ferreia/i,
+    match: /ferrel\s*a|ferrela|ferreia/i,
     photos: ['/concursantes/ferreia.jpeg'],
   },
 ]
