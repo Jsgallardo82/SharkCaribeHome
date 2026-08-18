@@ -537,8 +537,9 @@ export const REGISTER_OPTIONS = [
 ]
 
 export const NAV_LINKS = [
-  { label: 'Emprendimientos', href: '#emprendimientos' },
-  { label: '2ª Ronda', href: '#segunda-ronda' },
+  // { label: 'Emprendimientos', href: '#emprendimientos' },
+  // { label: '2ª Ronda', href: '#segunda-ronda' },
+  { label: 'Final', href: '#gran-final' },
   { label: 'Patrocinadores', href: '#patrocinadores' },
   { label: 'Muestra comercial', href: '#muestra-comercial' },
   { label: 'Premios', href: '#premios' },
@@ -597,6 +598,29 @@ export const PITCH_ROUND = {
       photo: '/2ronda/chris.jpeg',
     },
   ],
+}
+
+/* Anuncio Gran Final · finalistas */
+export const FINAL_ROUND = {
+  eyebrow: 'Próximo hito',
+  badge: 'GRAN FINAL',
+  title: 'Ellos avanzan a la final',
+  lead:
+    'Los finalistas se preparan para el gran cierre. La Gran Final será el 25 de noviembre de 2026.',
+  finalistsTitle: 'Finalistas',
+  emptyFinalists:
+    'Pronto revelaremos a quienes avanzan a la Gran Final.',
+  dateLabel: 'Martes 25 de noviembre',
+  yearLabel: '2026',
+  timeLabel: '5:00 p. m. – 9:45 p. m.',
+  venue: 'Hotel Dann Carlton',
+  address: 'Calle 98 No. 52B-10, Riomar · Barranquilla',
+  mapsUrl:
+    'https://www.google.com/maps/search/?api=1&query=Hotel+Dann+Carlton+Barranquilla+Calle+98',
+  mapsEmbedUrl:
+    'https://maps.google.com/maps?q=Hotel+Dann+Carlton+Barranquilla+Calle+98+No+52B-10&z=16&output=embed',
+  mapsCta: 'Abrir en Google Maps',
+  sharky: '/sharkycolor.png',
 }
 
 /* Fotos de concursantes (public/concursantes) emparejadas por nombre del emprendimiento */

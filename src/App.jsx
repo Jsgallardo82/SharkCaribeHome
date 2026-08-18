@@ -3,8 +3,9 @@ import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 // import Competition from './components/Competition.jsx'
 import Judges from './components/Judges.jsx'
-import Ventures from './components/Ventures.jsx'
-import PitchRound from './components/PitchRound.jsx'
+// import Ventures from './components/Ventures.jsx'
+// import PitchRound from './components/PitchRound.jsx'
+import FinalRound from './components/FinalRound.jsx'
 import Prizes from './components/Prizes.jsx'
 import About from './components/About.jsx'
 // import Editions from './components/Editions.jsx'
@@ -58,8 +59,9 @@ export default function App() {
       <Navbar onRegister={openRegister} />
       <main>
         <Hero onRegister={openRegister} />
-        <Ventures />
-        <PitchRound />
+        {/* <Ventures /> */}
+        {/* <PitchRound /> */}
+        <FinalRound />
         <Sponsors onRegister={openRegister} />
         <MuestraComercial onRegister={openRegister} />
         <Prizes />

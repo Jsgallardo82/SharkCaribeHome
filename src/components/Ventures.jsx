@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { fetchPublicVentures, isSupabaseConfigured } from '../lib/supabase'
 import './Ventures.css'
 
-function VentureModal({ venture, onClose }) {
+export function VentureModal({ venture, onClose }) {
   const panelRef = useRef(null)
   const photos = venture.photos?.length
     ? venture.photos
@@ -115,7 +115,7 @@ function VentureModal({ venture, onClose }) {
   )
 }
 
-function VentureGrid({ ventures, onOpen }) {
+export function VentureGrid({ ventures, onOpen }) {
   return (
     <div className="ventures__grid">
       {ventures.map((venture) => {
