@@ -14,6 +14,80 @@ export const REGISTER_URL =
 export const INSTAGRAM_URL =
   'https://www.instagram.com/shark.caribe?igsh=a3FiYWx0bTRsMWJv'
 
+/* Feed Instagram · edición actual (URLs curadas; embeds oficiales) */
+export const INSTAGRAM_FEED = {
+  username: 'shark.caribe',
+  profileUrl: 'https://www.instagram.com/shark.caribe/',
+  eyebrow: 'Edición 2026',
+  title: 'En Instagram',
+  subtitle: 'Publicaciones oficiales de esta edición.',
+  emptyMessage: 'Sigue la edición en vivo en nuestro Instagram.',
+  moreCta: 'Ver más en Instagram',
+  maxVisible: 12,
+  posts: [
+    {
+      id: '1',
+      post_url: 'https://www.instagram.com/p/Dbl7JrCO3xD/',
+      display_order: 1,
+    },
+    {
+      id: '2',
+      post_url: 'https://www.instagram.com/reel/DboKrmCOJMK/',
+      display_order: 2,
+    },
+    {
+      id: '3',
+      post_url: 'https://www.instagram.com/reel/DbuD5y1syGs/',
+      display_order: 3,
+    },
+    {
+      id: '4',
+      post_url: 'https://www.instagram.com/reel/DbwmxKrMD9G/',
+      display_order: 4,
+    },
+    {
+      id: '5',
+      post_url: 'https://www.instagram.com/reel/DbyrAUwhW81/',
+      display_order: 5,
+    },
+    {
+      id: '6',
+      post_url: 'https://www.instagram.com/p/Db0-JUhuc2J/',
+      display_order: 6,
+    },
+    {
+      id: '7',
+      post_url: 'https://www.instagram.com/p/Db3o7jGO0mh/',
+      display_order: 7,
+    },
+    {
+      id: '8',
+      post_url: 'https://www.instagram.com/p/Db4uTbGtMzj/',
+      display_order: 8,
+    },
+    {
+      id: '9',
+      post_url: 'https://www.instagram.com/p/Db9j5YuMUll/',
+      display_order: 9,
+    },
+    {
+      id: '10',
+      post_url: 'https://www.instagram.com/reel/DcEZ_A2uzWo/',
+      display_order: 10,
+    },
+    {
+      id: '11',
+      post_url: 'https://www.instagram.com/reel/DcNOCjrMSzX/',
+      display_order: 11,
+    },
+    {
+      id: '12',
+      post_url: 'https://www.instagram.com/p/DbyIvbvjWay/',
+      display_order: 12,
+    },
+  ],
+}
+
 /* Términos de referencia de la competencia (documento descargable en /public) */
 export const TERMS_URL = '/terminos-referencia-shark-caribe-2026.pdf'
 
@@ -550,6 +624,7 @@ export const NAV_LINKS = [
   { label: 'Quiénes somos', href: '#quienes-somos' },
   // { label: 'Ediciones', href: '#ediciones' },
   // { label: 'Testimonios', href: '#testimonios' },
+  { label: 'Instagram', href: '#instagram' },
   { label: 'Galería', href: '#galeria' },
   // { label: 'Contacto', href: '#contacto' },
 ]

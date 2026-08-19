@@ -14,6 +14,7 @@ import Sponsors from './components/Sponsors.jsx'
 import Entradas from './components/Entradas.jsx'
 import MuestraComercial from './components/MuestraComercial.jsx'
 import News from './components/News.jsx'
+import InstagramFeed from './components/InstagramFeed.jsx'
 import Allies from './components/Allies.jsx'
 import Footer from './components/Footer.jsx'
 import RegisterModal from './components/RegisterModal.jsx'
@@ -72,6 +73,7 @@ export default function App() {
         <About />
         {/* <Editions /> */}
         {/* <Testimonials /> */}
+        <InstagramFeed />
         <Gallery />
         {/* <Contact /> */}
       </main>

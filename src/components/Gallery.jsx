@@ -74,9 +74,9 @@ export default function Gallery() {
           }
         >
           <div className="gallery-ticket__main">
-            <h2 className="section__title">Galería</h2>
+            <h2 className="section__title">Galería · Ediciones anteriores</h2>
             <p className="section__subtitle">
-              Momentos que hacen especial a nuestro evento.
+              Momentos de ediciones pasadas de Shark Caribe.
             </p>
             <div className="gallery__grid">
               {PHOTOS.map((photo, i) => (
