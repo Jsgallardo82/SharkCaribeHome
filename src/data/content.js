@@ -892,7 +892,7 @@ export const HERO = {
   brandLine: 'by',
   brand: 'Shark Caribe',
   meta: '25/11/2026 - Hotel Dann Carlton Barranquilla',
-  supportMessage: 'Apoya a los participantes',
+  supportMessage: 'Asiste y apoya a los participantes',
   ctaLabel: 'Compra aquí',
 }
 
