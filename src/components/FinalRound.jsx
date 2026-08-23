@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { FINAL_ROUND } from '../data/content.js'
 import { fetchPublicVentures, isSupabaseConfigured } from '../lib/supabase.js'
+import { sharkySoundInteractionProps } from '../lib/sharkySound.js'
 import { VentureGrid, VentureModal } from './Ventures.jsx'
 import './Ventures.css'
 import './FinalRound.css'
@@ -157,6 +158,7 @@ export default function FinalRound({ onRegister }) {
               src={FINAL_ROUND.sharky}
               alt="Sharky, mascota de Shark Caribe"
               className="final-round__sharky"
+              {...sharkySoundInteractionProps()}
             />
           </div>
         </div>

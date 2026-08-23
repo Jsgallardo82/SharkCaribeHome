@@ -96,6 +96,7 @@
   height: auto;
   filter: drop-shadow(0 16px 36px rgba(43, 87, 255, 0.4));
   animation: live-r2-sharky 3.4s ease-in-out infinite;
+  cursor: pointer;
 }
 
 @keyframes live-r2-sharky {

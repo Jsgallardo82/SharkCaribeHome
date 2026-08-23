@@ -81,6 +81,7 @@
   width: 4.5rem;
   height: auto;
   object-fit: contain;
+  cursor: pointer;
 }
 
 .footer__legal-text {

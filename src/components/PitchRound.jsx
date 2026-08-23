@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { PITCH_ROUND } from '../data/content.js'
+import { sharkySoundInteractionProps } from '../lib/sharkySound.js'
 import './PitchRound.css'
 
 const FLOAT_EMOJIS = ['⚡', '🏆', '✨', '🔥', '📅', '📍']
@@ -82,6 +83,7 @@ export default function PitchRound() {
               src={PITCH_ROUND.sharky}
               alt="Sharky, mascota de Shark Caribe"
               className="pitch-round__sharky"
+              {...sharkySoundInteractionProps()}
             />
           </div>
         </div>

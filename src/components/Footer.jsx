@@ -1,4 +1,5 @@
 import { NAV_LINKS, INSTAGRAM_URL } from '../data/content.js'
+import { sharkySoundInteractionProps } from '../lib/sharkySound.js'
 import './Footer.css'
 
 export default function Footer() {
@@ -42,6 +43,7 @@ export default function Footer() {
             alt="Sharky, mascota de Shark Caribe"
             width="88"
             height="88"
+            {...sharkySoundInteractionProps()}
           />
           <p className="footer__legal-text">
             Shark Caribe® es una marca registrada ante la Superintendencia de

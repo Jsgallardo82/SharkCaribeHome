@@ -8,6 +8,7 @@ import {
   getLiveRankingCountdown,
   isLiveRankingVisible,
 } from '../data/content.js'
+import { sharkySoundInteractionProps } from '../lib/sharkySound.js'
 import './LiveRound2Results.css'
 
 const POLL_MS = 3000
@@ -143,6 +144,7 @@ export default function LiveRound2Results() {
               src="/sharkycolor.png"
               alt=""
               className="live-r2__sharky"
+              {...sharkySoundInteractionProps()}
             />
           </div>
         </div>

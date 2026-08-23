@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SPONSOR_BADGES, SPONSOR_PLANS } from '../data/content.js'
+import { sharkySoundInteractionProps } from '../lib/sharkySound.js'
 import './Sponsors.css'
 
 function planForBadge(badgeId) {
@@ -129,7 +130,11 @@ export default function Sponsors({ onRegister }) {
       <div className="container sponsors__shell">
         <div className="sponsors__inner">
           <div className="sponsors__mascot">
-            <img src="/sharkycolor.png" alt="Sharky, la mascota de Shark Caribe" />
+            <img
+              src="/sharkycolor.png"
+              alt="Sharky, la mascota de Shark Caribe"
+              {...sharkySoundInteractionProps()}
+            />
           </div>
           <div className="sponsors__content">
             <p className="sponsors__kicker">Patrocinios</p>

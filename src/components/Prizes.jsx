@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { PRIZES } from '../data/content.js'
+import { sharkySoundInteractionProps } from '../lib/sharkySound.js'
 import './Prizes.css'
 
 const FLOAT_EMOJIS = ['🏆', '💰', '✨', '🥇', '🎉', '🦈']
@@ -92,6 +93,7 @@ export default function Prizes() {
               src={PRIZES.sharky}
               alt="Sharky, mascota de Shark Caribe"
               className="prizes__sharky"
+              {...sharkySoundInteractionProps()}
             />
           </div>
         </div>

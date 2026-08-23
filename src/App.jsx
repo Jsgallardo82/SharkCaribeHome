@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 // import Competition from './components/Competition.jsx'
@@ -18,6 +18,10 @@ import InstagramFeed from './components/InstagramFeed.jsx'
 import Allies from './components/Allies.jsx'
 import Footer from './components/Footer.jsx'
 import UnifiedRegisterModal from './components/UnifiedRegisterModal.jsx'
+import {
+  installSharkySoundOnFirstGesture,
+  playSharkySound,
+} from './lib/sharkySound.js'
 
 function resolveRegisterOpen(kind, options = {}) {
   const accompaniedCompetitorId = options.accompaniedCompetitorId || ''
@@ -80,6 +84,11 @@ function resolveRegisterOpen(kind, options = {}) {
 
 export default function App() {
   const [registerOpen, setRegisterOpen] = useState(null)
+
+  useEffect(() => {
+    playSharkySound()
+    return installSharkySoundOnFirstGesture()
+  }, [])
 
   const openRegister = useCallback((kind = 'unificado', options = {}) => {
     setRegisterOpen(resolveRegisterOpen(kind, options))
