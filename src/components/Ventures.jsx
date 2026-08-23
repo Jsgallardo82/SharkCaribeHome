@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { fetchPublicVentures, isSupabaseConfigured } from '../lib/supabase'
 import './Ventures.css'
 
-export function VentureModal({ venture, onClose }) {
+export function VentureModal({ venture, onClose, onRegister }) {
   const panelRef = useRef(null)
   const photos = venture.photos?.length
     ? venture.photos
@@ -33,6 +33,14 @@ export function VentureModal({ venture, onClose }) {
     category === 'silver' || category === 'prime' || category === 'junior'
       ? `venture-modal--${category}`
       : ''
+
+  function handleSupportClick() {
+    onClose()
+    onRegister?.('asistente', {
+      accompaniedCompetitorId: venture.id || '',
+      ventureName: venture.name || '',
+    })
+  }
 
   return (
     <div
@@ -110,6 +118,22 @@ export function VentureModal({ venture, onClose }) {
             )}
           </div>
         </div>
+
+        {typeof onRegister === 'function' ? (
+          <div className="venture-modal__support">
+            <p className="venture-modal__support-text">
+              Apoya a {venture.name || 'este concursante'}: compra tu ticket y
+              vive el Gran Pitch Competition.
+            </p>
+            <button
+              type="button"
+              className="btn venture-modal__support-cta"
+              onClick={handleSupportClick}
+            >
+              Compra un ticket
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   )

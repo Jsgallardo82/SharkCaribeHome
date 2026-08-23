@@ -7,7 +7,7 @@ import './FinalRound.css'
 
 const FLOAT_EMOJIS = ['🏆', '✨', '🦈', '🔥', '📅', '📍']
 
-export default function FinalRound() {
+export default function FinalRound({ onRegister }) {
   const sectionRef = useRef(null)
   const [visible, setVisible] = useState(false)
   const [finalists, setFinalists] = useState([])
@@ -86,6 +86,51 @@ export default function FinalRound() {
       </div>
 
       <div className="container final-round__inner">
+        {/* 1) Concursantes / semifinalistas */}
+        <div className="final-round__finalists">
+          <h3 className="final-round__finalists-title">
+            <span aria-hidden="true">🦈</span> {FINAL_ROUND.finalistsTitle}
+          </h3>
+
+          {loading ? (
+            <p className="final-round__status">Cargando semifinalistas…</p>
+          ) : finalists.length === 0 ? (
+            <p className="final-round__status">{FINAL_ROUND.emptyFinalists}</p>
+          ) : (
+            <div className="final-round__ventures">
+              <VentureGrid
+                ventures={finalists}
+                onOpen={setActiveVenture}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* 2) Programa de entrenamiento + CTA entradas */}
+        <div className="final-round__training">
+          <h3 className="final-round__training-title">
+            {FINAL_ROUND.trainingTitle}
+          </h3>
+          <p className="final-round__training-body">{FINAL_ROUND.trainingBody}</p>
+          <div className="final-round__training-actions">
+            {typeof onRegister === 'function' ? (
+              <button
+                type="button"
+                className="final-round__tickets-cta"
+                onClick={() => onRegister('asistente')}
+              >
+                {FINAL_ROUND.ticketsCta}
+                <span aria-hidden="true">→</span>
+              </button>
+            ) : (
+              <a className="final-round__tickets-cta" href={FINAL_ROUND.ticketsHref}>
+                {FINAL_ROUND.ticketsCta}
+                <span aria-hidden="true">→</span>
+              </a>
+            )}
+          </div>
+        </div>
+
         <p className="final-round__eyebrow">
           <span aria-hidden="true">🚨</span> {FINAL_ROUND.eyebrow}
         </p>
@@ -116,25 +161,7 @@ export default function FinalRound() {
           </div>
         </div>
 
-        <div className="final-round__finalists">
-          <h3 className="final-round__finalists-title">
-            <span aria-hidden="true">🦈</span> {FINAL_ROUND.finalistsTitle}
-          </h3>
-
-          {loading ? (
-            <p className="final-round__status">Cargando finalistas…</p>
-          ) : finalists.length === 0 ? (
-            <p className="final-round__status">{FINAL_ROUND.emptyFinalists}</p>
-          ) : (
-            <div className="final-round__ventures">
-              <VentureGrid
-                ventures={finalists}
-                onOpen={setActiveVenture}
-              />
-            </div>
-          )}
-        </div>
-
+        {/* 3) Fecha, horario y lugar */}
         <div className="final-round__meta">
           <article className="final-round__card final-round__card--when">
             <span className="final-round__card-emoji" aria-hidden="true">
@@ -201,6 +228,7 @@ export default function FinalRound() {
         <VentureModal
           venture={activeVenture}
           onClose={() => setActiveVenture(null)}
+          onRegister={onRegister}
         />
       ) : null}
     </section>

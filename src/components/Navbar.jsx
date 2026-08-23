@@ -1,52 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
-import {
-  NAV_LINKS,
-  INSTAGRAM_URL,
-  REGISTER_OPTIONS,
-  COMPETITOR_REGISTRATION_CLOSED,
-  isCompetitorRegistrationOpen,
-} from '../data/content.js'
+import { useState } from 'react'
+import { NAV_LINKS, INSTAGRAM_URL } from '../data/content.js'
 import './Navbar.css'
 
 export default function Navbar({ onRegister }) {
   const [open, setOpen] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef = useRef(null)
-  const competitorOpen = isCompetitorRegistrationOpen()
-
-  useEffect(() => {
-    if (!menuOpen) return undefined
-
-    function onPointerDown(event) {
-      if (!menuRef.current?.contains(event.target)) {
-        setMenuOpen(false)
-      }
-    }
-
-    function onKeyDown(event) {
-      if (event.key === 'Escape') setMenuOpen(false)
-    }
-
-    document.addEventListener('pointerdown', onPointerDown)
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [menuOpen])
-
-  const choose = (kind) => {
-    setMenuOpen(false)
-    setOpen(false)
-    onRegister?.(kind)
-  }
-
-  const optionLabel = (opt) => {
-    if (opt.id === 'participante' && !competitorOpen) {
-      return `${opt.label} · ${COMPETITOR_REGISTRATION_CLOSED.ctaLabel}`
-    }
-    return opt.label
-  }
 
   return (
     <header className="navbar">
@@ -62,10 +19,7 @@ export default function Navbar({ onRegister }) {
           className="navbar__toggle"
           aria-label="Abrir menú"
           aria-expanded={open}
-          onClick={() => {
-            setOpen((v) => !v)
-            setMenuOpen(false)
-          }}
+          onClick={() => setOpen((v) => !v)}
         >
           <span />
           <span />
@@ -99,35 +53,16 @@ export default function Navbar({ onRegister }) {
               </a>
             </li>
             <li className="navbar__cta-item">
-              <div className="navbar__register" ref={menuRef}>
-                <button
-                  type="button"
-                  className="btn btn--primary navbar__cta"
-                  aria-haspopup="menu"
-                  aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen((v) => !v)}
-                >
-                  Inscríbete
-                  <span className="navbar__register-caret" aria-hidden="true">
-                    {menuOpen ? '▴' : '▾'}
-                  </span>
-                </button>
-                {menuOpen && (
-                  <div className="navbar__register-menu" role="menu">
-                    {REGISTER_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        role="menuitem"
-                        className="navbar__register-option"
-                        onClick={() => choose(opt.id)}
-                      >
-                        {optionLabel(opt)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <button
+                type="button"
+                className="btn btn--primary navbar__cta"
+                onClick={() => {
+                  setOpen(false)
+                  onRegister?.('unificado')
+                }}
+              >
+                Inscríbete
+              </button>
             </li>
           </ul>
         </nav>

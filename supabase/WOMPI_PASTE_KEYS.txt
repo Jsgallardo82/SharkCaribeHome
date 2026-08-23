@@ -1,0 +1,32 @@
+# Wompi · secretos a pegar (checklist)
+
+## A) Front — archivo `.env.local` (ya creado)
+1. `VITE_WOMPI_PUBLIC_KEY` = Llave pública (`pub_test_…` o `pub_prod_…`)
+2. `VITE_WOMPI_PAYMENTS_ENABLED=true` (ya activado)
+3. Reinicia `npm run dev` después de pegar.
+
+## B) Supabase SQL — integridad del checkout
+1. Abre `supabase/wompi_paste_secrets.sql`
+2. Reemplaza `PEGAR_AQUI_test_integrity_XXXXXXXX` con tu **Secreto de integridad**
+3. Ejecuta en SQL Editor.
+
+Si nunca corriste el setup Wompi, ejecuta antes:
+- `supabase/wompi_attendee_payment.sql`
+- `supabase/wompi_checkout_rpc.sql` (también pide integrity; puedes dejar el paste_secrets como paso final)
+
+## C) Webhook — secreto de eventos (Edge Function)
+En Supabase → Edge Functions → Secrets:
+
+```
+WOMPI_EVENTS_SECRET=PEGAR_AQUI_secreto_de_eventos
+```
+
+URL a configurar en Wompi (Eventos):
+```
+https://jcrjvtpylprlcvojxuvw.supabase.co/functions/v1/wompi-webhook
+```
+
+Verify JWT = OFF en la función `wompi-webhook`.
+
+## No pegues en el chat
+Llaves privadas / integrity / events. Solo pégalos en `.env.local`, SQL y Secrets.

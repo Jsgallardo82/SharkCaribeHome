@@ -1,59 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
-import {
-  HERO_SLIDES,
-  REGISTER_OPTIONS,
-  COMPETITOR_REGISTRATION_CLOSED,
-  isCompetitorRegistrationOpen,
-} from '../data/content.js'
+import { useEffect, useState } from 'react'
+import { HERO, HERO_SLIDES } from '../data/content.js'
 import './Hero.css'
 
 export default function Hero({ onRegister }) {
   const [active, setActive] = useState(0)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef = useRef(null)
   const count = HERO_SLIDES.length
-  const competitorOpen = isCompetitorRegistrationOpen()
 
   useEffect(() => {
-    if (count <= 1 || menuOpen) return undefined
+    if (count <= 1) return undefined
     const id = setInterval(() => setActive((a) => (a + 1) % count), 6000)
     return () => clearInterval(id)
-  }, [count, menuOpen])
-
-  useEffect(() => {
-    if (!menuOpen) return undefined
-
-    function onPointerDown(event) {
-      if (!menuRef.current?.contains(event.target)) {
-        setMenuOpen(false)
-      }
-    }
-
-    function onKeyDown(event) {
-      if (event.key === 'Escape') setMenuOpen(false)
-    }
-
-    document.addEventListener('pointerdown', onPointerDown)
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [menuOpen])
+  }, [count])
 
   const go = (i) => setActive((i + count) % count)
-
-  const choose = (kind) => {
-    setMenuOpen(false)
-    onRegister?.(kind)
-  }
-
-  const optionLabel = (opt) => {
-    if (opt.id === 'participante' && !competitorOpen) {
-      return `${opt.label} · ${COMPETITOR_REGISTRATION_CLOSED.ctaLabel}`
-    }
-    return opt.label
-  }
 
   return (
     <section id="inicio" className="hero" aria-roledescription="carrusel">
@@ -81,34 +40,17 @@ export default function Hero({ onRegister }) {
         ))}
       </div>
 
-      <div className="hero__register" ref={menuRef}>
-        {menuOpen && (
-          <div className="hero__register-menu" role="menu">
-            {REGISTER_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                role="menuitem"
-                className="hero__register-option"
-                onClick={() => choose(opt.id)}
-              >
-                {optionLabel(opt)}
-              </button>
-            ))}
-          </div>
-        )}
-        <button
-          type="button"
-          className="btn hero__register-btn"
-          aria-haspopup="menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          Inscríbete
-          <span className="hero__register-caret" aria-hidden="true">
-            {menuOpen ? '▴' : '▾'}
-          </span>
-        </button>
+      <div className="hero__register">
+        <div className="hero__register-row">
+          <p className="hero__support">{HERO.supportMessage}</p>
+          <button
+            type="button"
+            className="btn hero__register-btn"
+            onClick={() => onRegister?.('unificado')}
+          >
+            {HERO.ctaLabel}
+          </button>
+        </div>
       </div>
 
       {count > 1 && (

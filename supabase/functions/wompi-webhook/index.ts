@@ -6,6 +6,12 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-event-checksum',
 }
 
+const PAYMENT_TABLES = [
+  'attendee_registrations',
+  'sponsor_registrations',
+  'exhibitor_registrations',
+]
+
 function json(status, body) {
   return new Response(JSON.stringify(body), {
     status,
@@ -27,6 +33,11 @@ function readNested(obj, path) {
     if (acc == null) return undefined
     return acc[key]
   }, obj)
+}
+
+function normalizeStatus(value) {
+  if (value == null) return ''
+  return String(value).trim().toLowerCase()
 }
 
 async function verifyEventChecksum(event, eventsSecret) {
@@ -52,6 +63,23 @@ async function verifyEventChecksum(event, eventsSecret) {
 
   const computed = await sha256Hex(concat)
   return computed === checksum
+}
+
+async function findRegistrationByReference(supabase, reference) {
+  for (const table of PAYMENT_TABLES) {
+    const { data, error } = await supabase
+      .from(table)
+      .select('id, status, amount_in_cents, wompi_transaction_id')
+      .eq('payment_reference', reference)
+      .maybeSingle()
+
+    if (error) {
+      console.error('[wompi-webhook] find error', { table, error })
+      return { error }
+    }
+    if (data) return { table, row: data }
+  }
+  return { table: null, row: null }
 }
 
 Deno.serve(async (req) => {
@@ -129,28 +157,26 @@ Deno.serve(async (req) => {
   const amountInCents =
     typeof tx.amount_in_cents === 'number' ? tx.amount_in_cents : null
 
-  const { data: row, error: findError } = await supabase
-    .from('attendee_registrations')
-    .select('id, status, amount_in_cents, wompi_transaction_id')
-    .eq('payment_reference', reference)
-    .maybeSingle()
-
-  if (findError) {
-    console.error('[wompi-webhook] find error', findError)
+  const found = await findRegistrationByReference(supabase, reference)
+  if (found.error) {
     return json(500, { error: 'Error al buscar registro.' })
   }
 
-  if (!row) {
+  const { table, row } = found
+  if (!row || !table) {
     console.warn('[wompi-webhook] Referencia desconocida', reference)
     return json(200, { ok: true, unknownReference: true })
   }
 
+  const rowStatus = normalizeStatus(row.status)
+
   if (
     amountInCents != null &&
     row.amount_in_cents != null &&
-    amountInCents !== row.amount_in_cents
+    Number(amountInCents) !== Number(row.amount_in_cents)
   ) {
     console.error('[wompi-webhook] Monto no coincide', {
+      table,
       reference,
       expected: row.amount_in_cents,
       got: amountInCents,
@@ -159,13 +185,19 @@ Deno.serve(async (req) => {
   }
 
   if (status === 'APPROVED') {
-    if (row.status === 'pago') {
-      console.info('[wompi-webhook] ya estaba en pago', { reference, transactionId })
-      return json(200, { ok: true, alreadyPaid: true })
+    if (rowStatus === 'pago') {
+      console.info('[wompi-webhook] ya estaba en pago', {
+        table,
+        reference,
+        transactionId,
+        previousStatus: row.status,
+      })
+      return json(200, { ok: true, alreadyPaid: true, table })
     }
 
-    const { error: updateError } = await supabase
-      .from('attendee_registrations')
+    // Solo por id: cubre pending, null, '' u otros (antes .eq('status','pending') fallaba).
+    const { data: updatedRows, error: updateError } = await supabase
+      .from(table)
       .update({
         status: 'pago',
         payment_confirmation: transactionId
@@ -175,33 +207,49 @@ Deno.serve(async (req) => {
         reviewed_at: new Date().toISOString(),
       })
       .eq('id', row.id)
-      .eq('status', 'pending')
+      .select('id')
 
     if (updateError) {
-      console.error('[wompi-webhook] update error', updateError)
+      console.error('[wompi-webhook] update error', { table, updateError })
       return json(500, { error: 'No se pudo marcar el pago.' })
     }
 
+    const updatedCount = Array.isArray(updatedRows) ? updatedRows.length : 0
+    if (updatedCount === 0) {
+      console.error('[wompi-webhook] UPDATE 0 filas', {
+        table,
+        id: row.id,
+        reference,
+        previousStatus: row.status,
+      })
+      return json(500, { error: 'No se actualizó ninguna fila.' })
+    }
+
     console.info('[wompi-webhook] marcado como pago', {
+      table,
       id: row.id,
       reference,
       transactionId,
+      previousStatus: row.status,
+      rows: updatedCount,
     })
-    return json(200, { ok: true, paid: true })
+    return json(200, { ok: true, paid: true, table, rows: updatedCount })
   }
 
   console.warn('[wompi-webhook] transacción no aprobada', {
+    table,
     reference,
     status,
     transactionId,
+    previousStatus: row.status,
   })
 
-  if (transactionId && row.status === 'pending' && !row.wompi_transaction_id) {
+  if (transactionId && rowStatus !== 'pago' && !row.wompi_transaction_id) {
     await supabase
-      .from('attendee_registrations')
+      .from(table)
       .update({ wompi_transaction_id: transactionId })
       .eq('id', row.id)
   }
 
-  return json(200, { ok: true, status })
+  return json(200, { ok: true, status, table })
 })

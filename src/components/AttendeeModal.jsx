@@ -548,7 +548,7 @@ export default function AttendeeModal({ onClose, initialSeatType = '' }) {
               {wompiReady && (
                 <button
                   type="button"
-                  className="btn btn--outline modal__pay-later"
+                  className="btn btn--pay-online modal__pay-later"
                   onClick={handlePayOnline}
                   disabled={submitting}
                   title="Registra tu entrada y paga con Wompi"

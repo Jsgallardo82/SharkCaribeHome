@@ -892,10 +892,10 @@ export async function submitAttendeeRegistration(values) {
 }
 
 /**
- * Registra al asistente y obtiene params firmados para el Widget Wompi.
- * Usa RPC de Postgres (evita CloudFront 403 en /functions/v1 desde el browser).
+ * Checkout Wompi unificado (asistente | patrocinador | expositor).
+ * Usa RPC create_event_wompi_checkout (montos firmados en servidor).
  */
-export async function createAttendeeWompiCheckout(values) {
+export async function createEventWompiCheckout(kind, values) {
   if (!supabase) {
     throw new Error(
       'El formulario todavía no está conectado a la base de datos. Escríbenos y te inscribimos manualmente.'
@@ -909,31 +909,22 @@ export async function createAttendeeWompiCheckout(values) {
     )
   }
 
-  const payload = {
-    fullName: values.fullName,
-    documentType: values.documentType,
-    documentNumber: values.documentNumber,
-    email: values.email,
-    phone: values.phone,
-    profile: values.profile,
-    organization: values.organization,
-    interest: values.interest,
-    seatType: values.seatType,
-    accompaniedCompetitorId: values.accompaniedCompetitorId || null,
-    referralSource: values.referralSource,
-    referralSourceOther: values.referralSourceOther,
+  const allowed = new Set(['asistente', 'patrocinador', 'expositor'])
+  if (!allowed.has(kind)) {
+    throw new Error('Categoría de registro no válida para pago en línea.')
   }
 
+  const payload = { kind, ...values }
   const redirectOrigin =
     typeof window !== 'undefined' ? window.location.origin : null
 
-  console.info('[Shark Caribe][Wompi] Invocando RPC create_attendee_wompi_checkout…', {
-    seatType: payload.seatType,
-    email: payload.email,
+  console.info('[Shark Caribe][Wompi] Invocando RPC create_event_wompi_checkout…', {
+    kind,
+    email: values.email,
     origin: redirectOrigin,
   })
 
-  const { data, error } = await supabase.rpc('create_attendee_wompi_checkout', {
+  const { data, error } = await supabase.rpc('create_event_wompi_checkout', {
     payload,
   })
 
@@ -962,26 +953,48 @@ export async function createAttendeeWompiCheckout(values) {
   }
 
   console.info('[Shark Caribe][Wompi] Checkout listo (RPC)', {
+    kind,
     registrationId: checkout.registrationId,
     reference: checkout.reference,
     amountInCents: checkout.amountInCents,
     redirectUrl: checkout.redirectUrl,
   })
 
-  await notifyRegistration('asistente', {
-    full_name: values.fullName?.trim(),
-    document_type: values.documentType,
-    document_number: values.documentNumber?.trim(),
-    email: values.email?.trim().toLowerCase(),
-    phone: values.phone?.trim(),
-    profile: values.profile,
-    organization: values.organization?.trim() || null,
-    interest: values.interest,
-    seat_type: values.seatType,
-    referral_source: values.referralSource,
-  })
+  const notifyRow =
+    kind === 'asistente'
+      ? {
+          full_name: values.fullName?.trim(),
+          document_type: values.documentType,
+          document_number: values.documentNumber?.trim(),
+          email: values.email?.trim().toLowerCase(),
+          phone: values.phone?.trim(),
+          profile: values.profile,
+          organization: values.organization?.trim() || null,
+          interest: values.interest,
+          seat_type: values.seatType,
+          referral_source: values.referralSource,
+        }
+      : {
+          company_name: values.companyName?.trim(),
+          tax_id: values.taxId?.trim(),
+          contact_name: values.contactName?.trim(),
+          contact_role: values.contactRole?.trim(),
+          email: values.email?.trim().toLowerCase(),
+          phone: values.phone?.trim(),
+          plan: values.plan,
+          stand_type: values.standType,
+          sector: values.sector?.trim(),
+          referral_source: values.referralSource,
+        }
+
+  await notifyRegistration(kind, notifyRow)
 
   return checkout
+}
+
+/** @deprecated Prefer createEventWompiCheckout('asistente', values) */
+export async function createAttendeeWompiCheckout(values) {
+  return createEventWompiCheckout('asistente', values)
 }
 
 export async function submitSponsorRegistration(values) {

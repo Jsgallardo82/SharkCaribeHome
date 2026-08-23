@@ -119,6 +119,31 @@
   gap: 0.55rem;
 }
 
+.hero__register-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem 0.85rem;
+}
+
+.hero__support {
+  margin: 0;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  background: rgba(7, 13, 34, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  font-size: clamp(0.88rem, 2vw, 1rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-wrap: balance;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+  line-height: 1.2;
+}
+
 .hero__register-btn {
   display: inline-flex;
   align-items: center;

@@ -118,7 +118,6 @@ export const ALLIES = [
   { name: 'Universidad Sergio Arboleda', sub: 'Barranquilla', logo: '/logos/sergioarboleda.png' },
   { name: 'Prime Business School', sub: 'Universidad Sergio Arboleda', logo: '/logos/prime.png' },
   { name: 'SENA', sub: '', logo: '/logos/sena.png' },
-  { name: 'Universidad Autónoma del Caribe', sub: 'Vigilada Mineducación', logo: '/logos/AUTONOMA.png' },
   { name: 'Índice', sub: '', logo: '/logos/indice.png' },
   { name: 'FCA', sub: '', logo: '/logos/fca.png' },
   { name: 'Elena', sub: '', logo: '/logos/elena.jpeg' },
@@ -357,7 +356,16 @@ export const ATTENDEE_REGISTRATION = {
     'Compra tu entrada y vive la experiencia Shark Caribe 2026 en el Hotel Dann Carlton. Completa tus datos para apartar tu cupo.',
   feeLabel: 'Valor de entrada',
   feeHint:
-    'El valor depende de la ubicación elegida (preferencial o general). Al enviar el formulario te confirmamos el registro y los pasos de pago.',
+    'El valor depende de la ubicación elegida (preferencial o general). Al enviar el formulario te llevamos a pagar con Wompi.',
+}
+
+export const UNIFIED_REGISTER = {
+  title: 'Inscripción Shark Caribe 2026',
+  intro:
+    'Elige tu categoría, completa tus datos y paga en línea con Wompi para confirmar tu cupo.',
+  feeLabel: 'Valor a pagar',
+  feeHint:
+    'Al continuar se crea tu registro pendiente y se abre el checkout seguro de Wompi. El pago confirma tu inscripción automáticamente.',
 }
 
 /* Sección visual de entradas (asistentes) */
@@ -602,22 +610,31 @@ export const EXHIBITOR_STAND_TYPES = [
   },
 ]
 
-/* Opciones del menú Inscríbete (Hero y Navbar) */
+/* Opciones del menú Inscríbete (Hero y Navbar) → formulario unificado */
 export const REGISTER_OPTIONS = [
-  { id: 'participante', label: 'Participante competidor' },
-  { id: 'asistente', label: 'Asistente' },
+  {
+    id: 'publico_preferencial',
+    label: 'Público Preferencial',
+    seatType: 'preferencial',
+  },
+  {
+    id: 'publico_general',
+    label: 'Público General',
+    seatType: 'general',
+  },
   { id: 'patrocinador', label: 'Patrocinador' },
   { id: 'expositor', label: 'Expositor muestra comercial' },
+  { id: 'participante', label: 'Competidor' },
 ]
 
 export const NAV_LINKS = [
   // { label: 'Emprendimientos', href: '#emprendimientos' },
   // { label: '2ª Ronda', href: '#segunda-ronda' },
-  { label: 'Final', href: '#gran-final' },
+  { label: 'Semifinal', href: '#gran-final' },
+  { label: 'Jurados', href: '#jurados' },
   { label: 'Patrocinadores', href: '#patrocinadores' },
   { label: 'Muestra comercial', href: '#muestra-comercial' },
   { label: 'Premios', href: '#premios' },
-  { label: 'Jurados', href: '#jurados' },
   // { label: 'Competidores', href: '#competidores' },
   { label: 'Entradas', href: '#entradas' },
   { label: 'Novedades', href: '#novedades' },
@@ -675,17 +692,22 @@ export const PITCH_ROUND = {
   ],
 }
 
-/* Anuncio Gran Final · finalistas */
+/* Anuncio semifinalistas · camino a la Gran Final */
 export const FINAL_ROUND = {
   eyebrow: 'Próximo hito',
-  badge: 'GRAN FINAL',
-  title: 'Ellos avanzan a la final',
+  badge: 'SEMIFINALISTAS',
+  title: 'Ellos avanzan a la semifinal',
   lead:
-    'Los finalistas se preparan para el gran cierre. La Gran Final será el 25 de noviembre de 2026.',
-  finalistsTitle: 'Finalistas',
+    'Los semifinalistas se preparan para el gran cierre. La Gran Final será el 25 de noviembre de 2026.',
+  finalistsTitle: 'Semifinalistas',
   emptyFinalists:
-    'Pronto revelaremos a quienes avanzan a la Gran Final.',
-  dateLabel: 'Martes 25 de noviembre',
+    'Pronto revelaremos a quienes avanzan a la semifinal.',
+  trainingTitle: 'Programa de entrenamiento',
+  trainingBody:
+    'Como parte del compromiso de Shark Caribe Pitch Competition con el fortalecimiento empresarial de los emprendedores en competencia, desarrollamos a través de la Universidad Sergio Arboleda el PROGRAMA DE ENTRENAMIENTO EN COMUNICACIÓN ESTRATÉGICA diseñado para mejorar las capacidades de negociación y potencializar la propuesta de valor de los emprendimientos ante potenciales clientes e inversionistas.',
+  ticketsCta: 'Compra tu entrada a la Gran Final',
+  ticketsHref: '#entradas',
+  dateLabel: 'Miércoles 25 de noviembre',
   yearLabel: '2026',
   timeLabel: '5:00 p. m. – 9:45 p. m.',
   venue: 'Hotel Dann Carlton',
@@ -722,6 +744,13 @@ export const COMPETITOR_PHOTOS = [
     match: /ferrel\s*a|ferrela|ferreia/i,
     photos: ['/concursantes/ferreia.jpeg'],
   },
+  { match: /\bkefp\b|\bkfep\b/i, photo: '/concursantes/kfep.jpeg' },
+  { match: /\balora\b/i, photo: '/concursantes/alora.jpeg' },
+  {
+    match: /tulipancito|gurumi/i,
+    photo: '/concursantes/tulipancito.jpeg',
+  },
+  { match: /\blynka\b/i, photo: '/concursantes/lynka.jpeg' },
 ]
 
 export function resolveCompetitorPhotos(ventureName = '') {
@@ -863,6 +892,8 @@ export const HERO = {
   brandLine: 'by',
   brand: 'Shark Caribe',
   meta: '25/11/2026 - Hotel Dann Carlton Barranquilla',
+  supportMessage: 'Apoya a los participantes',
+  ctaLabel: 'Compra aquí',
 }
 
 /* Sección competidores + calendario (debajo del hero) */

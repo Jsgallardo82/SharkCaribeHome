@@ -17,42 +17,76 @@ import News from './components/News.jsx'
 import InstagramFeed from './components/InstagramFeed.jsx'
 import Allies from './components/Allies.jsx'
 import Footer from './components/Footer.jsx'
-import RegisterModal from './components/RegisterModal.jsx'
-import ClosedCompetitorModal from './components/ClosedCompetitorModal.jsx'
-import AttendeeModal from './components/AttendeeModal.jsx'
-import SponsorModal from './components/SponsorModal.jsx'
-import ExhibitorModal from './components/ExhibitorModal.jsx'
-import { isCompetitorRegistrationOpen } from './data/content.js'
+import UnifiedRegisterModal from './components/UnifiedRegisterModal.jsx'
+
+function resolveRegisterOpen(kind, options = {}) {
+  const accompaniedCompetitorId = options.accompaniedCompetitorId || ''
+
+  if (kind === 'participante' || kind === 'competidor') {
+    return { category: 'competidor' }
+  }
+  if (kind === 'publico_preferencial') {
+    return {
+      category: 'publico_preferencial',
+      seatType: 'preferencial',
+      accompaniedCompetitorId,
+    }
+  }
+  if (kind === 'publico_general') {
+    return {
+      category: 'publico_general',
+      seatType: 'general',
+      accompaniedCompetitorId,
+    }
+  }
+  if (kind === 'asistente') {
+    const seat = options.seatType || ''
+    if (seat === 'preferencial') {
+      return {
+        category: 'publico_preferencial',
+        seatType: 'preferencial',
+        accompaniedCompetitorId,
+      }
+    }
+    if (seat === 'general') {
+      return {
+        category: 'publico_general',
+        seatType: 'general',
+        accompaniedCompetitorId,
+      }
+    }
+    return { category: '', seatType: '', accompaniedCompetitorId }
+  }
+  if (kind === 'patrocinador') {
+    return { category: 'patrocinador', plan: options.plan || '' }
+  }
+  if (kind === 'expositor') {
+    return {
+      category: 'expositor',
+      standType: options.standType || '',
+    }
+  }
+  if (kind === 'unificado') {
+    return {
+      category: options.category || '',
+      seatType: options.seatType || '',
+      standType: options.standType || '',
+      plan: options.plan || '',
+      accompaniedCompetitorId,
+    }
+  }
+  return { category: '', accompaniedCompetitorId }
+}
 
 export default function App() {
-  const [registerKind, setRegisterKind] = useState(null)
-  const [attendeeSeatType, setAttendeeSeatType] = useState('')
-  const [exhibitorStandType, setExhibitorStandType] = useState('')
+  const [registerOpen, setRegisterOpen] = useState(null)
 
-  const openRegister = useCallback((kind = 'participante', options = {}) => {
-    const allowed = new Set([
-      'participante',
-      'asistente',
-      'patrocinador',
-      'expositor',
-    ])
-    const next = allowed.has(kind) ? kind : 'participante'
-
-    if (next === 'participante' && !isCompetitorRegistrationOpen()) {
-      setAttendeeSeatType('')
-      setExhibitorStandType('')
-      setRegisterKind('participante-cerrado')
-      return
-    }
-
-    setAttendeeSeatType(next === 'asistente' ? options.seatType || '' : '')
-    setExhibitorStandType(next === 'expositor' ? options.standType || '' : '')
-    setRegisterKind(next)
+  const openRegister = useCallback((kind = 'unificado', options = {}) => {
+    setRegisterOpen(resolveRegisterOpen(kind, options))
   }, [])
+
   const closeRegister = useCallback(() => {
-    setRegisterKind(null)
-    setAttendeeSeatType('')
-    setExhibitorStandType('')
+    setRegisterOpen(null)
   }, [])
 
   return (
@@ -62,11 +96,11 @@ export default function App() {
         <Hero onRegister={openRegister} />
         {/* <Ventures /> */}
         {/* <PitchRound /> */}
-        <FinalRound />
+        <FinalRound onRegister={openRegister} />
+        <Judges />
         <Sponsors onRegister={openRegister} />
         <MuestraComercial onRegister={openRegister} />
         <Prizes />
-        <Judges />
         {/* <Competition onRegister={openRegister} /> */}
         <Entradas onRegister={openRegister} />
         <News />
@@ -79,25 +113,16 @@ export default function App() {
       </main>
       <Allies />
       <Footer />
-      {registerKind === 'participante' && (
-        <RegisterModal onClose={closeRegister} />
-      )}
-      {registerKind === 'participante-cerrado' && (
-        <ClosedCompetitorModal onClose={closeRegister} />
-      )}
-      {registerKind === 'asistente' && (
-        <AttendeeModal
+      {registerOpen && (
+        <UnifiedRegisterModal
           onClose={closeRegister}
-          initialSeatType={attendeeSeatType}
-        />
-      )}
-      {registerKind === 'patrocinador' && (
-        <SponsorModal onClose={closeRegister} />
-      )}
-      {registerKind === 'expositor' && (
-        <ExhibitorModal
-          onClose={closeRegister}
-          initialStandType={exhibitorStandType}
+          initialCategory={registerOpen.category || ''}
+          initialSeatType={registerOpen.seatType || ''}
+          initialStandType={registerOpen.standType || ''}
+          initialPlan={registerOpen.plan || ''}
+          initialAccompaniedCompetitorId={
+            registerOpen.accompaniedCompetitorId || ''
+          }
         />
       )}
     </>

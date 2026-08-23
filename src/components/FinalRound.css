@@ -182,7 +182,7 @@
 }
 
 .final-round__finalists {
-  margin: 0 0 1.75rem;
+  margin: 0 0 2rem;
   padding: 1.4rem 1rem 1.5rem;
   border-radius: 1.25rem;
   background: rgba(26, 18, 8, 0.55);
@@ -192,7 +192,7 @@
 }
 
 .final-round.is-visible .final-round__finalists {
-  animation: final-rise 0.65s ease 0.28s forwards;
+  animation: final-rise 0.65s ease 0.08s forwards;
 }
 
 .final-round__finalists-title {
@@ -220,6 +220,68 @@
 
 .final-round__ventures .venture__meta {
   color: var(--color-text-muted);
+}
+
+.final-round__training {
+  margin: 0 0 1.75rem;
+  padding: 1.5rem 1.2rem 1.6rem;
+  border-radius: 1.25rem;
+  background: rgba(26, 18, 8, 0.55);
+  border: 1px solid rgba(255, 215, 106, 0.22);
+  text-align: left;
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.final-round.is-visible .final-round__training {
+  animation: final-rise 0.65s ease 0.36s forwards;
+}
+
+.final-round__training-title {
+  margin: 0 0 0.85rem;
+  font-size: clamp(1rem, 2.4vw, 1.2rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #ffd76a;
+}
+
+.final-round__training-body {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.final-round__training-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+.final-round__tickets-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d4a017, #b8860b);
+  color: #1a1200;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 10px 28px rgba(212, 160, 23, 0.35);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.final-round__tickets-cta:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
 }
 
 .final-round__meta {
@@ -456,7 +518,8 @@
   .final-round__badge,
   .final-round__hero,
   .final-round__card,
-  .final-round__finalists {
+  .final-round__finalists,
+  .final-round__training {
     opacity: 1;
     transform: none;
     animation: none;
