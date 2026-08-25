@@ -91,22 +91,23 @@ export const INSTAGRAM_FEED = {
 /* Términos de referencia de la competencia (documento descargable en /public) */
 export const TERMS_URL = '/terminos-referencia-shark-caribe-2026.pdf'
 
-/* Carrusel del hero: imágenes a pantalla completa en /public/hero */
+/* Carrusel del hero: slide 1 imagen; 2 Preferencial; 3 General */
 export const HERO_SLIDES = [
   {
     id: 'hero0',
+    kind: 'image',
     src: '/hero/hero0.jpg',
     alt: 'Shark Caribe 2026',
   },
   {
-    id: 'hero1',
-    src: '/hero/hero1.jpg',
-    alt: 'Shark Caribe 2026',
+    id: 'hero-preferencial',
+    kind: 'ticket',
+    seatType: 'preferencial',
   },
   {
-    id: 'hero2',
-    src: '/hero/hero2.jpg',
-    alt: 'Shark Caribe 2026',
+    id: 'hero-general',
+    kind: 'ticket',
+    seatType: 'general',
   },
 ]
 
@@ -360,12 +361,17 @@ export const ATTENDEE_REGISTRATION = {
 }
 
 export const UNIFIED_REGISTER = {
-  title: 'Inscripción Shark Caribe 2026',
+  title: 'Compra tu ticket · Shark Caribe 2026',
   intro:
-    'Elige tu categoría, completa tus datos y paga en línea con Wompi para confirmar tu cupo.',
+    'Elige tu categoría, completa tus datos y paga en línea con Wompi para confirmar tu entrada.',
   feeLabel: 'Valor a pagar',
   feeHint:
-    'Al continuar se crea tu registro pendiente y se abre el checkout seguro de Wompi. El pago confirma tu inscripción automáticamente.',
+    'Al continuar se crea tu registro pendiente y se abre el checkout seguro de Wompi. El pago confirma tu ticket automáticamente.',
+  categoryLabel: '¿Qué tipo de ticket deseas?',
+  payCta: 'Comprar e ir a pagar',
+  payCtaBusy: 'Abriendo pago…',
+  payCtaDisabled: 'Pago no disponible',
+  payTitle: 'Comprar e ir a pagar con Wompi',
 }
 
 /* Sección visual de entradas (asistentes) */
@@ -636,7 +642,7 @@ export const NAV_LINKS = [
   { label: 'Muestra comercial', href: '#muestra-comercial' },
   { label: 'Premios', href: '#premios' },
   // { label: 'Competidores', href: '#competidores' },
-  { label: 'Entradas', href: '#entradas' },
+  // { label: 'Entradas', href: '#entradas' },
   { label: 'Novedades', href: '#novedades' },
   { label: 'Quiénes somos', href: '#quienes-somos' },
   // { label: 'Ediciones', href: '#ediciones' },
@@ -706,12 +712,13 @@ export const FINAL_ROUND = {
   trainingBody:
     'Como parte del compromiso de Shark Caribe Pitch Competition con el fortalecimiento empresarial de los emprendedores en competencia, desarrollamos a través de la Universidad Sergio Arboleda el PROGRAMA DE ENTRENAMIENTO EN COMUNICACIÓN ESTRATÉGICA diseñado para mejorar las capacidades de negociación y potencializar la propuesta de valor de los emprendimientos ante potenciales clientes e inversionistas.',
   ticketsCta: 'Compra tu entrada a la Gran Final',
-  ticketsHref: '#entradas',
+  ticketsHref: '#inicio',
   dateLabel: 'Miércoles 25 de noviembre',
   yearLabel: '2026',
   timeLabel: '5:00 p. m. – 9:45 p. m.',
   venue: 'Hotel Dann Carlton',
   address: 'Calle 98 No. 52B-10, Riomar · Barranquilla',
+  hotelLogo: '/dancarton.svg',
   mapsUrl:
     'https://www.google.com/maps/search/?api=1&query=Hotel+Dann+Carlton+Barranquilla+Calle+98',
   mapsEmbedUrl:
@@ -1005,10 +1012,11 @@ export const SCHEDULE = {
 }
 
 export const ABOUT = {
-  title: '¿Por qué existe Shark Caribe Pitch Competition?',
+  title: '¿Qué es Shark Caribe Pitch Competition?',
   paragraphs: [
-    'Shark Caribe Pitch Competition existe para poner a prueba la creatividad e innovación de los emprendedores en etapa de escalabilidad que ofrezcan respuesta a necesidades insatisfechas del mercado, a través de un concurso que otorga a los finalistas un entrenamiento intensivo de preparación para la competencia y la oportunidad de disputar premios y visibilidad que impulsen el crecimiento de sus negocios. También existe como una plataforma que impulsa el emprendimiento en el Caribe colombiano, conectando a innovadores y visionarios con empresarios, inversionistas, universidades y aliados estratégicos.',
-    'Desde 2022, este evento de ciudad multipropósito se ha consolidado como un espacio único donde tradición e innovación dialogan, integrando oficios ancestrales con propuestas tecnológicas y turísticas de alto impacto, y demostrando que el talento del Caribe puede transformar la economía regional y proyectarse al mundo, generando valor social, cultural y económico.',
+    'Shark Caribe Pitch Competition: es un concurso de alto nivel que visibiliza, premia y conecta al ecosistema empresarial, financiero y de inversión del Caribe colombiano, con la creatividad e innovación de emprendedores en etapa de escalabilidad, cuyos proyectos resuelven necesidades reales e insatisfechas del mercado.',
+    'Etapas de la competencia: I. Postulación: los emprendedores presentan su iniciativa y pasan por un proceso de evaluación que identifica su potencial de escalabilidad, impacto y pertinencia frente al mercado. II. Aceleración: programa exclusivo para perfeccionar las estrategias de los competidores seleccionados. III. Competencia Final: los emprendedores participan en eventos estratégicos como antesala a la gran final, en la que presentan su pitch ante la audiencia y reconocidos jueces expertos.',
+    'En esta etapa se premian las propuestas más sólidas, innovadoras y con mayor potencial de escalabilidad.',
   ],
   stats: [
     { value: '2022', label: 'Primera edición' },

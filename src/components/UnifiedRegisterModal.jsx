@@ -391,7 +391,7 @@ export default function UnifiedRegisterModal({
           className="modal__close"
           onClick={handleClose}
           disabled={submitting}
-          aria-label="Cerrar formulario de inscripción"
+          aria-label="Cerrar compra de ticket"
         >
           ×
         </button>
@@ -438,7 +438,8 @@ export default function UnifiedRegisterModal({
 
             <fieldset className="field" data-field="category">
               <legend className="field__label">
-                ¿Qué tipo de inscripción deseas? <span className="field__req">*</span>
+                {UNIFIED_REGISTER.categoryLabel}{' '}
+                <span className="field__req">*</span>
               </legend>
               <div className="options">
                 {CATEGORIES.map((item) => (
@@ -981,15 +982,15 @@ export default function UnifiedRegisterModal({
                     disabled={submitting || !wompiReady}
                     title={
                       wompiReady
-                        ? 'Registrar e ir a pagar con Wompi'
+                        ? UNIFIED_REGISTER.payTitle
                         : 'Pago en línea no configurado'
                     }
                   >
                     {submitting
-                      ? 'Abriendo pago…'
+                      ? UNIFIED_REGISTER.payCtaBusy
                       : wompiReady
-                        ? 'Inscribirse e ir a pagar'
-                        : 'Pago no disponible'}
+                        ? UNIFIED_REGISTER.payCta
+                        : UNIFIED_REGISTER.payCtaDisabled}
                   </button>
                 </footer>
               </>

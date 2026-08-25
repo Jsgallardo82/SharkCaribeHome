@@ -383,6 +383,17 @@
   gap: 0.75rem;
 }
 
+.final-round__hotel-logo {
+  display: block;
+  width: min(100%, 200px);
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.65rem 0.85rem;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
 .final-round__map-wrap {
   border-radius: 0.95rem;
   overflow: hidden;

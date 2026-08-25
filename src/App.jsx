@@ -11,7 +11,7 @@ import About from './components/About.jsx'
 // import Editions from './components/Editions.jsx'
 import Gallery from './components/Gallery.jsx'
 import Sponsors from './components/Sponsors.jsx'
-import Entradas from './components/Entradas.jsx'
+// import Entradas from './components/Entradas.jsx'
 import MuestraComercial from './components/MuestraComercial.jsx'
 import News from './components/News.jsx'
 import InstagramFeed from './components/InstagramFeed.jsx'
@@ -103,6 +103,7 @@ export default function App() {
       <Navbar onRegister={openRegister} />
       <main>
         <Hero onRegister={openRegister} />
+        <About />
         {/* <Ventures /> */}
         {/* <PitchRound /> */}
         <FinalRound onRegister={openRegister} />
@@ -111,9 +112,8 @@ export default function App() {
         <MuestraComercial onRegister={openRegister} />
         <Prizes />
         {/* <Competition onRegister={openRegister} /> */}
-        <Entradas onRegister={openRegister} />
+        {/* <Entradas onRegister={openRegister} /> */}
         <News />
-        <About />
         {/* <Editions /> */}
         {/* <Testimonials /> */}
         <InstagramFeed />

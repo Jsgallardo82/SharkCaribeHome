@@ -1,6 +1,25 @@
 import { useEffect, useState } from 'react'
-import { HERO, HERO_SLIDES } from '../data/content.js'
+import {
+  ALLIES,
+  ATTENDEE_SEAT_TYPES,
+  ENTRADAS,
+  HERO,
+  HERO_SLIDES,
+  ORGANIZER,
+} from '../data/content.js'
+import { sharkySoundInteractionProps } from '../lib/sharkySound.js'
 import './Hero.css'
+
+const HERO_ALLY_LOGOS = [
+  ...(ORGANIZER?.logo
+    ? [{ name: ORGANIZER.name, logo: ORGANIZER.logo }]
+    : []),
+  ...ALLIES.filter((a) => a.logo),
+]
+
+function seatForSlide(slide) {
+  return ATTENDEE_SEAT_TYPES.find((s) => s.value === slide.seatType) || null
+}
 
 export default function Hero({ onRegister }) {
   const [active, setActive] = useState(0)
@@ -24,20 +43,93 @@ export default function Hero({ onRegister }) {
       <div className="hero__overlay" aria-hidden="true" />
 
       <div className="hero__track">
-        {HERO_SLIDES.map((slide, i) => (
-          <figure
-            key={slide.id}
-            className={`hero__slide ${i === active ? 'is-active' : ''}`}
-            aria-hidden={i !== active}
-          >
-            <img
-              src={slide.src}
-              alt={slide.alt}
-              className="hero__image"
-              draggable={false}
-            />
-          </figure>
-        ))}
+        {HERO_SLIDES.map((slide, i) => {
+          const isActive = i === active
+          const seat = slide.kind === 'ticket' ? seatForSlide(slide) : null
+
+          return (
+            <figure
+              key={slide.id}
+              className={`hero__slide ${isActive ? 'is-active' : ''} ${
+                slide.kind === 'ticket' ? 'hero__slide--ticket' : ''
+              }`}
+              aria-hidden={!isActive}
+            >
+              {slide.kind === 'image' ? (
+                <img
+                  src={slide.src}
+                  alt={slide.alt}
+                  className="hero__image"
+                  draggable={false}
+                />
+              ) : seat ? (
+                <div className="hero__ticket">
+                  <div
+                    className={`hero__ticket-card ${
+                      seat.featured ? 'is-featured' : ''
+                    }`}
+                  >
+                    <div className="hero__ticket-copy">
+                      <p className="hero__ticket-meta">
+                        <span>{ENTRADAS.date}</span>
+                        <span aria-hidden="true">·</span>
+                        <span className="hero__ticket-venue">
+                          <img
+                            src="/dancarton.svg"
+                            alt=""
+                            className="hero__ticket-venue-logo"
+                            aria-hidden="true"
+                          />
+                          <span>{ENTRADAS.location}</span>
+                        </span>
+                      </p>
+                      <h2 className="hero__ticket-title">{seat.label}</h2>
+                      <p className="hero__ticket-desc">{seat.description}</p>
+                      <p className="hero__ticket-price">{seat.priceLabel}</p>
+                      <button
+                        type="button"
+                        className={`btn ${
+                          seat.featured ? 'btn--primary' : 'btn--outline'
+                        } hero__ticket-cta`}
+                        onClick={() =>
+                          onRegister?.('asistente', { seatType: seat.value })
+                        }
+                      >
+                        {ENTRADAS.cta}
+                      </button>
+                    </div>
+
+                    <div className="hero__ticket-media">
+                      <img
+                        src={
+                          seat.featured ? '/sharky.png' : '/sharkycolor.png'
+                        }
+                        alt="Sharky, mascota de Shark Caribe"
+                        className="hero__ticket-sharky"
+                        {...sharkySoundInteractionProps()}
+                      />
+                    </div>
+
+                    {HERO_ALLY_LOGOS.length > 0 ? (
+                      <ul className="hero__allies" aria-label="Aliados">
+                        {HERO_ALLY_LOGOS.map((ally) => (
+                          <li key={ally.name} className="hero__allies-item">
+                            <img
+                              src={ally.logo}
+                              alt={ally.name}
+                              className="hero__allies-logo"
+                              loading="lazy"
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+            </figure>
+          )
+        })}
       </div>
 
       <div className="hero__register">
@@ -46,7 +138,9 @@ export default function Hero({ onRegister }) {
           <button
             type="button"
             className="btn hero__register-btn"
-            onClick={() => onRegister?.('unificado')}
+            onClick={() =>
+              onRegister?.('asistente', { seatType: 'preferencial' })
+            }
           >
             {HERO.ctaLabel}
           </button>
@@ -80,7 +174,7 @@ export default function Hero({ onRegister }) {
                 aria-selected={i === active}
                 className={`hero__dot ${i === active ? 'is-active' : ''}`}
                 onClick={() => go(i)}
-                aria-label={`Ir a imagen ${i + 1}`}
+                aria-label={`Ir a diapositiva ${i + 1}`}
               />
             ))}
           </div>

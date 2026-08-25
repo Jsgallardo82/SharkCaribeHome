@@ -1,7 +1,7 @@
 .hero {
   position: relative;
   width: 100%;
-  height: clamp(320px, 52vw, 560px);
+  height: clamp(360px, 54vw, 600px);
   overflow: hidden;
   background: #0a1330;
 }
@@ -72,6 +72,202 @@
   user-select: none;
   border-radius: var(--radius);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.hero__slide--ticket {
+  flex-direction: column;
+  padding-block: 0.25rem 0.5rem;
+}
+
+.hero__ticket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 1040px);
+  max-height: 100%;
+}
+
+.hero__ticket-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 2.5vw, 1.75rem) clamp(1.25rem, 3vw, 2.5rem);
+  width: 100%;
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 1.85rem) clamp(1.5rem, 3.5vw, 2.5rem);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #151b2e 0%, #0f1424 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  overflow: visible;
+}
+
+.hero__ticket-copy {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 0;
+  max-width: 32rem;
+}
+
+.hero__ticket-media {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(120px, 18vw, 220px);
+  height: clamp(120px, 18vw, 220px);
+  overflow: visible;
+}
+
+.hero__ticket-sharky {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
+  cursor: pointer;
+  transform-origin: center;
+  animation: hero-ticket-sharky 3.4s ease-in-out infinite;
+}
+
+@keyframes hero-ticket-sharky {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg) scale(1.32);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg) scale(1.32);
+  }
+}
+
+.hero__ticket-card.is-featured {
+  background: linear-gradient(180deg, #172554 0%, #0f1a3d 55%, #0c1633 100%);
+  border-color: rgba(43, 87, 255, 0.55);
+  box-shadow: 0 18px 48px rgba(43, 87, 255, 0.25);
+}
+
+.hero__ticket-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0 0 0.75rem;
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero__ticket-venue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hero__ticket-venue-logo {
+  display: block;
+  height: 1.55rem;
+  width: auto;
+  object-fit: contain;
+}
+
+/* General: logo en blanco */
+.hero__ticket-card:not(.is-featured) .hero__ticket-venue-logo {
+  filter: brightness(0) invert(1);
+}
+
+/* Preferencial: logo en dorado */
+.hero__ticket-card.is-featured .hero__ticket-venue-logo {
+  filter: brightness(0) saturate(100%) invert(77%) sepia(48%) saturate(589%)
+    hue-rotate(359deg) brightness(103%) contrast(101%);
+}
+
+.hero__ticket-title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.85rem, 4.2vw, 2.55rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.hero__ticket-desc {
+  margin: 0 0 0.85rem;
+  min-height: calc(1.4em * 2);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.hero__ticket-price {
+  margin: 0 0 1.1rem;
+  font-size: clamp(1.7rem, 3.8vw, 2.35rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #ffd76a;
+}
+
+.hero__ticket-cta {
+  min-width: 10.5rem;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1.35rem;
+}
+
+.hero__ticket-card:not(.is-featured) .hero__ticket-cta {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #fff;
+}
+
+.hero__ticket-card:not(.is-featured) .hero__ticket-cta:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+  color: #fff;
+}
+
+.hero__allies {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem 0.7rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.85rem 0 0;
+  max-width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hero__allies-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+
+.hero__allies-logo {
+  display: block;
+  height: 34px;
+  width: auto;
+  max-width: 96px;
+  object-fit: contain;
+  filter: brightness(1.05);
+  transform-origin: center;
+  transition: transform 0.22s ease;
+}
+
+.hero__allies-item:hover .hero__allies-logo {
+  transform: scale(1.55);
 }
 
 .hero__nav {
@@ -153,14 +349,15 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  background: var(--color-white);
-  color: var(--color-primary);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  background: #e11d2e;
+  color: #fff;
+  border: 0;
+  box-shadow: 0 10px 28px rgba(225, 29, 46, 0.45);
 }
 
 .hero__register-btn:hover {
-  background: #f4f6fb;
-  color: var(--color-primary-dark);
+  background: #c41625;
+  color: #fff;
   transform: translateY(-2px);
 }
 
@@ -231,7 +428,7 @@
 
 @media (max-width: 720px) {
   .hero {
-    height: clamp(280px, 78vw, 420px);
+    height: clamp(380px, 96vw, 520px);
   }
 
   .hero__track {
@@ -241,6 +438,43 @@
   .hero__slide {
     inset: clamp(0.75rem, 2vw, 1.25rem) clamp(2.5rem, 5vw, 3.5rem)
       5.25rem;
+  }
+
+  .hero__ticket-card {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.85rem;
+  }
+
+  .hero__ticket-copy {
+    max-width: none;
+    order: 2;
+  }
+
+  .hero__ticket-media {
+    order: 1;
+    width: clamp(96px, 30vw, 140px);
+    height: clamp(96px, 30vw, 140px);
+  }
+
+  .hero__allies {
+    order: 3;
+    gap: 0.35rem 0.5rem;
+    padding-top: 0.7rem;
+  }
+
+  .hero__ticket-sharky {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero__allies-item {
+    height: 32px;
+  }
+
+  .hero__allies-logo {
+    height: 26px;
+    max-width: 72px;
   }
 
   .hero__nav {

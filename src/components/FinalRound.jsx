@@ -197,6 +197,12 @@ export default function FinalRound({ onRegister }) {
                   </div>
                 </div>
 
+                <img
+                  src={FINAL_ROUND.hotelLogo}
+                  alt="Hotel Dann Carlton Barranquilla"
+                  className="final-round__hotel-logo"
+                />
+
                 <a
                   className="final-round__maps"
                   href={FINAL_ROUND.mapsUrl}
