@@ -7,7 +7,7 @@ function getAudio() {
   if (typeof window === 'undefined') return null
   if (!audio) {
     audio = new Audio(SHARKY_SOUND_SRC)
-    audio.preload = 'auto'
+    audio.preload = 'none'
   }
   return audio
 }

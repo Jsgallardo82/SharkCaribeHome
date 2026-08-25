@@ -113,9 +113,11 @@ export default function InstagramFeed() {
   }, [])
 
   useEffect(() => {
-    if (isEmpty) {
-      setScriptReady(true)
-      setScriptError('')
+    if (isEmpty || !visible) {
+      if (isEmpty) {
+        setScriptReady(true)
+        setScriptError('')
+      }
       return undefined
     }
 
@@ -137,13 +139,13 @@ export default function InstagramFeed() {
     return () => {
       cancelled = true
     }
-  }, [isEmpty, count])
+  }, [isEmpty, count, visible])
 
   /* Re-procesar al cambiar de página (widgets que entran en viewport) */
   useEffect(() => {
-    if (isEmpty) return undefined
+    if (isEmpty || !visible) return undefined
     loadAndProcessInstagramEmbeds(200).catch(() => {})
-  }, [safePage, isEmpty])
+  }, [safePage, isEmpty, visible])
 
   useEffect(() => {
     if (isEmpty || pageCount <= 1) return undefined

@@ -27,8 +27,29 @@ export default function Hero({ onRegister }) {
 
   useEffect(() => {
     if (count <= 1) return undefined
-    const id = setInterval(() => setActive((a) => (a + 1) % count), 6000)
-    return () => clearInterval(id)
+
+    let id = null
+    const start = () => {
+      if (id != null) return
+      id = setInterval(() => setActive((a) => (a + 1) % count), 6000)
+    }
+    const stop = () => {
+      if (id == null) return
+      clearInterval(id)
+      id = null
+    }
+
+    const onVisibility = () => {
+      if (document.hidden) stop()
+      else start()
+    }
+
+    if (!document.hidden) start()
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      stop()
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
   }, [count])
 
   const go = (i) => setActive((i + count) % count)
@@ -61,6 +82,8 @@ export default function Hero({ onRegister }) {
                   alt={slide.alt}
                   className="hero__image"
                   draggable={false}
+                  fetchPriority={i === 0 ? 'high' : 'low'}
+                  loading={i === 0 ? 'eager' : 'lazy'}
                 />
               ) : seat ? (
                 <div className="hero__ticket">
@@ -106,6 +129,8 @@ export default function Hero({ onRegister }) {
                         }
                         alt="Sharky, mascota de Shark Caribe"
                         className="hero__ticket-sharky"
+                        loading={isActive ? 'eager' : 'lazy'}
+                        decoding="async"
                         {...sharkySoundInteractionProps()}
                       />
                     </div>

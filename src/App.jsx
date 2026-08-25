@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 // import Competition from './components/Competition.jsx'
@@ -9,19 +9,22 @@ import FinalRound from './components/FinalRound.jsx'
 import Prizes from './components/Prizes.jsx'
 import About from './components/About.jsx'
 // import Editions from './components/Editions.jsx'
-import Gallery from './components/Gallery.jsx'
 import Sponsors from './components/Sponsors.jsx'
 // import Entradas from './components/Entradas.jsx'
 import MuestraComercial from './components/MuestraComercial.jsx'
 import News from './components/News.jsx'
-import InstagramFeed from './components/InstagramFeed.jsx'
 import Allies from './components/Allies.jsx'
 import Footer from './components/Footer.jsx'
-import UnifiedRegisterModal from './components/UnifiedRegisterModal.jsx'
 import {
   installSharkySoundOnFirstGesture,
   playSharkySound,
 } from './lib/sharkySound.js'
+
+const InstagramFeed = lazy(() => import('./components/InstagramFeed.jsx'))
+const Gallery = lazy(() => import('./components/Gallery.jsx'))
+const UnifiedRegisterModal = lazy(
+  () => import('./components/UnifiedRegisterModal.jsx'),
+)
 
 function resolveRegisterOpen(kind, options = {}) {
   const accompaniedCompetitorId = options.accompaniedCompetitorId || ''
@@ -116,23 +119,27 @@ export default function App() {
         <News />
         {/* <Editions /> */}
         {/* <Testimonials /> */}
-        <InstagramFeed />
-        <Gallery />
+        <Suspense fallback={null}>
+          <InstagramFeed />
+          <Gallery />
+        </Suspense>
         {/* <Contact /> */}
       </main>
       <Allies />
       <Footer />
       {registerOpen && (
-        <UnifiedRegisterModal
-          onClose={closeRegister}
-          initialCategory={registerOpen.category || ''}
-          initialSeatType={registerOpen.seatType || ''}
-          initialStandType={registerOpen.standType || ''}
-          initialPlan={registerOpen.plan || ''}
-          initialAccompaniedCompetitorId={
-            registerOpen.accompaniedCompetitorId || ''
-          }
-        />
+        <Suspense fallback={null}>
+          <UnifiedRegisterModal
+            onClose={closeRegister}
+            initialCategory={registerOpen.category || ''}
+            initialSeatType={registerOpen.seatType || ''}
+            initialStandType={registerOpen.standType || ''}
+            initialPlan={registerOpen.plan || ''}
+            initialAccompaniedCompetitorId={
+              registerOpen.accompaniedCompetitorId || ''
+            }
+          />
+        </Suspense>
       )}
     </>
   )
