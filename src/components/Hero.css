@@ -91,45 +91,89 @@
 .hero__ticket-card {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
-  gap: clamp(1rem, 2.5vw, 1.75rem) clamp(1.25rem, 3vw, 2.5rem);
+  gap: 0;
   width: 100%;
   min-width: 0;
-  padding: clamp(1.25rem, 3vw, 1.85rem) clamp(1.5rem, 3.5vw, 2.5rem);
+  padding: 0;
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, #151b2e 0%, #0f1424 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-  color: #fff;
-  overflow: visible;
+  color: var(--color-text);
+  overflow: hidden;
 }
 
 .hero__ticket-copy {
-  flex: 1 1 auto;
+  flex: 2 1 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   min-width: 0;
-  max-width: 32rem;
+  max-width: none;
+  padding: clamp(1.15rem, 2.8vw, 1.75rem) clamp(1.25rem, 3vw, 2.15rem);
+  background: #fff;
+  color: var(--color-text);
+}
+
+.hero__ticket-card.is-featured .hero__ticket-copy {
+  background:
+    linear-gradient(
+      125deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(255, 255, 255, 0) 38%,
+      rgba(255, 255, 255, 0.45) 55%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    linear-gradient(
+      155deg,
+      #ffffff 0%,
+      #dfe5ee 14%,
+      #8e9aab 32%,
+      #f4f6f9 48%,
+      #6f7d90 64%,
+      #c5ceda 78%,
+      #ffffff 100%
+    );
+  color: #c4922e;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(70, 80, 100, 0.22);
 }
 
 .hero__ticket-media {
-  flex: 0 0 auto;
+  flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: clamp(120px, 18vw, 220px);
-  height: clamp(120px, 18vw, 220px);
+  width: auto;
+  min-width: 0;
+  min-height: clamp(160px, 28vw, 260px);
+  height: auto;
+  padding: clamp(0.85rem, 2vw, 1.25rem);
   overflow: visible;
+  position: relative;
+  background: linear-gradient(180deg, #151b2e 0%, #0f1424 100%);
+}
+
+.hero__ticket-media::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-left: 2px dashed rgba(255, 255, 255, 0.35);
 }
 
 .hero__ticket-sharky {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: clamp(140px, 24vw, 220px);
   object-fit: contain;
   filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
   cursor: pointer;
@@ -140,17 +184,24 @@
 @keyframes hero-ticket-sharky {
   0%,
   100% {
-    transform: translateY(0) rotate(-2deg) scale(1.32);
+    transform: translateY(0) rotate(-2deg) scale(1.18);
   }
   50% {
-    transform: translateY(-8px) rotate(2deg) scale(1.32);
+    transform: translateY(-8px) rotate(2deg) scale(1.18);
   }
 }
 
 .hero__ticket-card.is-featured {
-  background: linear-gradient(180deg, #172554 0%, #0f1a3d 55%, #0c1633 100%);
-  border-color: rgba(43, 87, 255, 0.55);
-  box-shadow: 0 18px 48px rgba(43, 87, 255, 0.25);
+  border-color: rgba(212, 175, 55, 0.65);
+  box-shadow: 0 18px 48px rgba(184, 134, 11, 0.28);
+}
+
+.hero__ticket-card.is-featured .hero__ticket-media {
+  background: linear-gradient(160deg, #f0d78c 0%, #d4a84b 45%, #c4922e 100%);
+}
+
+.hero__ticket-card.is-featured .hero__ticket-media::before {
+  border-left-color: rgba(80, 50, 0, 0.22);
 }
 
 .hero__ticket-meta {
@@ -163,7 +214,7 @@
   font-size: clamp(0.85rem, 1.8vw, 1rem);
   font-weight: 600;
   letter-spacing: 0.03em;
-  color: rgba(255, 255, 255, 0.72);
+  color: inherit;
 }
 
 .hero__ticket-venue {
@@ -179,23 +230,13 @@
   object-fit: contain;
 }
 
-/* General: logo en blanco */
-.hero__ticket-card:not(.is-featured) .hero__ticket-venue-logo {
-  filter: brightness(0) invert(1);
-}
-
-/* Preferencial: logo en dorado */
-.hero__ticket-card.is-featured .hero__ticket-venue-logo {
-  filter: brightness(0) saturate(100%) invert(77%) sepia(48%) saturate(589%)
-    hue-rotate(359deg) brightness(103%) contrast(101%);
-}
-
 .hero__ticket-title {
   margin: 0 0 0.5rem;
   font-size: clamp(1.85rem, 4.2vw, 2.55rem);
   font-weight: 800;
   letter-spacing: 0.02em;
   line-height: 1.1;
+  color: inherit;
 }
 
 .hero__ticket-desc {
@@ -203,7 +244,7 @@
   min-height: calc(1.4em * 2);
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   line-height: 1.4;
-  color: rgba(255, 255, 255, 0.82);
+  color: inherit;
 }
 
 .hero__ticket-price {
@@ -211,7 +252,7 @@
   font-size: clamp(1.7rem, 3.8vw, 2.35rem);
   font-weight: 800;
   letter-spacing: 0.02em;
-  color: #ffd76a;
+  color: inherit;
 }
 
 .hero__ticket-cta {
@@ -221,17 +262,49 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 0.75rem 1.35rem;
+  transition: transform 0.22s ease;
+}
+
+/* Preferencial: botón dorado sólido */
+.hero__ticket-card.is-featured .hero__ticket-venue-logo {
+  filter: brightness(0) saturate(100%) invert(77%) sepia(48%) saturate(589%)
+    hue-rotate(359deg) brightness(103%) contrast(101%);
+}
+
+.hero__ticket-card.is-featured .hero__ticket-cta {
+  background: #c4922e;
+  border: 2px solid #c4922e;
+  color: #fff;
+}
+
+.hero__ticket-card.is-featured .hero__ticket-cta:hover {
+  background: #c4922e;
+  border-color: #c4922e;
+  color: #fff;
+  transform: scale(1.08);
+}
+
+/* General: texto y botón azules */
+.hero__ticket-card:not(.is-featured) .hero__ticket-copy {
+  color: var(--color-primary);
+}
+
+.hero__ticket-card:not(.is-featured) .hero__ticket-venue-logo {
+  filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(2476%)
+    hue-rotate(221deg) brightness(98%) contrast(104%);
 }
 
 .hero__ticket-card:not(.is-featured) .hero__ticket-cta {
-  border-color: rgba(255, 255, 255, 0.45);
+  background: var(--color-primary);
+  border: 2px solid var(--color-primary);
   color: #fff;
 }
 
 .hero__ticket-card:not(.is-featured) .hero__ticket-cta:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   color: #fff;
+  transform: scale(1.08);
 }
 
 .hero__allies {
@@ -243,8 +316,9 @@
   gap: 0.45rem 0.7rem;
   list-style: none;
   margin: 0;
-  padding: 0.85rem 0 0;
+  padding: 0.75rem clamp(1rem, 2.5vw, 1.5rem);
   max-width: 100%;
+  background: linear-gradient(180deg, #151b2e 0%, #0f1424 100%);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
@@ -442,30 +516,46 @@
 
   .hero__ticket-card {
     flex-direction: column;
-    justify-content: center;
-    gap: 0.85rem;
+    justify-content: stretch;
+    gap: 0;
   }
 
   .hero__ticket-copy {
     max-width: none;
     order: 2;
+    flex: 1 1 auto;
   }
 
   .hero__ticket-media {
     order: 1;
-    width: clamp(96px, 30vw, 140px);
-    height: clamp(96px, 30vw, 140px);
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: clamp(120px, 34vw, 160px);
+    height: auto;
+  }
+
+  .hero__ticket-media::before {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    border-left: none;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.35);
+  }
+
+  .hero__ticket-card.is-featured .hero__ticket-media::before {
+    border-bottom-color: rgba(80, 50, 0, 0.22);
   }
 
   .hero__allies {
     order: 3;
     gap: 0.35rem 0.5rem;
-    padding-top: 0.7rem;
+    padding: 0.65rem 0.85rem;
   }
 
   .hero__ticket-sharky {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    max-height: clamp(100px, 28vw, 140px);
   }
 
   .hero__allies-item {

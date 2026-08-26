@@ -818,6 +818,12 @@ export const PRIZES = {
    name se usa solo para accesibilidad (alt / aria). */
 export const JUDGES = [
   {
+    name: 'Eduardo Verano de la Rosa',
+    title: 'Gobernador del Atlántico',
+    photo: '/jurados/verano.jpeg',
+    instagramUrl: '',
+  },
+  {
     name: 'Ricardo Insignares',
     title: 'Gerente Centro Comercial Buenavista',
     photo: '/jurados/ricardo.jpeg',
@@ -835,6 +841,12 @@ export const JUDGES = [
     title:
       'CEO de Prago International con sedes en Colombia, Ecuador, Peru & Chile.',
     photo: '/jurados/cesar.jpeg',
+    instagramUrl: '',
+  },
+  {
+    name: 'Isa Severiche',
+    title: 'Publicista · CEO Shark Caribe Pitch Competition',
+    photo: '/jurados/isa.jpeg',
     instagramUrl: '',
   },
 ]
