@@ -1,0 +1,32 @@
+# Pegar functions en el Dashboard de Supabase (sin CLI)
+#
+# Los archivos index.ts ya son AUTÓNOMOS (sin carpeta _shared).
+# Abre cada index.ts en el editor del repo, copia TODO y pégalo en Supabase.
+#
+# ------------------------------------------------------------
+# A) wompi-webhook  (ya debería existir)
+# ------------------------------------------------------------
+# 1. Supabase → Edge Functions → wompi-webhook
+# 2. Abre el editor / Details → Code
+# 3. Borra el código viejo y pega TODO el contenido de:
+#      supabase/functions/wompi-webhook/index.ts
+# 4. Deploy / Save
+# 5. Verify JWT = OFF  (importante: Wompi no manda JWT de Supabase)
+#
+# ------------------------------------------------------------
+# B) resend-ticket  (créala si no existe)
+# ------------------------------------------------------------
+# 1. Edge Functions → Deploy a new function → nombre: resend-ticket
+# 2. Pega TODO el contenido de:
+#      supabase/functions/resend-ticket/index.ts
+# 3. Deploy
+# 4. Verify JWT = ON (Admin envía el token del usuario)
+#
+# ------------------------------------------------------------
+# Nota Resend
+# ------------------------------------------------------------
+# Sin RESEND_API_KEY / RESEND_FROM:
+# - wompi-webhook igual marca el pago (solo omite el correo)
+# - resend-ticket fallará hasta que configures Resend
+#
+# Secrets: Project Settings → Edge Functions → Secrets

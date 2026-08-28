@@ -1,0 +1,28 @@
+# Ticket por correo al pago exitoso + QR + check-in
+#
+# ----------------------------------------------------------
+# 1) SQL (obligatorio) — en este orden:
+#    a) supabase/attendee_ticket_number.sql   (si aún no lo corriste)
+#    b) supabase/attendee_checkin.sql         ← token QR + checked_in_at + RPC
+# ----------------------------------------------------------
+#
+# ----------------------------------------------------------
+# 2) Resend (correos)
+# ----------------------------------------------------------
+# Secrets Edge Functions:
+#   RESEND_API_KEY=re_xxx
+#   RESEND_FROM=Shark Caribe <noreply@tudominio.com>
+#
+# ----------------------------------------------------------
+# 3) Redeploy
+# ----------------------------------------------------------
+#   supabase functions deploy wompi-webhook
+#   supabase functions deploy resend-ticket
+#
+# Flujo:
+#   Pago APPROVED → status=pago → ticket_number (trigger) → correo con QR
+#   Admin → pestaña Acceso → escanear QR → checked_in_at
+#   Admin → Asistentes → Reenviar ticket / Marcar llegada
+#
+# El QR no se guarda como imagen: solo ticket_token (UUID) en la tabla.
+# La imagen del QR se genera al enviar el correo.

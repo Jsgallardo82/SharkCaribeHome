@@ -437,3 +437,120 @@
   font-weight: 600;
   font-size: 0.9rem;
 }
+
+.admin__access-actions {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.admin__access-actions .admin__pay-title {
+  flex: 1 1 100%;
+  margin: 0;
+}
+
+.admin-checkin {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.admin-checkin__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+}
+
+.admin-checkin__lead {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.admin-checkin__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.admin-checkin__panel {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.admin-checkin__reader {
+  min-height: 220px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0a1330;
+}
+
+.admin-checkin__reader video {
+  max-width: 100%;
+}
+
+.admin-checkin__scan-actions {
+  margin-top: 0.85rem;
+}
+
+.admin-checkin__manual {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.admin-checkin__label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.admin-checkin__manual input {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.admin-checkin__error {
+  margin: 0.85rem 0 0;
+  color: #c62828;
+}
+
+.admin-checkin__result {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius);
+}
+
+.admin-checkin__result.is-ok {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+}
+
+.admin-checkin__result.is-already {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+}
+
+.admin-checkin__result-kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.admin-checkin__result-name {
+  margin: 0.35rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.admin-checkin__result-meta,
+.admin-checkin__result-time {
+  margin: 0.25rem 0 0;
+  color: var(--color-text-muted);
+}

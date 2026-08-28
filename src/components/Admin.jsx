@@ -15,6 +15,8 @@ import {
   confirmSponsorPayment,
   confirmExhibitorPayment,
   updateCompetitorProgress,
+  setAttendeeCheckedIn,
+  resendAttendeeTicket,
   isSupabaseConfigured,
 } from '../lib/supabase.js'
 import {
@@ -33,9 +35,11 @@ import {
   COMPETITION_STAGE_ORDER,
 } from '../data/content.js'
 import JuryRound2Results from './JuryRound2Results.jsx'
+import AdminCheckIn from './AdminCheckIn.jsx'
 import './Admin.css'
 
 const TABS = [
+  { id: 'acceso', label: 'Acceso' },
   { id: 'competidores', label: 'Competidores' },
   { id: 'asistentes', label: 'Asistentes' },
   { id: 'patrocinadores', label: 'Patrocinadores' },
@@ -60,6 +64,8 @@ const COMPETITOR_COLUMNS = [
 const ATTENDEE_COLUMNS = [
   { key: 'created_at', label: 'Fecha' },
   { key: 'status', label: 'Estado' },
+  { key: 'ticket_number', label: 'Ticket #' },
+  { key: 'checked_in', label: 'Ingreso' },
   { key: 'full_name', label: 'Nombre' },
   { key: 'email', label: 'Correo' },
   { key: 'phone', label: 'Teléfono' },
@@ -199,6 +205,12 @@ function attendeeCell(row, key) {
   }
   if (key === 'created_at') return display(formatDateTime(row.created_at))
   if (key === 'status') return statusLabel(row.status)
+  if (key === 'ticket_number') {
+    return row.ticket_number == null ? '—' : `#${row.ticket_number}`
+  }
+  if (key === 'checked_in') {
+    return row.checked_in_at ? 'Sí' : 'No'
+  }
   if (key === 'profile') return display(labelOf(ATTENDEE_PROFILES, row.profile))
   if (key === 'seat_type') return display(labelOf(ATTENDEE_SEAT_TYPES, row.seat_type))
   if (key === 'interest') return display(labelOf(ATTENDEE_INTERESTS, row.interest))
@@ -250,6 +262,14 @@ function competitorDetails(row) {
 
 function attendeeDetails(row) {
   return [
+    { label: 'Número de ticket', value: row.ticket_number },
+    {
+      label: 'Ingreso al evento',
+      value: row.checked_in_at
+        ? formatDateTime(row.checked_in_at)
+        : 'Aún no ingresa',
+    },
+    { label: 'Token QR', value: row.ticket_token },
     { label: 'Empresa / Institución', value: row.organization },
     {
       label: 'Emprendedor que acompaña',
@@ -383,7 +403,7 @@ function tabConfig(tab) {
 }
 
 function tabRowCount(itemId, counts) {
-  if (itemId === 'resultados-2ronda') return '·'
+  if (itemId === 'resultados-2ronda' || itemId === 'acceso') return '·'
   if (itemId === 'asistentes') return counts.attendees
   if (itemId === 'patrocinadores') return counts.sponsors
   if (itemId === 'expositores') return counts.exhibitors
@@ -445,6 +465,10 @@ export default function Admin() {
   const [progressBusyId, setProgressBusyId] = useState(null)
   const [progressError, setProgressError] = useState('')
   const [progressOkId, setProgressOkId] = useState(null)
+  const [checkInBusyId, setCheckInBusyId] = useState(null)
+  const [resendBusyId, setResendBusyId] = useState(null)
+  const [accessMsg, setAccessMsg] = useState('')
+  const [accessErr, setAccessErr] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -545,8 +569,64 @@ export default function Admin() {
     setPaymentOkId(null)
     setProgressError('')
     setProgressOkId(null)
+    setAccessMsg('')
+    setAccessErr('')
     if (next !== 'asistentes') setSeatFilter('')
     if (next !== 'expositores') setStandFilter('')
+  }
+
+  const patchAttendeeCheckIn = (payload) => {
+    if (!payload?.id) return
+    setAttendeeRows((prev) =>
+      prev.map((r) =>
+        r.id === payload.id
+          ? { ...r, checked_in_at: payload.checked_in_at ?? r.checked_in_at }
+          : r
+      )
+    )
+  }
+
+  const handleToggleCheckIn = async (row, checkedIn) => {
+    setAccessErr('')
+    setAccessMsg('')
+    setCheckInBusyId(row.id)
+    try {
+      const data = await setAttendeeCheckedIn(row.id, checkedIn)
+      setAttendeeRows((prev) =>
+        prev.map((r) =>
+          r.id === row.id
+            ? { ...r, checked_in_at: data.checked_in_at ?? null }
+            : r
+        )
+      )
+      setAccessMsg(
+        checkedIn
+          ? `Ingreso marcado: ${data.full_name || row.full_name}`
+          : `Ingreso deshecho: ${data.full_name || row.full_name}`
+      )
+    } catch (err) {
+      setAccessErr(err?.message || 'No pudimos actualizar el ingreso.')
+    } finally {
+      setCheckInBusyId(null)
+    }
+  }
+
+  const handleResendTicket = async (row) => {
+    setAccessErr('')
+    setAccessMsg('')
+    setResendBusyId(row.id)
+    try {
+      const data = await resendAttendeeTicket(row.id)
+      setAccessMsg(
+        `Ticket reenviado a ${data?.to || row.email}${
+          data?.ticket_number != null ? ` (#${data.ticket_number})` : ''
+        }.`
+      )
+    } catch (err) {
+      setAccessErr(err?.message || 'No pudimos reenviar el ticket.')
+    } finally {
+      setResendBusyId(null)
+    }
   }
 
   const seedProgressDraft = (row) => {
@@ -682,6 +762,8 @@ export default function Admin() {
                 payment_confirmation: updated.payment_confirmation,
                 reviewed_at: updated.reviewed_at,
                 updated_at: updated.updated_at,
+                ticket_number:
+                  updated.ticket_number ?? r.ticket_number ?? null,
               }
             : r
         )
@@ -926,6 +1008,45 @@ export default function Admin() {
           {paymentOkId === row.id && (
             <p className="admin__pay-ok">Pago confirmado.</p>
           )}
+
+          {tab === 'asistentes' && row.status === 'pago' && (
+            <div className="admin__access-actions">
+              <p className="admin__pay-title">Ticket / ingreso</p>
+              {!row.checked_in_at ? (
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  disabled={checkInBusyId === row.id}
+                  onClick={() => handleToggleCheckIn(row, true)}
+                >
+                  {checkInBusyId === row.id ? 'Guardando…' : 'Marcar llegada'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn--outline"
+                  disabled={checkInBusyId === row.id}
+                  onClick={() => handleToggleCheckIn(row, false)}
+                >
+                  {checkInBusyId === row.id ? 'Guardando…' : 'Deshacer ingreso'}
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn btn--outline"
+                disabled={resendBusyId === row.id}
+                onClick={() => handleResendTicket(row)}
+              >
+                {resendBusyId === row.id ? 'Enviando…' : 'Reenviar ticket'}
+              </button>
+              {accessErr && expandedId === rowKey && (
+                <p className="admin__pay-error">{accessErr}</p>
+              )}
+              {accessMsg && expandedId === rowKey && (
+                <p className="admin__pay-ok">{accessMsg}</p>
+              )}
+            </div>
+          )}
         </td>
       </tr>
     )
@@ -1020,7 +1141,9 @@ export default function Admin() {
               ))}
             </div>
 
-            {tab === 'resultados-2ronda' ? (
+            {tab === 'acceso' ? (
+              <AdminCheckIn onCheckedIn={patchAttendeeCheckIn} />
+            ) : tab === 'resultados-2ronda' ? (
               <JuryRound2Results />
             ) : (
               <>

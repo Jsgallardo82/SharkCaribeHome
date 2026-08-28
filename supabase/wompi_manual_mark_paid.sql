@@ -31,6 +31,8 @@ SET status = 'pending'
 WHERE status IS NULL OR btrim(status) = '';
 
 -- --- ASISTENTE (descomenta y edita) ---
+-- Al pasar a 'pago', el trigger asigna ticket_number automáticamente
+-- (requiere haber ejecutado attendee_ticket_number.sql).
 -- UPDATE public.attendee_registrations
 -- SET
 --   status = 'pago',
@@ -39,6 +41,8 @@ WHERE status IS NULL OR btrim(status) = '';
 --   reviewed_at = now()
 -- WHERE payment_reference = 'PEGAR_REFERENCE'
 --   AND coalesce(status, '') IS DISTINCT FROM 'pago';
+-- Luego: SELECT id, email, ticket_number, status FROM attendee_registrations
+--        WHERE payment_reference = 'PEGAR_REFERENCE';
 
 -- --- PATROCINADOR (descomenta y edita) ---
 -- UPDATE public.sponsor_registrations

@@ -494,7 +494,9 @@ async function confirmRegistrationPayment(table, id, paymentCode) {
     })
     .eq('id', id)
     .eq('status', 'pending')
-    .select('id, status, payment_confirmation, reviewed_at, updated_at')
+    .select(
+      'id, status, payment_confirmation, reviewed_at, updated_at, ticket_number'
+    )
     .maybeSingle()
 
   if (error) {
@@ -1061,4 +1063,77 @@ export async function submitExhibitorRegistration(values) {
   }
 
   await notifyRegistration('expositor', row)
+}
+
+/** Extrae un UUID de un QR (token puro o URL que lo contenga). */
+export function extractTicketToken(raw) {
+  const s = String(raw || '').trim()
+  if (!s) return ''
+  const match = s.match(
+    /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i
+  )
+  return match ? match[0] : ''
+}
+
+export async function checkInAttendeeByToken(token) {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+  const ticketToken = extractTicketToken(token)
+  if (!ticketToken) throw new Error('Código QR inválido.')
+
+  const { data, error } = await supabase.rpc('check_in_attendee_by_token', {
+    p_token: ticketToken,
+  })
+
+  if (error) {
+    console.error('[Shark Caribe] check_in_attendee_by_token:', error)
+    throw new Error(error.message || 'No pudimos validar el ticket.')
+  }
+
+  return data
+}
+
+export async function setAttendeeCheckedIn(id, checkedIn) {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+  if (!id) throw new Error('Falta el id del asistente.')
+
+  const { data, error } = await supabase.rpc('set_attendee_checked_in', {
+    p_id: id,
+    p_checked_in: Boolean(checkedIn),
+  })
+
+  if (error) {
+    console.error('[Shark Caribe] set_attendee_checked_in:', error)
+    throw new Error(error.message || 'No pudimos actualizar el ingreso.')
+  }
+
+  if (data && data.ok === false) {
+    const map = {
+      not_paid: 'El asistente aún no tiene pago confirmado.',
+      not_found: 'Asistente no encontrado.',
+      forbidden: 'No tienes permiso de administrador.',
+    }
+    throw new Error(map[data.error] || data.error || 'No se pudo actualizar.')
+  }
+
+  return data
+}
+
+export async function resendAttendeeTicket(attendeeId) {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+  if (!attendeeId) throw new Error('Falta el id del asistente.')
+
+  const { data, error } = await supabase.functions.invoke('resend-ticket', {
+    body: { attendeeId },
+  })
+
+  if (error) {
+    console.error('[Shark Caribe] resend-ticket:', error)
+    throw new Error(error.message || 'No pudimos reenviar el ticket.')
+  }
+
+  if (data?.error) {
+    throw new Error(data.error)
+  }
+
+  return data
 }

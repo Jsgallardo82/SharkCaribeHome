@@ -17,3 +17,10 @@
 # Correos de inscripción (asistente / patrocinador / expositor):
 #   ver supabase/functions/NOTIFY_REGISTRATION.txt
 #   función: notify-registration
+#
+# Ticket por correo al pagar + número de boleto + QR + check-in:
+#   1) SQL: attendee_ticket_number.sql (si falta)
+#   2) SQL: attendee_checkin.sql
+#   3) ver supabase/functions/TICKET_EMAIL.txt
+#   4) Redeploy: wompi-webhook + resend-ticket
+#   Secrets Resend: RESEND_API_KEY, RESEND_FROM

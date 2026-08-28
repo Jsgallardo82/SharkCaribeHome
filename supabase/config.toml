@@ -9,3 +9,5 @@ verify_jwt = false
 
 [functions.notify-registration]
 verify_jwt = false
+
+# resend-ticket: deja verify_jwt en true (default) — Admin envía JWT.
