@@ -36,10 +36,12 @@ import {
 } from '../data/content.js'
 import JuryRound2Results from './JuryRound2Results.jsx'
 import AdminCheckIn from './AdminCheckIn.jsx'
+import AdminTicketPreview from './AdminTicketPreview.jsx'
 import './Admin.css'
 
 const TABS = [
   { id: 'acceso', label: 'Acceso' },
+  { id: 'boleta', label: 'Boleta' },
   { id: 'competidores', label: 'Competidores' },
   { id: 'asistentes', label: 'Asistentes' },
   { id: 'patrocinadores', label: 'Patrocinadores' },
@@ -403,7 +405,8 @@ function tabConfig(tab) {
 }
 
 function tabRowCount(itemId, counts) {
-  if (itemId === 'resultados-2ronda' || itemId === 'acceso') return '·'
+  if (itemId === 'resultados-2ronda' || itemId === 'acceso' || itemId === 'boleta')
+    return '·'
   if (itemId === 'asistentes') return counts.attendees
   if (itemId === 'patrocinadores') return counts.sponsors
   if (itemId === 'expositores') return counts.exhibitors
@@ -469,6 +472,7 @@ export default function Admin() {
   const [resendBusyId, setResendBusyId] = useState(null)
   const [accessMsg, setAccessMsg] = useState('')
   const [accessErr, setAccessErr] = useState('')
+  const [ticketPreviewId, setTicketPreviewId] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -1039,6 +1043,17 @@ export default function Admin() {
               >
                 {resendBusyId === row.id ? 'Enviando…' : 'Reenviar ticket'}
               </button>
+              <button
+                type="button"
+                className="btn btn--outline"
+                onClick={() => {
+                  setTicketPreviewId(row.id)
+                  setTab('boleta')
+                  setExpandedId(null)
+                }}
+              >
+                Ver boleta
+              </button>
               {accessErr && expandedId === rowKey && (
                 <p className="admin__pay-error">{accessErr}</p>
               )}
@@ -1143,6 +1158,11 @@ export default function Admin() {
 
             {tab === 'acceso' ? (
               <AdminCheckIn onCheckedIn={patchAttendeeCheckIn} />
+            ) : tab === 'boleta' ? (
+              <AdminTicketPreview
+                attendees={attendeeRows}
+                initialId={ticketPreviewId}
+              />
             ) : tab === 'resultados-2ronda' ? (
               <JuryRound2Results />
             ) : (

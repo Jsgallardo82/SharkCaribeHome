@@ -1,7 +1,4 @@
-/**
- * Plantilla HTML del boleto (Edge Functions).
- * Preferencial = dorado; General = azul.
- */
+/** Plantilla del boleto (correo Resend + vista previa Admin). */
 
 export const EVENT_META = {
   name: 'Shark Caribe Pitch Competition 2026',
@@ -16,6 +13,7 @@ export const SEAT_LABELS = {
   general: 'General',
 }
 
+/** Logos del pie (mismas rutas que content.js ORGANIZER / ALLIES). */
 export const TICKET_LOGOS = {
   organizer: [{ name: 'IS Comunicaciones', src: '/issnofondo.png' }],
   allies: [
@@ -66,9 +64,32 @@ export function resolveAssetUrl(path, baseUrl = '') {
   return base ? `${base}${rel}` : rel
 }
 
+export const SAMPLE_TICKET_PREFERENCIAL = {
+  full_name: 'María Ejemplo',
+  seat_type: 'preferencial',
+  ticket_number: 1,
+  ticket_token: '00000000-0000-4000-8000-000000000001',
+  amount_in_cents: 7990000,
+  payment_reference: 'DEMO-REF-001',
+}
+
+export const SAMPLE_TICKET_GENERAL = {
+  full_name: 'Carlos Ejemplo',
+  seat_type: 'general',
+  ticket_number: 2,
+  ticket_token: '00000000-0000-4000-8000-000000000002',
+  amount_in_cents: 5000000,
+  payment_reference: 'DEMO-REF-002',
+}
+
+/** @deprecated usar SAMPLE_TICKET_PREFERENCIAL */
+export const SAMPLE_TICKET_RECORD = SAMPLE_TICKET_PREFERENCIAL
+
 function themeForSeat(seatType) {
-  if (seatType === 'preferencial') {
+  const featured = seatType === 'preferencial'
+  if (featured) {
     return {
+      featured: true,
       headerBg: 'linear-gradient(145deg,#1a2340 0%,#0f1a3d 55%,#c4922e 160%)',
       accent: '#c4922e',
       bodyBg: 'linear-gradient(180deg,#f7f3e8 0%,#fffdf5 40%,#ffffff 100%)',
@@ -80,6 +101,7 @@ function themeForSeat(seatType) {
     }
   }
   return {
+    featured: false,
     headerBg: 'linear-gradient(145deg,#172554 0%,#0d1a3d 60%,#2b57ff 140%)',
     accent: '#2b57ff',
     bodyBg: 'linear-gradient(180deg,#eef2ff 0%,#f8faff 45%,#ffffff 100%)',
@@ -103,6 +125,7 @@ function logoRowFlexHtml(logos, baseUrl, heightPx, maxWidthPx = 88) {
   return `<div style="display:flex;justify-content:${justify};align-items:center;width:100%;gap:4px;margin:0 0 8px;">${imgs}</div>`
 }
 
+/** Rejilla de logos en varias filas con space-between en cada fila. */
 function logoGridHtml(logos, baseUrl, heightPx, maxWidthPx = 72, perRow = 6) {
   if (!logos.length) return ''
   const chunks = []
@@ -114,17 +137,25 @@ function logoGridHtml(logos, baseUrl, heightPx, maxWidthPx = 72, perRow = 6) {
     .join('')
 }
 
-/** @param {Record<string, unknown>} record @param {{ baseUrl?: string }} [options] */
+/**
+ * @param {object} record
+ * @param {{ baseUrl?: string }} [options]
+ */
 export function buildAttendeeTicketEmail(record, options = {}) {
-  const baseUrl = String(options.baseUrl || '').replace(/\/$/, '')
+  const baseUrl =
+    options.baseUrl ||
+    (typeof window !== 'undefined' && window.location?.origin
+      ? window.location.origin
+      : '')
+
   const name = record.full_name || 'asistente'
-  const seatType = String(record.seat_type || 'general')
+  const seatType = record.seat_type || 'general'
   const seat = SEAT_LABELS[seatType] || seatType || 'Entrada'
   const ticketNo =
     record.ticket_number != null ? String(record.ticket_number) : '—'
   const amount = formatAmount(record.amount_in_cents)
-  const reference = String(record.payment_reference || '—')
-  const token = String(record.ticket_token || '')
+  const reference = record.payment_reference || '—'
+  const token = record.ticket_token || ''
   const qrUrl = qrImageUrl(token)
   const theme = themeForSeat(seatType)
   const sharkySrc = resolveAssetUrl(theme.sharky, baseUrl)
@@ -161,6 +192,7 @@ export function buildAttendeeTicketEmail(record, options = {}) {
       </div>
 
       <div style="max-width:560px;margin:0 auto;border-radius:18px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,0.35);border:2px solid ${theme.border};">
+        <!-- Encabezado -->
         <div style="background:${theme.headerBg};color:#fff;padding:22px 22px 18px;text-align:center;">
           <p style="margin:0 0 10px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.85;">Número de ticket</p>
           <p style="margin:0 0 14px;font-size:42px;font-weight:800;line-height:1;color:${theme.titleColor};">#${escapeHtml(ticketNo)}</p>
@@ -168,6 +200,7 @@ export function buildAttendeeTicketEmail(record, options = {}) {
           <p style="margin:6px 0 0;font-size:32px;font-weight:800;letter-spacing:0.06em;line-height:1.1;text-transform:uppercase;color:${theme.titleColor};">Shark Caribe</p>
         </div>
 
+        <!-- QR (fondo claro: mejor contraste para escanear) -->
         <div style="background:#ffffff;padding:18px 18px 14px;text-align:center;">
           ${
             qrUrl
@@ -177,6 +210,7 @@ export function buildAttendeeTicketEmail(record, options = {}) {
           }
         </div>
 
+        <!-- Franja plateada/azul: info + Sharky + logos -->
         <div style="background:${theme.infoBg};padding:18px 18px 18px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
             <tr>

@@ -12,12 +12,16 @@
 # Secrets Edge Functions:
 #   RESEND_API_KEY=re_xxx
 #   RESEND_FROM=Shark Caribe <noreply@tudominio.com>
+#   PUBLIC_SITE_URL=https://tudominio.com   ← logos/Sharky absolutos en el mail
 #
 # ----------------------------------------------------------
-# 3) Redeploy
+# 3) Redeploy (Dashboard: pegar index.ts de cada carpeta)
 # ----------------------------------------------------------
-#   supabase functions deploy wompi-webhook
-#   supabase functions deploy resend-ticket
+#   wompi-webhook
+#   resend-ticket
+#
+# Vista previa en Admin → pestaña Boleta:
+#   Ejemplo Preferencial | Ejemplo General | Asistente pagado
 #
 # Flujo:
 #   Pago APPROVED → status=pago → ticket_number (trigger) → correo con QR

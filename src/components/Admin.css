@@ -554,3 +554,72 @@
   margin: 0.25rem 0 0;
   color: var(--color-text-muted);
 }
+
+.admin-ticket-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-ticket-preview__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+}
+
+.admin-ticket-preview__lead {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.admin-ticket-preview__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.admin-ticket-preview__pdf {
+  margin-left: auto;
+}
+
+.admin-ticket-preview__modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-ticket-preview__select {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.admin-ticket-preview__select select {
+  min-width: 16rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-weight: 500;
+}
+
+.admin-ticket-preview__subject {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.admin-ticket-preview__frame {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #0a1330;
+}
+
+.admin-ticket-preview__iframe {
+  display: block;
+  width: 100%;
+  min-height: 1100px;
+  border: 0;
+  background: #0a1330;
+}
