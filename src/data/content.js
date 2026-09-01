@@ -14,6 +14,14 @@ export const REGISTER_URL =
 export const INSTAGRAM_URL =
   'https://www.instagram.com/shark.caribe?igsh=a3FiYWx0bTRsMWJv'
 
+/* Links para compartir boleta (WhatsApp). Abren el registro con tipo listo.
+   Dominio de producción: sharkcaribe.co */
+export const BOLETA_SHARE_LINKS = {
+  preferencial: 'https://sharkcaribe.co/boleta/preferencial',
+  general: 'https://sharkcaribe.co/boleta/general',
+  elegir: 'https://sharkcaribe.co/boleta',
+}
+
 /* Feed Instagram · edición actual (URLs curadas; embeds oficiales) */
 export const INSTAGRAM_FEED = {
   username: 'shark.caribe',

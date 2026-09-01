@@ -34,6 +34,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<App />} />
+          {/* Links para WhatsApp / compartir boleta con tipo preseleccionado */}
+          <Route path="/boleta" element={<App />} />
+          <Route path="/boleta/:seatType" element={<App />} />
           <Route path="/pago/resultado" element={<PaymentResult />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Signup />} />

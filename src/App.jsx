@@ -1,4 +1,5 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 // import Competition from './components/Competition.jsx'
@@ -25,6 +26,15 @@ const Gallery = lazy(() => import('./components/Gallery.jsx'))
 const UnifiedRegisterModal = lazy(
   () => import('./components/UnifiedRegisterModal.jsx'),
 )
+
+function normalizeSeatType(value) {
+  const seat = String(value || '')
+    .trim()
+    .toLowerCase()
+  if (seat === 'preferencial' || seat === 'pref') return 'preferencial'
+  if (seat === 'general' || seat === 'gen') return 'general'
+  return ''
+}
 
 function resolveRegisterOpen(kind, options = {}) {
   const accompaniedCompetitorId = options.accompaniedCompetitorId || ''
@@ -87,6 +97,10 @@ function resolveRegisterOpen(kind, options = {}) {
 
 export default function App() {
   const [registerOpen, setRegisterOpen] = useState(null)
+  const deepLinkHandled = useRef(false)
+  const { seatType: seatFromPath } = useParams()
+  const [searchParams] = useSearchParams()
+  const location = useLocation()
 
   useEffect(() => {
     playSharkySound()
@@ -100,6 +114,38 @@ export default function App() {
   const closeRegister = useCallback(() => {
     setRegisterOpen(null)
   }, [])
+
+  // Deep link WhatsApp / compartir:
+  //   /boleta/preferencial  /boleta/general
+  //   /boleta?tipo=preferencial
+  //   /?tipo=general
+  useEffect(() => {
+    if (deepLinkHandled.current) return
+
+    const fromQuery =
+      searchParams.get('tipo') ||
+      searchParams.get('seat') ||
+      searchParams.get('boleta')
+    const seat = normalizeSeatType(seatFromPath || fromQuery)
+    const onBoletaRoute = location.pathname.startsWith('/boleta')
+
+    if (!seat && !onBoletaRoute) return
+
+    deepLinkHandled.current = true
+
+    if (seat) {
+      openRegister('asistente', { seatType: seat })
+    } else {
+      openRegister('unificado', { category: '' })
+    }
+
+    const hero = document.getElementById('inicio')
+    if (hero) {
+      requestAnimationFrame(() => {
+        hero.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    }
+  }, [location.pathname, openRegister, searchParams, seatFromPath])
 
   return (
     <>

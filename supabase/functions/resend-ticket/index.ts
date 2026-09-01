@@ -224,6 +224,21 @@ function json(status, body) {
   })
 }
 
+/** Detecta JWT service_role (string exacto o claim role). */
+function isServiceRoleToken(bearer, serviceKey) {
+  if (!bearer) return false
+  if (serviceKey && bearer === serviceKey) return true
+  try {
+    const payloadPart = bearer.split('.')[1]
+    if (!payloadPart) return false
+    const jsonPayload = atob(payloadPart.replace(/-/g, '+').replace(/_/g, '/'))
+    const payload = JSON.parse(jsonPayload)
+    return payload?.role === 'service_role'
+  } catch {
+    return false
+  }
+}
+
 function ticketBaseUrl() {
   return (Deno.env.get('PUBLIC_SITE_URL') || Deno.env.get('SITE_URL') || '').replace(/\/$/, '')
 }
@@ -258,25 +273,36 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get('Authorization') || ''
   if (!authHeader.startsWith('Bearer ')) return json(401, { error: 'No autenticado.' })
 
-  const userClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: authHeader } },
-    auth: { persistSession: false, autoRefreshToken: false },
-  })
-  const {
-    data: { user },
-    error: userError,
-  } = await userClient.auth.getUser()
-  if (userError || !user) return json(401, { error: 'Sesión inválida.' })
+  const bearer = authHeader.slice('Bearer '.length).trim()
+  const serviceOk = isServiceRoleToken(bearer, serviceKey)
 
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   })
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .maybeSingle()
-  if (profile?.role !== 'admin') return json(403, { error: 'Solo administradores.' })
+
+  if (!serviceOk) {
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    })
+    const {
+      data: { user },
+      error: userError,
+    } = await userClient.auth.getUser()
+    if (userError || !user) {
+      return json(401, {
+        error:
+          'Sesión inválida. Usa service_role legacy (eyJ...) o sesión admin. ¿Redesplegaste resend-ticket?',
+      })
+    }
+
+    const { data: profile } = await admin
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle()
+    if (profile?.role !== 'admin') return json(403, { error: 'Solo administradores.' })
+  }
 
   let body
   try {

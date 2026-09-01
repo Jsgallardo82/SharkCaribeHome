@@ -14,6 +14,10 @@
 #   RESEND_FROM=Shark Caribe <noreply@tudominio.com>
 #   PUBLIC_SITE_URL=https://tudominio.com   ← logos/Sharky absolutos en el mail
 #
+# Prueba desde SQL Editor:
+#   supabase/test_ticket_resend.sql
+#   (requiere resend-ticket redesplegada: acepta service_role)
+#
 # ----------------------------------------------------------
 # 3) Redeploy (Dashboard: pegar index.ts de cada carpeta)
 # ----------------------------------------------------------
