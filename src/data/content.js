@@ -278,6 +278,21 @@ export function getLiveRankingCountdown(now = new Date()) {
   return { diff, totalSeconds, hours, minutes, seconds, done: diff <= 0 }
 }
 
+/* Emprendimientos que no deben aparecer en “Emprendedor que acompañan”
+   (ya no están en competencia). */
+export const ACCOMPANY_COMPETITOR_EXCLUDED = [
+  /legal[\s-]*ia/i,
+  /nobaq/i,
+  /oportunitic/i,
+]
+
+export function filterAccompanyCompetitors(list = []) {
+  return list.filter((row) => {
+    const haystack = `${row?.venture_name || ''} ${row?.full_name || ''}`
+    return !ACCOMPANY_COMPETITOR_EXCLUDED.some((rx) => rx.test(haystack))
+  })
+}
+
 /* Orden fijo de pitch para el panel del jurado (2ª ronda).
    “Sistema de hidroponía” queda fuera del concurso. */
 export const JURY_ROUND2_EXCLUDED = [/hidropo/i, /hidropon/i]
@@ -345,10 +360,7 @@ export const SECTORS = [
 export const REFERRAL_SOURCES = [
   { value: 'instagram', label: '@shark.caribe' },
   { value: 'sergio_arboleda', label: 'Universidad Sergio Arboleda' },
-  {
-    value: 'universidad_autonoma_del_caribe',
-    label: 'Universidad Autónoma del Caribe',
-  },
+  { value: 'cc_buenavista', label: 'CC Buenavista' },
   { value: 'sena', label: 'SENA' },
   { value: 'recomendacion', label: 'Recomendación' },
   { value: 'other', label: 'Otro' },

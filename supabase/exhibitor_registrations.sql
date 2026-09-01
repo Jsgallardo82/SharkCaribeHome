@@ -16,6 +16,7 @@ DO $$ BEGIN
     'instagram',
     'sergio_arboleda',
     'universidad_autonoma_del_caribe',
+    'cc_buenavista',
     'sena',
     'recomendacion',
     'other'

@@ -7,6 +7,7 @@ import { createClient } from '@supabase/supabase-js'
 import {
   isCompetitorRegistrationOpen,
   resolveCompetitorPhotos,
+  filterAccompanyCompetitors,
   CATEGORIES,
   SECTORS,
 } from '../data/content.js'
@@ -759,7 +760,12 @@ export async function fetchPublicCompetitors() {
     return []
   }
 
-  return Array.isArray(data) ? data : []
+  const rows = filterAccompanyCompetitors(Array.isArray(data) ? data : [])
+  return rows.map((row) => ({
+    ...row,
+    full_name: String(row.full_name || '').toUpperCase(),
+    venture_name: String(row.venture_name || '').toUpperCase(),
+  }))
 }
 
 function labelOf(list, value) {

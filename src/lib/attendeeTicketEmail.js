@@ -15,17 +15,23 @@ export const SEAT_LABELS = {
 
 /** Logos del pie (mismas rutas que content.js ORGANIZER / ALLIES). */
 export const TICKET_LOGOS = {
-  organizer: [{ name: 'IS Comunicaciones', src: '/issnofondo.png' }],
+  organizer: [
+    {
+      name: 'IS Comunicaciones',
+      src: '/issnofondo.png',
+      darkBg: true,
+    },
+  ],
   allies: [
     { name: 'Universidad Sergio Arboleda', src: '/logos/sergioarboleda.png' },
-    { name: 'Prime Business School', src: '/logos/prime.png' },
+    { name: 'Prime Business School', src: '/logos/prime.png', darkBg: true },
     { name: 'SENA', src: '/logos/sena.png' },
-    { name: 'Índice', src: '/logos/indice.png' },
-    { name: 'FCA', src: '/logos/fca.png' },
-    { name: 'Elena', src: '/logos/elena.jpeg' },
-    { name: 'Mi Red', src: '/logos/mired.png' },
-    { name: 'Space Rock', src: '/logos/spacerock.png' },
     { name: 'CC Buenavista', src: '/logos/ccbuenavista.png' },
+    { name: 'Índice', src: '/logos/indice.png' },
+    { name: 'FCA', src: '/logos/fca.png', height: 36, maxWidth: 78 },
+    { name: 'Space Rock', src: '/logos/spacerock.png', height: 36, maxWidth: 78 },
+    { name: 'Mi Red', src: '/logos/mired.png', height: 36, maxWidth: 78 },
+    { name: 'Elena', src: '/logos/elena.jpeg' },
     { name: 'Reformada', src: '/logos/reformada.png' },
     { name: 'Universidad del Atlántico', src: '/logos/UA.png' },
   ],
@@ -118,7 +124,13 @@ function logoRowFlexHtml(logos, baseUrl, heightPx, maxWidthPx = 88) {
   const imgs = logos
     .map((logo) => {
       const src = resolveAssetUrl(logo.src, baseUrl)
-      return `<img src="${escapeHtml(src)}" alt="${escapeHtml(logo.name)}" height="${heightPx}" style="display:block;height:${heightPx}px;width:auto;max-width:${maxWidthPx}px;object-fit:contain;flex:0 0 auto;margin:0 auto;" />`
+      const h = logo.height ?? heightPx
+      const maxW = logo.maxWidth ?? maxWidthPx
+      const img = `<img src="${escapeHtml(src)}" alt="${escapeHtml(logo.name)}" height="${h}" style="display:block;height:${h}px;width:auto;max-width:${maxW}px;object-fit:contain;margin:0 auto;" />`
+      if (logo.darkBg) {
+        return `<div style="flex:0 0 auto;background:#000000;border-radius:8px;padding:8px 10px;line-height:0;">${img}</div>`
+      }
+      return `<div style="flex:0 0 auto;line-height:0;">${img}</div>`
     })
     .join('')
   const justify = logos.length === 1 ? 'center' : 'space-between'
@@ -228,7 +240,10 @@ export function buildAttendeeTicketEmail(record, options = {}) {
           ${organizerHtml}
           <p style="margin:14px 0 8px;text-align:center;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;font-weight:700;">Aliados</p>
           ${alliesHtml}
-          <p style="margin:14px 0 0;text-align:center;font-size:11px;color:#64748b;">Shark Caribe · administrativo@sharkcaribe.co</p>
+          <p style="margin:16px 0 0;text-align:center;font-size:13px;line-height:1.45;color:#0d1a3d;font-weight:700;">
+            Presenta este ticket (o el código QR) el día del evento para ingresar.
+          </p>
+          <p style="margin:10px 0 0;text-align:center;font-size:11px;color:#64748b;">Shark Caribe · administrativo@sharkcaribe.co</p>
         </div>
       </div>
     </div>
