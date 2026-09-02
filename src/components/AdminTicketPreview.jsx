@@ -5,12 +5,14 @@ import {
   buildAttendeeTicketEmail,
 } from '../lib/attendeeTicketEmail.js'
 
-/** Escala según boletas por hoja (carta). Más densas = QR más chico. */
-const SCALE_BY_PER_PAGE = {
-  1: 0.48,
-  2: 0.4,
-  4: 0.3,
-}
+/** Hoja de imprenta: 32 × 47 cm */
+const PAGE_W_MM = 320
+const PAGE_H_MM = 470
+const PAGE_MARGIN_MM = 6
+const GRID_GAP_MM = 4
+const TICKET_BASE_W = 560
+const MIN_SCALE = 0.26
+const MAX_SCALE = 0.42
 
 function isPhysicalInventoryTicket(row) {
   const conf = String(row?.payment_confirmation || '')
@@ -22,52 +24,33 @@ function isPhysicalInventoryTicket(row) {
   )
 }
 
-function chunkTickets(items, size) {
-  const sheets = []
-  for (let i = 0; i < items.length; i += size) {
-    sheets.push(items.slice(i, i + size))
-  }
-  return sheets
-}
-
 /**
  * @param {Array<{ label: string, html: string }>} tickets
  * @param {string} title
- * @param {1|2|4} [ticketsPerPage]
+ * @param {{ cols?: number }} [options] cols=0 → máximo automático
  */
-function openPrintWindow(tickets, title, ticketsPerPage = 1) {
+function openPrintWindow(tickets, title, options = {}) {
   if (!tickets.length) {
     window.alert('No hay boletas para imprimir.')
     return
   }
 
-  const perPage = [1, 2, 4].includes(Number(ticketsPerPage))
-    ? Number(ticketsPerPage)
-    : 1
-  const scale = SCALE_BY_PER_PAGE[perPage] || SCALE_BY_PER_PAGE[1]
-  const frameW = Math.round(560 * scale)
-  const sheets = chunkTickets(tickets, perPage)
-  const layoutClass =
-    perPage === 4 ? 'sheet--grid4' : perPage === 2 ? 'sheet--stack2' : 'sheet--one'
+  const forcedCols = Number(options.cols) || 0
 
-  const sheetHtml = sheets
-    .map((sheet) => {
-      const cells = sheet
-        .map(
-          (ticket) => `
-      <div class="ticket-cell">
-        <p class="print-label">${ticket.label}</p>
-        <div class="ticket-frame">
-          <div class="ticket-scale">${ticket.html}</div>
-        </div>
-      </div>`
-        )
-        .join('\n')
-      return `
-  <section class="sheet ${layoutClass}">
-    ${cells}
-  </section>`
-    })
+  /* Primera pasada: HTML con escala provisional; el script mide y reajusta */
+  const provisionalScale = 0.32
+  const frameW = Math.round(TICKET_BASE_W * provisionalScale)
+
+  const cellsHtml = tickets
+    .map(
+      (ticket, idx) => `
+    <div class="ticket-cell" data-idx="${idx}">
+      <p class="print-label">${ticket.label}</p>
+      <div class="ticket-frame">
+        <div class="ticket-scale">${ticket.html}</div>
+      </div>
+    </div>`
+    )
     .join('\n')
 
   const doc = `<!DOCTYPE html>
@@ -76,124 +59,243 @@ function openPrintWindow(tickets, title, ticketsPerPage = 1) {
   <meta charset="utf-8" />
   <title>${title}</title>
   <style>
-    @page { size: letter; margin: 8mm; }
+    @page {
+      size: ${PAGE_W_MM}mm ${PAGE_H_MM}mm;
+      margin: ${PAGE_MARGIN_MM}mm;
+    }
     * { box-sizing: border-box; }
-    body {
+    html, body {
       margin: 0;
-      background: #f1f5f9;
+      padding: 0;
+      background: #e2e8f0;
       color: #0d1a3d;
       font-family: Segoe UI, Arial, sans-serif;
     }
-    .print-label {
-      margin: 0 0 4px;
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #64748b;
-      font-weight: 700;
+    .no-print {
       text-align: center;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #64748b;
+      max-width: 40rem;
+      margin: 0 auto;
     }
     .sheet {
+      width: ${PAGE_W_MM - PAGE_MARGIN_MM * 2}mm;
+      height: ${PAGE_H_MM - PAGE_MARGIN_MM * 2}mm;
+      margin: 0 auto 12px;
+      padding: 0;
+      background: #fff;
       page-break-after: always;
       break-after: page;
       page-break-inside: avoid;
       break-inside: avoid;
-      padding: 6px 0 10px;
-      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, max-content);
+      grid-auto-rows: max-content;
+      gap: ${GRID_GAP_MM}mm;
+      justify-content: center;
+      align-content: start;
+      overflow: hidden;
     }
     .sheet:last-child {
       page-break-after: auto;
       break-after: auto;
     }
-    .sheet--one {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
-    .sheet--stack2 {
+    .ticket-cell {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-around;
-      gap: 8px;
-      min-height: 250mm;
+      justify-content: flex-start;
+      overflow: hidden;
+      /* evita que el transform “se salga” y tape vecinos */
+      position: relative;
     }
-    .sheet--grid4 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 6px 8px;
-      align-items: start;
-      justify-items: center;
-      min-height: 250mm;
-    }
-    .ticket-cell {
+    .print-label {
+      margin: 0 0 2px;
+      font-size: 7px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
       text-align: center;
+      line-height: 1.2;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     .ticket-frame {
-      display: inline-block;
+      display: block;
       width: ${frameW}px;
+      height: auto;
       overflow: hidden;
-      text-align: left;
-      vertical-align: top;
+      position: relative;
     }
     .ticket-scale {
-      width: 560px;
-      transform: scale(${scale});
+      width: ${TICKET_BASE_W}px;
+      transform: scale(${provisionalScale});
       transform-origin: top left;
+      pointer-events: none;
     }
     .ticket-scale > div {
-      padding: 6px !important;
+      padding: 4px !important;
       background: transparent !important;
     }
+    /* Oculta el saludo del correo; deja solo la boleta */
     .ticket-scale > div > div:first-child {
       display: none !important;
     }
     @media print {
       body { background: #fff; }
       .no-print { display: none !important; }
-      .sheet { padding: 0; }
-      .sheet--stack2, .sheet--grid4 { min-height: 0; height: 260mm; }
+      .sheet {
+        margin: 0;
+        box-shadow: none;
+      }
     }
   </style>
 </head>
 <body>
-  <p class="no-print" style="text-align:center;padding:12px;font-size:14px;color:#64748b;max-width:40rem;margin:0 auto;">
-    ${tickets.length} boleta(s) · ${perPage} por hoja · ${sheets.length} página(s).
-    Usa “Guardar como PDF”. Espera a que carguen los QR.
-    ${perPage === 4 ? ' Aviso: con 4 por hoja el QR queda más chico; prueba escanear una muestra.' : ''}
+  <p class="no-print" id="print-hint">
+    Preparando cuadrícula ${PAGE_W_MM / 10}×${PAGE_H_MM / 10} cm…
+    Espera a que carguen los QR y luego “Guardar como PDF”.
   </p>
-  ${sheetHtml}
+  <div id="measure-host" style="position:absolute;left:-99999px;top:0;visibility:hidden;">
+    ${tickets[0] ? `<div class="ticket-scale" id="measure-scale" style="transform:none;width:${TICKET_BASE_W}px;">${tickets[0].html}</div>` : ''}
+  </div>
+  <div id="sheets-root">${cellsHtml}</div>
   <script>
     (async function () {
-      const scale = ${scale}
-      const imgs = Array.from(document.images || [])
-      await Promise.all(
-        imgs.map(function (img) {
-          if (img.complete) return Promise.resolve()
-          return new Promise(function (resolve) {
-            img.onload = resolve
-            img.onerror = resolve
-          })
-        })
-      )
-      document.querySelectorAll('.ticket-frame').forEach(function (frame) {
-        var scaleEl = frame.querySelector('.ticket-scale')
-        if (!scaleEl) return
-        frame.style.height = Math.ceil(scaleEl.scrollHeight * scale) + 'px'
-      })
+      var TICKET_BASE_W = ${TICKET_BASE_W};
+      var forcedCols = ${forcedCols};
+      var tickets = ${JSON.stringify(tickets.map((t) => ({ label: t.label })))};
+      var htmls = ${JSON.stringify(tickets.map((t) => t.html))};
+
+      function mmToPx(mm) { return (mm * 96) / 25.4; }
+      function pickGridLayout(unscaledHeightPx, forcedCols) {
+        var usableW = mmToPx(${PAGE_W_MM - PAGE_MARGIN_MM * 2});
+        var usableH = mmToPx(${PAGE_H_MM - PAGE_MARGIN_MM * 2});
+        var gap = mmToPx(${GRID_GAP_MM});
+        var labelH = 14;
+        var best = { scale: 0.32, cols: 2, rows: 2, perPage: 4, cellW: 0, cellH: 0 };
+        for (var s = ${MAX_SCALE}; s >= ${MIN_SCALE} - 0.001; s -= 0.01) {
+          var tw = TICKET_BASE_W * s;
+          var th = unscaledHeightPx * s + labelH;
+          var colsMax = Math.max(1, Math.floor((usableW + gap) / (tw + gap)));
+          var cols = forcedCols > 0 ? Math.min(forcedCols, colsMax) : colsMax;
+          if (cols < 1) continue;
+          var rows = Math.max(1, Math.floor((usableH + gap) / (th + gap)));
+          var perPage = cols * rows;
+          if (perPage > best.perPage || (perPage === best.perPage && s > best.scale)) {
+            best = {
+              scale: Math.round(s * 100) / 100,
+              cols: cols,
+              rows: rows,
+              perPage: perPage,
+              cellW: Math.ceil(tw),
+              cellH: Math.ceil(th)
+            };
+          }
+        }
+        return best;
+      }
+
+      var imgs = Array.from(document.images || []);
+      await Promise.all(imgs.map(function (img) {
+        if (img.complete) return Promise.resolve();
+        return new Promise(function (resolve) {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      }));
+
+      var measure = document.getElementById('measure-scale');
+      if (measure) {
+        var hide = measure.querySelector(':scope > div > div:first-child');
+        if (hide) hide.style.display = 'none';
+      }
+      var unscaledH = measure ? measure.scrollHeight : 900;
+      var layout = pickGridLayout(unscaledH, forcedCols);
+
+      var root = document.getElementById('sheets-root');
+      root.innerHTML = '';
+      var perPage = layout.perPage;
+      var sheetCount = Math.ceil(htmls.length / perPage);
+
+      for (var si = 0; si < sheetCount; si++) {
+        var sheet = document.createElement('section');
+        sheet.className = 'sheet';
+        sheet.style.gridTemplateColumns = 'repeat(' + layout.cols + ', ' + layout.cellW + 'px)';
+        sheet.style.gridAutoRows = layout.cellH + 'px';
+
+        for (var ci = 0; ci < perPage; ci++) {
+          var idx = si * perPage + ci;
+          if (idx >= htmls.length) break;
+
+          var cell = document.createElement('div');
+          cell.className = 'ticket-cell';
+          cell.style.width = layout.cellW + 'px';
+          cell.style.height = layout.cellH + 'px';
+
+          var label = document.createElement('p');
+          label.className = 'print-label';
+          label.textContent = tickets[idx].label;
+
+          var frame = document.createElement('div');
+          frame.className = 'ticket-frame';
+          frame.style.width = layout.cellW + 'px';
+          frame.style.height = Math.ceil(unscaledH * layout.scale) + 'px';
+          frame.style.overflow = 'hidden';
+
+          var scaleEl = document.createElement('div');
+          scaleEl.className = 'ticket-scale';
+          scaleEl.style.width = TICKET_BASE_W + 'px';
+          scaleEl.style.transform = 'scale(' + layout.scale + ')';
+          scaleEl.style.transformOrigin = 'top left';
+          scaleEl.innerHTML = htmls[idx];
+
+          var greet = scaleEl.querySelector(':scope > div > div:first-child');
+          if (greet) greet.style.display = 'none';
+
+          frame.appendChild(scaleEl);
+          cell.appendChild(label);
+          cell.appendChild(frame);
+          sheet.appendChild(cell);
+        }
+        root.appendChild(sheet);
+      }
+
+      var hint = document.getElementById('print-hint');
+      if (hint) {
+        hint.textContent =
+          htmls.length + ' boleta(s) · hoja ' + ${PAGE_W_MM / 10} + '×' + ${PAGE_H_MM / 10} +
+          ' cm · cuadrícula ' + layout.cols + '×' + layout.rows +
+          ' (' + layout.perPage + ' por hoja) · ' + sheetCount + ' página(s) · escala ' +
+          Math.round(layout.scale * 100) + '%. Usa “Guardar como PDF”.';
+      }
+
+      /* Re-espera imágenes del HTML inyectado */
+      var imgs2 = Array.from(document.images || []);
+      await Promise.all(imgs2.map(function (img) {
+        if (img.complete) return Promise.resolve();
+        return new Promise(function (resolve) {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      }));
+
       setTimeout(function () {
-        window.focus()
-        window.print()
-      }, 450)
-    })()
+        window.focus();
+        window.print();
+      }, 500);
+    })();
   </script>
 </body>
 </html>`
 
   const blob = new Blob([doc], { type: 'text/html;charset=utf-8' })
   const url = URL.createObjectURL(blob)
-  const win = window.open(url, '_blank', 'width=780,height=920')
+  const win = window.open(url, '_blank', 'width=900,height=1000')
   if (!win) {
     URL.revokeObjectURL(url)
     window.alert(
@@ -215,12 +317,12 @@ function openTicketsPrintWindow() {
       { label: 'Ticket Preferencial · ejemplo', html: preferencial.html },
       { label: 'Ticket General · ejemplo', html: general.html },
     ],
-    'Tickets Shark Caribe — Preferencial y General',
-    1
+    'Tickets Shark Caribe — ejemplos · 32×47 cm',
+    { cols: 0 }
   )
 }
 
-function openInventoryPrintWindow(records, seatLabel, ticketsPerPage) {
+function openInventoryPrintWindow(records, seatLabel, cols) {
   const baseUrl = window.location.origin
   const sorted = [...records].sort((a, b) => {
     const na = Number(a.ticket_number) || 0
@@ -241,13 +343,11 @@ function openInventoryPrintWindow(records, seatLabel, ticketsPerPage) {
     }
   })
 
-  const sheets = Math.ceil(tickets.length / ticketsPerPage)
   openPrintWindow(
     tickets,
-    `Inventario físico · ${seatLabel} · ${tickets.length} boletas · ${ticketsPerPage}/hoja`,
-    ticketsPerPage
+    `Inventario físico · ${seatLabel} · ${tickets.length} boletas · 32×47 cm`,
+    { cols }
   )
-  return sheets
 }
 
 /**
@@ -287,7 +387,8 @@ export default function AdminTicketPreview({ attendees = [], initialId = '' }) {
   )
   const [selectedId, setSelectedId] = useState(initialId || '')
   const [busyPrint, setBusyPrint] = useState('')
-  const [ticketsPerPage, setTicketsPerPage] = useState(2)
+  /** 0 = máximo automático; 2 o 3 = forzar columnas */
+  const [gridCols, setGridCols] = useState(0)
 
   useEffect(() => {
     if (!initialId) return
@@ -320,17 +421,16 @@ export default function AdminTicketPreview({ attendees = [], initialId = '' }) {
       )
       return
     }
-    const sheets = Math.ceil(rows.length / ticketsPerPage)
     const ok = window.confirm(
-      `Se abrirá una ventana con ${rows.length} boletas ${label}\n` +
-        `(${ticketsPerPage} por hoja ≈ ${sheets} páginas).\n` +
-        'Luego elige “Guardar como PDF”.\n\n' +
+      `PDF en hoja 32×47 cm (cuadrícula, sin solapes).\n` +
+        `${rows.length} boletas ${label}.\n` +
+        'En el diálogo de impresión elige tamaño personalizado 320×470 mm si el navegador no lo toma solo.\n\n' +
         '¿Continuar?'
     )
     if (!ok) return
     setBusyPrint(kind)
     try {
-      openInventoryPrintWindow(rows, label, ticketsPerPage)
+      openInventoryPrintWindow(rows, label, gridCols)
     } finally {
       setTimeout(() => setBusyPrint(''), 800)
     }
@@ -418,19 +518,19 @@ export default function AdminTicketPreview({ attendees = [], initialId = '' }) {
           Inventario físico para imprenta
         </h3>
         <p className="admin-ticket-preview__inventory-lead">
-          Genera PDF con QR reales. Recomendado: <strong>2 por hoja</strong>{' '}
-          (ahorra papel y el QR sigue legible). Con 4 por hoja prueba escanear
-          una muestra antes de mandar a imprenta.
+          Hoja <strong>32 × 47 cm</strong>. Cuadrícula ordenada (lado a lado y
+          filas abajo), sin solapes. Por defecto mete el máximo posible
+          manteniendo el QR legible.
         </p>
         <label className="admin-ticket-preview__select admin-ticket-preview__per-page">
-          <span>Boletas por hoja</span>
+          <span>Distribución</span>
           <select
-            value={ticketsPerPage}
-            onChange={(e) => setTicketsPerPage(Number(e.target.value))}
+            value={gridCols}
+            onChange={(e) => setGridCols(Number(e.target.value))}
           >
-            <option value={1}>1 por hoja (~100 páginas / tipo)</option>
-            <option value={2}>2 por hoja (~50 páginas / tipo) · recomendado</option>
-            <option value={4}>4 por hoja (~25 páginas / tipo)</option>
+            <option value={0}>Máximo automático (recomendado)</option>
+            <option value={2}>2 columnas (cuadrícula)</option>
+            <option value={3}>3 columnas (cuadrícula)</option>
           </select>
         </label>
         <div className="admin-ticket-preview__inventory-actions">
