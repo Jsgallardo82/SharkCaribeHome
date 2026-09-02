@@ -80,6 +80,12 @@ ON CONFLICT (document_number) DO UPDATE SET
   reviewed_at = now(),
   updated_at = now();
 
+-- Preferencial también a juan.gallardo (misma prueba)
+UPDATE public.attendee_registrations
+SET email = lower('juan.gallardo@codigoabierto.tech'),
+    updated_at = now()
+WHERE document_number = 'TEST-TICKET-PREF';
+
 UPDATE public.attendee_registrations
 SET ticket_token = coalesce(ticket_token, gen_random_uuid())
 WHERE document_number IN ('TEST-TICKET-PREF', 'TEST-TICKET-GEN');

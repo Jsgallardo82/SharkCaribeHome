@@ -1019,7 +1019,7 @@ export default function Admin() {
               {!row.checked_in_at ? (
                 <button
                   type="button"
-                  className="btn btn--primary"
+                  className="btn admin-btn admin-btn--green"
                   disabled={checkInBusyId === row.id}
                   onClick={() => handleToggleCheckIn(row, true)}
                 >
@@ -1028,7 +1028,7 @@ export default function Admin() {
               ) : (
                 <button
                   type="button"
-                  className="btn btn--outline"
+                  className="btn admin-btn admin-btn--yellow"
                   disabled={checkInBusyId === row.id}
                   onClick={() => handleToggleCheckIn(row, false)}
                 >
@@ -1037,7 +1037,7 @@ export default function Admin() {
               )}
               <button
                 type="button"
-                className="btn btn--outline"
+                className="btn admin-btn admin-btn--red"
                 disabled={resendBusyId === row.id}
                 onClick={() => handleResendTicket(row)}
               >
@@ -1045,7 +1045,7 @@ export default function Admin() {
               </button>
               <button
                 type="button"
-                className="btn btn--outline"
+                className="btn admin-btn admin-btn--blue"
                 onClick={() => {
                   setTicketPreviewId(row.id)
                   setTab('boleta')

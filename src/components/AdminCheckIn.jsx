@@ -27,9 +27,15 @@ export default function AdminCheckIn({ onCheckedIn }) {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+  const [modal, setModal] = useState(null)
   const scannerRef = useRef(null)
   const lastScanRef = useRef('')
+  const modalOpenRef = useRef(false)
   const readerId = 'admin-qr-reader'
+
+  useEffect(() => {
+    modalOpenRef.current = Boolean(modal)
+  }, [modal])
 
   useEffect(() => {
     return () => {
@@ -50,24 +56,36 @@ export default function AdminCheckIn({ onCheckedIn }) {
     }
   }, [])
 
+  const closeModal = () => {
+    setModal(null)
+    lastScanRef.current = ''
+  }
+
   const applyResult = (data) => {
     setResult(data)
-    if (data?.ok && data.id && !data.already) {
-      onCheckedIn?.(data)
-    } else if (data?.ok && data.already && data.id) {
+    setModal({
+      kind: data.already ? 'already' : 'ok',
+      title: data.already ? 'Ya había ingresado' : 'Ingreso registrado',
+      name: data.full_name || 'Asistente',
+      meta: `Ticket #${data.ticket_number ?? '—'} · ${seatLabel(data.seat_type)}`,
+      time: data.checked_in_at ? formatWhen(data.checked_in_at) : '',
+    })
+    if (data?.ok && data.id) {
       onCheckedIn?.(data)
     }
   }
 
   const processToken = async (raw) => {
+    if (modalOpenRef.current) return
+
     const rawText = String(raw || '').trim()
     const token = extractTicketToken(rawText)
     if (!token) {
-      setError(
-        rawText
-          ? `No reconocimos un código de ticket válido. Leído: “${rawText.slice(0, 80)}${rawText.length > 80 ? '…' : ''}”`
-          : 'No reconocimos un código de ticket válido.'
-      )
+      const msg = rawText
+        ? `No reconocimos un código de ticket válido. Leído: “${rawText.slice(0, 80)}${rawText.length > 80 ? '…' : ''}”`
+        : 'No reconocimos un código de ticket válido.'
+      setError(msg)
+      setModal({ kind: 'error', title: 'QR no válido', message: msg })
       return
     }
     if (busy) return
@@ -86,17 +104,24 @@ export default function AdminCheckIn({ onCheckedIn }) {
           forbidden: 'Sin permiso de administrador.',
         }
         const detail =
-          data?.error === 'not_found'
-            ? ` Token leído: ${token}`
-            : ''
-        setError((map[data?.error] || data?.error || 'No se pudo validar.') + detail)
+          data?.error === 'not_found' ? ` Token leído: ${token}` : ''
+        const msg =
+          (map[data?.error] || data?.error || 'No se pudo validar.') + detail
+        setError(msg)
         setResult(data || null)
+        setModal({
+          kind: 'error',
+          title: 'No se pudo validar',
+          message: msg,
+        })
         return
       }
       applyResult(data)
     } catch (err) {
-      setError(err?.message || 'Error al validar el ticket.')
+      const msg = err?.message || 'Error al validar el ticket.'
+      setError(msg)
       setResult(null)
+      setModal({ kind: 'error', title: 'Error', message: msg })
     } finally {
       setBusy(false)
     }
@@ -105,6 +130,7 @@ export default function AdminCheckIn({ onCheckedIn }) {
   const startScanner = async () => {
     setError('')
     setResult(null)
+    setModal(null)
     try {
       const scanner = new Html5Qrcode(readerId)
       scannerRef.current = scanner
@@ -162,7 +188,7 @@ export default function AdminCheckIn({ onCheckedIn }) {
             {!scanning ? (
               <button
                 type="button"
-                className="btn btn--primary"
+                className="btn admin-btn admin-btn--green"
                 onClick={startScanner}
                 disabled={busy}
               >
@@ -171,7 +197,7 @@ export default function AdminCheckIn({ onCheckedIn }) {
             ) : (
               <button
                 type="button"
-                className="btn btn--outline"
+                className="btn admin-btn admin-btn--yellow"
                 onClick={stopScanner}
               >
                 Detener cámara
@@ -196,16 +222,16 @@ export default function AdminCheckIn({ onCheckedIn }) {
             />
             <button
               type="submit"
-              className="btn btn--primary"
+              className="btn admin-btn admin-btn--blue"
               disabled={busy || !manual.trim()}
             >
               {busy ? 'Validando…' : 'Marcar ingreso'}
             </button>
           </form>
 
-          {error && <p className="admin-checkin__error">{error}</p>}
+          {error && !modal && <p className="admin-checkin__error">{error}</p>}
 
-          {result?.ok && (
+          {result?.ok && !modal && (
             <div
               className={`admin-checkin__result ${
                 result.already ? 'is-already' : 'is-ok'
@@ -228,6 +254,49 @@ export default function AdminCheckIn({ onCheckedIn }) {
           )}
         </section>
       </div>
+
+      {modal && (
+        <div
+          className="admin-checkin-modal__backdrop"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) closeModal()
+          }}
+        >
+          <div
+            className={`admin-checkin-modal admin-checkin-modal--${modal.kind}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-checkin-modal-title"
+          >
+            <p
+              id="admin-checkin-modal-title"
+              className="admin-checkin-modal__title"
+            >
+              {modal.title}
+            </p>
+            {modal.name ? (
+              <p className="admin-checkin-modal__name">{modal.name}</p>
+            ) : null}
+            {modal.meta ? (
+              <p className="admin-checkin-modal__meta">{modal.meta}</p>
+            ) : null}
+            {modal.time ? (
+              <p className="admin-checkin-modal__time">{modal.time}</p>
+            ) : null}
+            {modal.message ? (
+              <p className="admin-checkin-modal__message">{modal.message}</p>
+            ) : null}
+            <button
+              type="button"
+              className="btn admin-btn admin-btn--green admin-checkin-modal__ok"
+              onClick={closeModal}
+              autoFocus
+            >
+              Continuar escaneando
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
