@@ -502,69 +502,120 @@
 
 @media (max-width: 720px) {
   .hero {
-    height: clamp(380px, 96vw, 520px);
+    /* Más alto: cabe imagen + texto + CTA sin recortar el copy */
+    height: clamp(560px, 168vw, 720px);
   }
 
   .hero__track {
-    padding-bottom: 5.5rem;
+    padding: 0.65rem 2.75rem 6.75rem;
   }
 
   .hero__slide {
-    inset: clamp(0.75rem, 2vw, 1.25rem) clamp(2.5rem, 5vw, 3.5rem)
-      5.25rem;
+    inset: 0.55rem 2.6rem 6.5rem;
+  }
+
+  .hero__ticket {
+    max-height: 100%;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .hero__ticket-card {
     flex-direction: column;
-    justify-content: stretch;
+    justify-content: flex-start;
     gap: 0;
+    max-height: 100%;
+    overflow: hidden;
   }
 
   .hero__ticket-copy {
+    order: 1;
+    flex: 0 0 auto; /* no aplastar el texto */
     max-width: none;
-    order: 2;
-    flex: 1 1 auto;
+    padding: 0.7rem 0.85rem 0.85rem;
+    gap: 0;
   }
 
   .hero__ticket-media {
-    order: 1;
+    order: 2;
     flex: 0 0 auto;
     width: 100%;
-    min-height: clamp(120px, 34vw, 160px);
+    min-height: 0;
     height: auto;
+    padding: 0.55rem 0.65rem 0.45rem;
   }
 
   .hero__ticket-media::before {
     left: 0;
     right: 0;
-    top: auto;
-    bottom: 0;
+    top: 0;
+    bottom: auto;
     border-left: none;
-    border-bottom: 2px dashed rgba(255, 255, 255, 0.35);
+    border-bottom: none;
+    border-top: 2px dashed rgba(255, 255, 255, 0.35);
   }
 
   .hero__ticket-card.is-featured .hero__ticket-media::before {
-    border-bottom-color: rgba(80, 50, 0, 0.22);
+    border-top-color: rgba(80, 50, 0, 0.22);
+    border-bottom-color: transparent;
   }
 
+  .hero__ticket-meta {
+    margin: 0 0 0.35rem;
+    font-size: 0.72rem;
+    line-height: 1.25;
+    gap: 0.2rem 0.35rem;
+  }
+
+  .hero__ticket-venue-logo {
+    height: 1.1rem;
+  }
+
+  .hero__ticket-title {
+    margin: 0 0 0.25rem;
+    font-size: clamp(1.35rem, 7vw, 1.7rem);
+  }
+
+  .hero__ticket-desc {
+    margin: 0 0 0.4rem;
+    min-height: 0;
+    font-size: clamp(0.85rem, 3.6vw, 0.95rem);
+    line-height: 1.3;
+  }
+
+  .hero__ticket-price {
+    margin: 0 0 0.55rem;
+    font-size: clamp(1.25rem, 6vw, 1.55rem);
+  }
+
+  .hero__ticket-cta {
+    min-width: 8.5rem;
+    font-size: 0.85rem;
+    padding: 0.55rem 1.1rem;
+  }
+
+  /* Aliados debajo del tiburón */
   .hero__allies {
     order: 3;
-    gap: 0.35rem 0.5rem;
-    padding: 0.65rem 0.85rem;
+    flex: 0 0 auto;
+    gap: 0.25rem 0.4rem;
+    padding: 0.4rem 0.55rem;
+    max-height: 2.5rem;
+    overflow: hidden;
   }
 
   .hero__ticket-sharky {
     width: auto;
-    max-height: clamp(100px, 28vw, 140px);
+    max-height: clamp(88px, 26vw, 120px);
   }
 
   .hero__allies-item {
-    height: 32px;
+    height: 26px;
   }
 
   .hero__allies-logo {
-    height: 26px;
-    max-width: 72px;
+    height: 22px;
+    max-width: 58px;
   }
 
   .hero__nav {
@@ -573,12 +624,38 @@
     font-size: 1.4rem;
   }
 
+  .hero__dots {
+    bottom: 5.35rem;
+  }
+
   .hero__register {
-    bottom: 1.15rem;
+    bottom: 0.85rem;
+    width: min(100% - 1.5rem, 22rem);
+  }
+
+  .hero__register-row {
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .hero__support {
+    font-size: 0.78rem;
+    padding: 0.4rem 0.75rem;
   }
 
   .hero__register-btn {
     min-width: 10rem;
     padding-inline: 1.25rem;
+  }
+}
+
+/* Móviles muy angostos: priorizar copy; ocultar franja de logos del hero */
+@media (max-width: 400px) {
+  .hero {
+    height: clamp(520px, 178vw, 640px);
+  }
+
+  .hero__allies {
+    display: none;
   }
 }

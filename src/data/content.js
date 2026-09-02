@@ -735,7 +735,7 @@ export const FINAL_ROUND = {
   ticketsHref: '#inicio',
   dateLabel: 'Miércoles 25 de noviembre',
   yearLabel: '2026',
-  timeLabel: '5:00 p. m. – 9:45 p. m.',
+  timeLabel: '3:00 p. m. – 9:45 p. m.',
   venue: 'Hotel Dann Carlton',
   address: 'Calle 98 No. 52B-10, Riomar · Barranquilla',
   hotelLogo: '/dancarton.svg',
@@ -867,6 +867,12 @@ export const JUDGES = [
     name: 'Isa Severiche',
     title: 'Publicista · CEO Shark Caribe Pitch Competition',
     photo: '/jurados/isa.jpeg',
+    instagramUrl: '',
+  },
+  {
+    name: 'Jacqueline Rojas',
+    title: 'Ex directora del SENA Regional Atlántico',
+    photo: '',
     instagramUrl: '',
   },
 ]
@@ -1025,7 +1031,7 @@ export const SCHEDULE = {
   galaSubtitle: '25 de noviembre · Hotel Dann Carlton',
   galaAgenda: [
     {
-      time: '5:00 PM – 6:30 PM',
+      time: '3:00 PM – 6:30 PM',
       detail: 'Pitch de finalistas.',
     },
     {

@@ -255,7 +255,7 @@ export default function AdminTicketPreview({ attendees = [], initialId = '' }) {
 
       <div className="admin-ticket-preview__frame">
         <iframe
-          key={`ticket-preview-${mode}-${record.ticket_number ?? 'x'}-${record.seat_type ?? ''}-logos-flex`}
+          key={`ticket-preview-${mode}-${record.ticket_number ?? 'x'}-${record.seat_type ?? ''}-lux-5`}
           title="Vista previa del correo del ticket"
           className="admin-ticket-preview__iframe"
           srcDoc={preview.html}

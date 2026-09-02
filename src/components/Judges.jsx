@@ -200,6 +200,9 @@ export default function Judges() {
                         photo
                       )}
                     </div>
+                    {!judge.photo && (
+                      <p className="judge__name">{judge.name}</p>
+                    )}
                     {judge.title && (
                       <p className="judge__title">{judge.title}</p>
                     )}
