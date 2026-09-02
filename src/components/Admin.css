@@ -582,6 +582,48 @@
   margin-left: auto;
 }
 
+.admin-ticket-preview__inventory {
+  margin: 1rem 0 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(13, 26, 61, 0.12);
+  background: #f8fafc;
+}
+
+.admin-ticket-preview__inventory-title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0d1a3d;
+}
+
+.admin-ticket-preview__inventory-lead {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+.admin-ticket-preview__inventory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.admin-ticket-preview__per-page {
+  margin-bottom: 0.75rem;
+}
+
+.admin-ticket-preview__inventory-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.admin-ticket-preview__inventory-hint code {
+  font-size: 0.8em;
+}
+
 .admin-ticket-preview__modes {
   display: flex;
   flex-wrap: wrap;

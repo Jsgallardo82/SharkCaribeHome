@@ -5,23 +5,78 @@ import {
   buildAttendeeTicketEmail,
 } from '../lib/attendeeTicketEmail.js'
 
-function openTicketsPrintWindow() {
-  const baseUrl = window.location.origin
-  const preferencial = buildAttendeeTicketEmail(SAMPLE_TICKET_PREFERENCIAL, {
-    baseUrl,
-  })
-  const general = buildAttendeeTicketEmail(SAMPLE_TICKET_GENERAL, { baseUrl })
+/** Escala según boletas por hoja (carta). Más densas = QR más chico. */
+const SCALE_BY_PER_PAGE = {
+  1: 0.48,
+  2: 0.4,
+  4: 0.3,
+}
 
-  // Escala ~48%: 1 ticket por hoja carta, ~mitad del ancho.
-  const PRINT_SCALE = 0.48
+function isPhysicalInventoryTicket(row) {
+  const conf = String(row?.payment_confirmation || '')
+  const doc = String(row?.document_number || '')
+  return (
+    conf === 'FISICO:INVENTARIO' ||
+    doc.startsWith('FIS-PREF-') ||
+    doc.startsWith('FIS-GEN-')
+  )
+}
+
+function chunkTickets(items, size) {
+  const sheets = []
+  for (let i = 0; i < items.length; i += size) {
+    sheets.push(items.slice(i, i + size))
+  }
+  return sheets
+}
+
+/**
+ * @param {Array<{ label: string, html: string }>} tickets
+ * @param {string} title
+ * @param {1|2|4} [ticketsPerPage]
+ */
+function openPrintWindow(tickets, title, ticketsPerPage = 1) {
+  if (!tickets.length) {
+    window.alert('No hay boletas para imprimir.')
+    return
+  }
+
+  const perPage = [1, 2, 4].includes(Number(ticketsPerPage))
+    ? Number(ticketsPerPage)
+    : 1
+  const scale = SCALE_BY_PER_PAGE[perPage] || SCALE_BY_PER_PAGE[1]
+  const frameW = Math.round(560 * scale)
+  const sheets = chunkTickets(tickets, perPage)
+  const layoutClass =
+    perPage === 4 ? 'sheet--grid4' : perPage === 2 ? 'sheet--stack2' : 'sheet--one'
+
+  const sheetHtml = sheets
+    .map((sheet) => {
+      const cells = sheet
+        .map(
+          (ticket) => `
+      <div class="ticket-cell">
+        <p class="print-label">${ticket.label}</p>
+        <div class="ticket-frame">
+          <div class="ticket-scale">${ticket.html}</div>
+        </div>
+      </div>`
+        )
+        .join('\n')
+      return `
+  <section class="sheet ${layoutClass}">
+    ${cells}
+  </section>`
+    })
+    .join('\n')
 
   const doc = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Tickets Shark Caribe — Preferencial y General</title>
+  <title>${title}</title>
   <style>
-    @page { size: letter; margin: 10mm; }
+    @page { size: letter; margin: 8mm; }
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -30,40 +85,65 @@ function openTicketsPrintWindow() {
       font-family: Segoe UI, Arial, sans-serif;
     }
     .print-label {
-      margin: 0 0 6px;
-      font-size: 10px;
-      letter-spacing: 0.12em;
+      margin: 0 0 4px;
+      font-size: 9px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #64748b;
       font-weight: 700;
       text-align: center;
     }
-    .ticket-page {
+    .sheet {
       page-break-after: always;
       break-after: page;
       page-break-inside: avoid;
       break-inside: avoid;
-      padding: 12px 0 24px;
-      text-align: center;
+      padding: 6px 0 10px;
+      width: 100%;
     }
-    .ticket-page:last-child {
+    .sheet:last-child {
       page-break-after: auto;
       break-after: auto;
     }
+    .sheet--one {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .sheet--stack2 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      gap: 8px;
+      min-height: 250mm;
+    }
+    .sheet--grid4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 6px 8px;
+      align-items: start;
+      justify-items: center;
+      min-height: 250mm;
+    }
+    .ticket-cell {
+      text-align: center;
+    }
     .ticket-frame {
       display: inline-block;
-      width: ${Math.round(560 * PRINT_SCALE)}px;
+      width: ${frameW}px;
       overflow: hidden;
       text-align: left;
       vertical-align: top;
     }
     .ticket-scale {
       width: 560px;
-      transform: scale(${PRINT_SCALE});
+      transform: scale(${scale});
       transform-origin: top left;
     }
     .ticket-scale > div {
-      padding: 8px !important;
+      padding: 6px !important;
       background: transparent !important;
     }
     .ticket-scale > div > div:first-child {
@@ -72,29 +152,21 @@ function openTicketsPrintWindow() {
     @media print {
       body { background: #fff; }
       .no-print { display: none !important; }
-      .ticket-page { padding: 0; }
+      .sheet { padding: 0; }
+      .sheet--stack2, .sheet--grid4 { min-height: 0; height: 260mm; }
     }
   </style>
 </head>
 <body>
-  <p class="no-print" style="text-align:center;padding:12px;font-size:14px;color:#64748b;">
-    Usa “Guardar como PDF” o imprime. Cada ticket va en una página (escala ${Math.round(PRINT_SCALE * 100)}%).
+  <p class="no-print" style="text-align:center;padding:12px;font-size:14px;color:#64748b;max-width:40rem;margin:0 auto;">
+    ${tickets.length} boleta(s) · ${perPage} por hoja · ${sheets.length} página(s).
+    Usa “Guardar como PDF”. Espera a que carguen los QR.
+    ${perPage === 4 ? ' Aviso: con 4 por hoja el QR queda más chico; prueba escanear una muestra.' : ''}
   </p>
-  <section class="ticket-page">
-    <p class="print-label">Ticket Preferencial · ejemplo</p>
-    <div class="ticket-frame">
-      <div class="ticket-scale">${preferencial.html}</div>
-    </div>
-  </section>
-  <section class="ticket-page">
-    <p class="print-label">Ticket General · ejemplo</p>
-    <div class="ticket-frame">
-      <div class="ticket-scale">${general.html}</div>
-    </div>
-  </section>
+  ${sheetHtml}
   <script>
     (async function () {
-      const scale = ${PRINT_SCALE}
+      const scale = ${scale}
       const imgs = Array.from(document.images || [])
       await Promise.all(
         imgs.map(function (img) {
@@ -113,7 +185,7 @@ function openTicketsPrintWindow() {
       setTimeout(function () {
         window.focus()
         window.print()
-      }, 250)
+      }, 450)
     })()
   </script>
 </body>
@@ -121,7 +193,7 @@ function openTicketsPrintWindow() {
 
   const blob = new Blob([doc], { type: 'text/html;charset=utf-8' })
   const url = URL.createObjectURL(blob)
-  const win = window.open(url, '_blank', 'width=720,height=900')
+  const win = window.open(url, '_blank', 'width=780,height=920')
   if (!win) {
     URL.revokeObjectURL(url)
     window.alert(
@@ -129,7 +201,53 @@ function openTicketsPrintWindow() {
     )
     return
   }
-  setTimeout(() => URL.revokeObjectURL(url), 60_000)
+  setTimeout(() => URL.revokeObjectURL(url), 180_000)
+}
+
+function openTicketsPrintWindow() {
+  const baseUrl = window.location.origin
+  const preferencial = buildAttendeeTicketEmail(SAMPLE_TICKET_PREFERENCIAL, {
+    baseUrl,
+  })
+  const general = buildAttendeeTicketEmail(SAMPLE_TICKET_GENERAL, { baseUrl })
+  openPrintWindow(
+    [
+      { label: 'Ticket Preferencial · ejemplo', html: preferencial.html },
+      { label: 'Ticket General · ejemplo', html: general.html },
+    ],
+    'Tickets Shark Caribe — Preferencial y General',
+    1
+  )
+}
+
+function openInventoryPrintWindow(records, seatLabel, ticketsPerPage) {
+  const baseUrl = window.location.origin
+  const sorted = [...records].sort((a, b) => {
+    const na = Number(a.ticket_number) || 0
+    const nb = Number(b.ticket_number) || 0
+    if (na !== nb) return na - nb
+    return String(a.document_number || '').localeCompare(
+      String(b.document_number || '')
+    )
+  })
+
+  const tickets = sorted.map((row) => {
+    const built = buildAttendeeTicketEmail(row, { baseUrl })
+    const num = row.ticket_number != null ? `#${row.ticket_number}` : '—'
+    const docNo = row.document_number || ''
+    return {
+      label: `${seatLabel} · ticket ${num} · ${docNo}`,
+      html: built.html,
+    }
+  })
+
+  const sheets = Math.ceil(tickets.length / ticketsPerPage)
+  openPrintWindow(
+    tickets,
+    `Inventario físico · ${seatLabel} · ${tickets.length} boletas · ${ticketsPerPage}/hoja`,
+    ticketsPerPage
+  )
+  return sheets
 }
 
 /**
@@ -145,10 +263,31 @@ export default function AdminTicketPreview({ attendees = [], initialId = '' }) {
     [attendees]
   )
 
+  const physicalPref = useMemo(
+    () =>
+      paid.filter(
+        (a) =>
+          isPhysicalInventoryTicket(a) &&
+          String(a.seat_type || '') === 'preferencial'
+      ),
+    [paid]
+  )
+  const physicalGen = useMemo(
+    () =>
+      paid.filter(
+        (a) =>
+          isPhysicalInventoryTicket(a) &&
+          String(a.seat_type || '') === 'general'
+      ),
+    [paid]
+  )
+
   const [mode, setMode] = useState(
     initialId ? 'real' : 'sample-preferencial'
   )
   const [selectedId, setSelectedId] = useState(initialId || '')
+  const [busyPrint, setBusyPrint] = useState('')
+  const [ticketsPerPage, setTicketsPerPage] = useState(2)
 
   useEffect(() => {
     if (!initialId) return
@@ -171,6 +310,31 @@ export default function AdminTicketPreview({ attendees = [], initialId = '' }) {
       }),
     [record]
   )
+
+  function handleInventoryPrint(kind) {
+    const rows = kind === 'preferencial' ? physicalPref : physicalGen
+    const label = kind === 'preferencial' ? 'Preferencial' : 'General'
+    if (!rows.length) {
+      window.alert(
+        `No hay boletas físicas ${label} en la base. Ejecuta physical_ticket_inventory.sql primero.`
+      )
+      return
+    }
+    const sheets = Math.ceil(rows.length / ticketsPerPage)
+    const ok = window.confirm(
+      `Se abrirá una ventana con ${rows.length} boletas ${label}\n` +
+        `(${ticketsPerPage} por hoja ≈ ${sheets} páginas).\n` +
+        'Luego elige “Guardar como PDF”.\n\n' +
+        '¿Continuar?'
+    )
+    if (!ok) return
+    setBusyPrint(kind)
+    try {
+      openInventoryPrintWindow(rows, label, ticketsPerPage)
+    } finally {
+      setTimeout(() => setBusyPrint(''), 800)
+    }
+  }
 
   return (
     <div className="admin-ticket-preview">
@@ -247,6 +411,52 @@ export default function AdminTicketPreview({ attendees = [], initialId = '' }) {
         >
           Descargar PDF (ambos)
         </button>
+      </div>
+
+      <div className="admin-ticket-preview__inventory">
+        <h3 className="admin-ticket-preview__inventory-title">
+          Inventario físico para imprenta
+        </h3>
+        <p className="admin-ticket-preview__inventory-lead">
+          Genera PDF con QR reales. Recomendado: <strong>2 por hoja</strong>{' '}
+          (ahorra papel y el QR sigue legible). Con 4 por hoja prueba escanear
+          una muestra antes de mandar a imprenta.
+        </p>
+        <label className="admin-ticket-preview__select admin-ticket-preview__per-page">
+          <span>Boletas por hoja</span>
+          <select
+            value={ticketsPerPage}
+            onChange={(e) => setTicketsPerPage(Number(e.target.value))}
+          >
+            <option value={1}>1 por hoja (~100 páginas / tipo)</option>
+            <option value={2}>2 por hoja (~50 páginas / tipo) · recomendado</option>
+            <option value={4}>4 por hoja (~25 páginas / tipo)</option>
+          </select>
+        </label>
+        <div className="admin-ticket-preview__inventory-actions">
+          <button
+            type="button"
+            className="btn btn--primary"
+            disabled={busyPrint === 'preferencial' || physicalPref.length === 0}
+            onClick={() => handleInventoryPrint('preferencial')}
+          >
+            PDF Preferencial ({physicalPref.length})
+          </button>
+          <button
+            type="button"
+            className="btn btn--primary"
+            disabled={busyPrint === 'general' || physicalGen.length === 0}
+            onClick={() => handleInventoryPrint('general')}
+          >
+            PDF General ({physicalGen.length})
+          </button>
+        </div>
+        {physicalPref.length === 0 && physicalGen.length === 0 ? (
+          <p className="admin-ticket-preview__inventory-hint">
+            Aún no hay filas <code>FISICO:INVENTARIO</code>. Ejecuta{' '}
+            <code>physical_ticket_inventory.sql</code> y recarga Admin.
+          </p>
+        ) : null}
       </div>
 
       <p className="admin-ticket-preview__subject">

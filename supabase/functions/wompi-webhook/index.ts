@@ -55,11 +55,18 @@ function formatAmount(cents) {
   }).format(pesos)
 }
 
-function qrImageUrl(token) {
-  const payload = String(token || '').trim()
+/**
+ * URL de imagen QR. El contenido del código es:
+ *   sharkcaribe-ticket:<uuid>
+ * (prefijo + UUID, corrección de errores alta) para que el escáner
+ * no confunda un UUID mal leído con otro ticket.
+ */
+function qrImageUrl(token, _baseUrl = '') {
+  const payload = String(token || '').trim().toLowerCase()
   if (!payload) return ''
-  const data = encodeURIComponent(payload)
-  return `https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=10&data=${data}`
+  const dataPayload = `sharkcaribe-ticket:${payload}`
+  const data = encodeURIComponent(dataPayload)
+  return `https://api.qrserver.com/v1/create-qr-code/?size=520x520&margin=12&ecc=H&data=${data}`
 }
 
 function resolveAssetUrl(path, baseUrl = '') {
@@ -210,7 +217,7 @@ function buildAttendeeTicketEmail(record, options = {}) {
   const amount = formatAmount(record.amount_in_cents)
   const reference = record.payment_reference || '—'
   const token = record.ticket_token || ''
-  const qrUrl = qrImageUrl(token)
+  const qrUrl = qrImageUrl(token, baseUrl)
   const theme = themeForSeat(seatType)
   const sharkySrc = resolveAssetUrl(theme.sharky, baseUrl)
 

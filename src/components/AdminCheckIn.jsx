@@ -60,9 +60,14 @@ export default function AdminCheckIn({ onCheckedIn }) {
   }
 
   const processToken = async (raw) => {
-    const token = extractTicketToken(raw)
+    const rawText = String(raw || '').trim()
+    const token = extractTicketToken(rawText)
     if (!token) {
-      setError('No reconocimos un código de ticket válido.')
+      setError(
+        rawText
+          ? `No reconocimos un código de ticket válido. Leído: “${rawText.slice(0, 80)}${rawText.length > 80 ? '…' : ''}”`
+          : 'No reconocimos un código de ticket válido.'
+      )
       return
     }
     if (busy) return
@@ -80,7 +85,11 @@ export default function AdminCheckIn({ onCheckedIn }) {
           missing_token: 'Código vacío.',
           forbidden: 'Sin permiso de administrador.',
         }
-        setError(map[data?.error] || data?.error || 'No se pudo validar.')
+        const detail =
+          data?.error === 'not_found'
+            ? ` Token leído: ${token}`
+            : ''
+        setError((map[data?.error] || data?.error || 'No se pudo validar.') + detail)
         setResult(data || null)
         return
       }

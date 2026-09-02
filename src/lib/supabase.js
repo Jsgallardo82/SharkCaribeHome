@@ -1071,14 +1071,35 @@ export async function submitExhibitorRegistration(values) {
   await notifyRegistration('expositor', row)
 }
 
-/** Extrae un UUID de un QR (token puro o URL que lo contenga). */
+/** UUID (cualquier variante hex); se normaliza a minúsculas. */
+const TICKET_UUID_RE =
+  /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
+
+/** Extrae un UUID de un QR (token puro, URL /checkin?t= o prefijo sharkcaribe-ticket:). */
 export function extractTicketToken(raw) {
   const s = String(raw || '').trim()
   if (!s) return ''
-  const match = s.match(
-    /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i
-  )
-  return match ? match[0] : ''
+
+  const prefixed = s.match(/sharkcaribe-ticket:[\s]*([0-9a-f-]{36})/i)
+  if (prefixed?.[1]) return prefixed[1].toLowerCase()
+
+  try {
+    const asUrl = new URL(s)
+    const fromQuery =
+      asUrl.searchParams.get('t') ||
+      asUrl.searchParams.get('token') ||
+      asUrl.searchParams.get('ticket_token')
+    if (fromQuery && TICKET_UUID_RE.test(fromQuery.trim())) {
+      return fromQuery.trim().toLowerCase()
+    }
+    const pathMatch = asUrl.pathname.match(TICKET_UUID_RE)
+    if (pathMatch) return pathMatch[0].toLowerCase()
+  } catch {
+    /* no es URL absoluta */
+  }
+
+  const match = s.match(TICKET_UUID_RE)
+  return match ? match[0].toLowerCase() : ''
 }
 
 export async function checkInAttendeeByToken(token) {
