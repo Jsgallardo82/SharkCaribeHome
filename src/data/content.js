@@ -725,7 +725,7 @@ export const FINAL_ROUND = {
   title: 'Ellos avanzan a la semifinal',
   lead:
     'Los semifinalistas se preparan para el gran cierre. La Gran Final será el 25 de noviembre de 2026.',
-  finalistsTitle: 'Semifinalistas',
+  finalistsTitle: 'Semifinalistas 2026',
   emptyFinalists:
     'Pronto revelaremos a quienes avanzan a la semifinal.',
   trainingTitle: 'Programa de entrenamiento',
