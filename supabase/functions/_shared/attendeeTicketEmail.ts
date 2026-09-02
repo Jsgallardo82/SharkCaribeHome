@@ -21,21 +21,20 @@ export const TICKET_LOGOS = {
     {
       name: 'IS Comunicaciones',
       src: '/issnofondo.png',
-      darkBg: true,
     },
   ],
   allies: [
-    { name: 'Universidad Sergio Arboleda', src: '/logos/sergioarboleda.png' },
-    { name: 'Prime Business School', src: '/logos/prime.png', darkBg: true },
-    { name: 'SENA', src: '/logos/sena.png' },
     { name: 'CC Buenavista', src: '/logos/ccbuenavista.png' },
-    { name: 'Índice', src: '/logos/indice.png' },
+    { name: 'Prime Business School', src: '/logos/prime.png' },
+    { name: 'SENA', src: '/logos/sena.png' },
+    { name: 'Universidad Sergio Arboleda', src: '/logos/sergioarboleda.png' },
     { name: 'FCA', src: '/logos/fca.png', height: 36, maxWidth: 78 },
-    { name: 'Space Rock', src: '/logos/spacerock.png', height: 36, maxWidth: 78 },
-    { name: 'Mi Red', src: '/logos/mired.png', height: 36, maxWidth: 78 },
-    { name: 'Elena', src: '/logos/elena.jpeg' },
+    { name: 'Índice', src: '/logos/indice.png' },
     { name: 'Reformada', src: '/logos/reformada.png' },
+    { name: 'Mi Red', src: '/logos/mired.png', height: 36, maxWidth: 78 },
+    { name: 'Space Rock', src: '/logos/spacerock.png', height: 36, maxWidth: 78 },
     { name: 'Universidad del Atlántico', src: '/logos/UA.png' },
+    { name: 'Elena', src: '/logos/elena.jpeg' },
   ],
 }
 
@@ -97,32 +96,87 @@ function themeForSeat(seatType) {
   }
 }
 
-function logoRowFlexHtml(logos, baseUrl, heightPx, maxWidthPx = 88) {
-  if (!logos.length) return ''
-  const imgs = logos
-    .map((logo) => {
-      const src = resolveAssetUrl(logo.src, baseUrl)
-      const h = logo.height ?? heightPx
-      const maxW = logo.maxWidth ?? maxWidthPx
-      const img = `<img src="${escapeHtml(src)}" alt="${escapeHtml(logo.name)}" height="${h}" style="display:block;height:${h}px;width:auto;max-width:${maxW}px;object-fit:contain;margin:0 auto;" />`
-      if (logo.darkBg) {
-        return `<div style="flex:0 0 auto;background:#000000;border-radius:8px;padding:8px 10px;line-height:0;">${img}</div>`
-      }
-      return `<div style="flex:0 0 auto;line-height:0;">${img}</div>`
-    })
-    .join('')
-  const justify = logos.length === 1 ? 'center' : 'space-between'
-  return `<div style="display:flex;justify-content:${justify};align-items:center;width:100%;gap:4px;margin:0 0 8px;">${imgs}</div>`
+function resolveLogoBg(logo, index, alternate) {
+  if (logo?.bg === 'black' || logo?.bg === 'white') return logo.bg
+  if (logo?.darkBg) return 'black'
+  if (!alternate) return null
+  return index % 2 === 0 ? 'white' : 'black'
 }
 
-function logoGridHtml(logos, baseUrl, heightPx, maxWidthPx = 72, perRow = 6) {
+function logoRowFlexHtml(
+  logos,
+  baseUrl,
+  heightPx,
+  maxWidthPx = 88,
+  startIndex = 0,
+  alternate = false
+) {
   if (!logos.length) return ''
+  const isOrganizerOnly = !alternate && logos.length === 1
+  const cellH = isOrganizerOnly ? 72 : 68
+  const cellW = isOrganizerOnly ? 160 : 'auto'
+  const radius = isOrganizerOnly ? '6px' : '0'
+  const organizerBorder = isOrganizerOnly ? 'border:1px solid #0d1a3d;' : ''
+  const cellBase = isOrganizerOnly
+    ? `flex:0 0 ${cellW}px;width:${cellW}px;height:${cellH}px;min-width:${cellW}px;min-height:${cellH}px;` +
+      `padding:8px 14px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;` +
+      `line-height:0;overflow:hidden;border-radius:${radius};background:transparent;${organizerBorder}`
+    : `flex:0 0 auto;height:${cellH}px;min-width:${cellH}px;padding:6px 10px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;line-height:0;background:transparent;border:1px solid #0d1a3d;`
+  const imgs = logos
+    .map((logo, i) => {
+      const src = resolveAssetUrl(logo.src, baseUrl)
+      const h = Math.min(logo.height ?? heightPx, cellH - 16)
+      const maxW = Math.min(
+        logo.maxWidth ?? maxWidthPx,
+        isOrganizerOnly ? cellW - 16 : maxWidthPx
+      )
+      const bg = resolveLogoBg(logo, startIndex + i, alternate)
+      const img = `<img src="${escapeHtml(src)}" alt="${escapeHtml(logo.name)}" height="${h}" style="display:block;height:${h}px;width:auto;max-width:${maxW}px;object-fit:contain;" />`
+      const join =
+        !isOrganizerOnly && i > 0 ? 'margin-left:-1px;' : ''
+      if (isOrganizerOnly) {
+        return `<div style="${cellBase}">${img}</div>`
+      }
+      if (bg === 'black') {
+        return `<div style="${cellBase}${join}background:#000000;">${img}</div>`
+      }
+      if (bg === 'white') {
+        return `<div style="${cellBase}${join}background:#ffffff;">${img}</div>`
+      }
+      return `<div style="${cellBase}${join}">${img}</div>`
+    })
+    .join('')
+  const rowJoin = !isOrganizerOnly && startIndex > 0 ? 'margin-top:-1px;' : ''
+  return `<div style="display:flex;justify-content:center;align-items:center;flex-wrap:nowrap;width:100%;gap:0;margin:0;${rowJoin}">${imgs}</div>`
+}
+
+function logoGridHtml(
+  logos,
+  baseUrl,
+  heightPx,
+  maxWidthPx = 72,
+  perRow = 6,
+  alternateBg = false
+) {
+  if (!logos.length) return ''
+  if (logos.length === 1 && !alternateBg) {
+    return logoRowFlexHtml(logos, baseUrl, heightPx, maxWidthPx, 0, false)
+  }
   const chunks = []
   for (let i = 0; i < logos.length; i += perRow) {
     chunks.push(logos.slice(i, i + perRow))
   }
   return chunks
-    .map((chunk) => logoRowFlexHtml(chunk, baseUrl, heightPx, maxWidthPx))
+    .map((chunk, rowIdx) =>
+      logoRowFlexHtml(
+        chunk,
+        baseUrl,
+        heightPx,
+        maxWidthPx,
+        rowIdx * perRow,
+        false
+      )
+    )
     .join('')
 }
 
@@ -162,8 +216,8 @@ export function buildAttendeeTicketEmail(record, options = {}) {
     )
     .join('')
 
-  const organizerHtml = logoGridHtml(TICKET_LOGOS.organizer, baseUrl, 64, 180, 1)
-  const alliesHtml = logoGridHtml(TICKET_LOGOS.allies, baseUrl, 32, 70, 6)
+  const organizerHtml = logoGridHtml(TICKET_LOGOS.organizer, baseUrl, 64, 180, 1, false)
+  const alliesHtml = logoGridHtml(TICKET_LOGOS.allies, baseUrl, 32, 70, 6, false)
 
   const html = `
     <div style="font-family:Segoe UI,Arial,sans-serif;background:#0a1330;padding:24px;color:#0d1a3d;">
