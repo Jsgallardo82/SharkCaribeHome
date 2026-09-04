@@ -854,14 +854,16 @@ export const JUDGES = [
     name: 'Kike De Lavalle Tcherassi',
     title: 'Gerente General y Fundador, De Lavalle Tcherassi S.A.S.',
     photo: '/jurados/kike.jpeg',
-    instagramUrl: '',
+    instagramUrl:
+      'https://www.instagram.com/reel/Dc2KflpsFWB/?utm_source=ig_web_copy_link',
   },
   {
     name: 'César Prada',
     title:
       'CEO de Prago International con sedes en Colombia, Ecuador, Peru & Chile.',
     photo: '/jurados/cesar.jpeg',
-    instagramUrl: '',
+    instagramUrl:
+      'https://www.instagram.com/reel/DctWPcbRAHX/?utm_source=ig_web_copy_link',
   },
   {
     name: 'Isa Severiche',
