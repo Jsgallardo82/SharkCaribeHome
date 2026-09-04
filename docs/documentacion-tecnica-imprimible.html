@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Documentación técnica · Shark Caribe Home</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --navy: #0d1a3d;
+      --blue: #2b57ff;
+      --gold: #c4922e;
+      --muted: #64748b;
+      --bg: #f8fafc;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--navy);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      background: var(--navy);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    }
+    .toolbar h1 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .toolbar p {
+      margin: 0.15rem 0 0;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .btn-pdf {
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem 1.35rem;
+      background: #e11d2e;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(225, 29, 46, 0.4);
+    }
+    .btn-pdf:hover { background: #c41625; }
+    .hint {
+      max-width: 920px;
+      margin: 1rem auto 0;
+      padding: 0.85rem 1rem;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 10px;
+      color: #9a3412;
+      font-size: 0.92rem;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+    section.doc {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.35rem 1.5rem 1.5rem;
+      margin: 1.25rem 0;
+      page-break-inside: avoid;
+    }
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.45rem;
+      color: var(--blue);
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 0.35rem;
+    }
+    h3 {
+      margin: 1.25rem 0 0.5rem;
+      font-size: 1.1rem;
+    }
+    p, li { font-size: 0.95rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0 1rem;
+      font-size: 0.88rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 0.45rem 0.55rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eef2ff; }
+    code {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 0.85em;
+      background: #f1f5f9;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    .mermaid {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.75rem;
+      margin: 0.75rem 0 1rem;
+      overflow-x: auto;
+    }
+    .cover {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .cover h2 {
+      border: none;
+      font-size: 1.8rem;
+      color: var(--navy);
+    }
+    .cover .meta { color: var(--muted); font-size: 0.95rem; }
+    @media print {
+      .toolbar, .hint, .no-print { display: none !important; }
+      body { background: #fff; }
+      main { max-width: none; padding: 0; }
+      section.doc {
+        border: none;
+        border-radius: 0;
+        padding: 0 0 1rem;
+        margin: 0 0 1.25rem;
+        break-inside: avoid;
+      }
+      h2 { break-after: avoid; }
+      .mermaid { break-inside: avoid; }
+      @page { margin: 14mm; }
+    }
+  </style>
+</head>
+<body>
+  <header class="toolbar no-print">
+    <div>
+      <h1>Documentación técnica · Shark Caribe</h1>
+      <p>Este es el botón rojo de la derecha → abre el diálogo del navegador → elige “Guardar como PDF”.</p>
+    </div>
+    <button type="button" class="btn-pdf" id="btn-download-pdf" onclick="window.print()">
+      Descargar PDF
+    </button>
+  </header>
+
+  <p class="hint no-print">
+    <strong>Cómo guardar el PDF:</strong> haz clic en el botón rojo <em>Descargar PDF</em> (arriba a la derecha).
+    En el diálogo del sistema elige destino <strong>Microsoft Print to PDF</strong> / <strong>Guardar como PDF</strong>,
+    márgenes normales, y guarda el archivo. Espera 1–2 s a que carguen los diagramas antes de imprimir.
+  </p>
+
+  <main>
+    <section class="doc cover">
+      <h2>Shark Caribe Home</h2>
+      <p><strong>Documentación técnica del proyecto</strong></p>
+      <p class="meta">
+        Pitch Competition 2026 · Primer commit 22 jul 2026 (`3872fd4`)<br />
+        Dominio: sharkcaribe.co · Stack: React + Vite + Supabase + Wompi + Resend · Hosting: Vercel
+      </p>
+    </section>
+
+    <section class="doc" id="arquitectura">
+      <h2>01 · Arquitectura</h2>
+      <h3>Stack</h3>
+      <div class="mermaid">
+flowchart TB
+  subgraph Cliente
+    Browser[Navegador]
+  end
+  subgraph Vercel
+    SPA[SPA React + Vite]
+  end
+  subgraph Supabase
+    Auth[Auth]
+    DB[(Postgres)]
+    RPC[RPC SQL]
+    EF[Edge Functions]
+    Storage[Storage logos]
+  end
+  subgraph Externos
+    Wompi[Wompi Checkout]
+    Resend[Resend Email]
+    IG[Instagram Embed]
+    QRAPI[api.qrserver.com]
+  end
+  Browser --> SPA
+  SPA --> Auth
+  SPA --> DB
+  SPA --> RPC
+  SPA --> EF
+  SPA --> Storage
+  SPA -->|redirect form POST| Wompi
+  Wompi -->|webhook transaction.updated| EF
+  EF --> DB
+  EF --> Resend
+  Resend -->|HTML con img QR| Browser
+  SPA --> IG
+  Resend --> QRAPI
+      </div>
+      <table>
+        <thead><tr><th>Capa</th><th>Tecnología</th><th>Dónde</th></tr></thead>
+        <tbody>
+          <tr><td>Frontend</td><td>React 18, Vite 6, React Router 7</td><td><code>src/</code> · Vercel</td></tr>
+          <tr><td>Estilos</td><td>CSS por componente + tokens</td><td><code>src/styles/</code></td></tr>
+          <tr><td>CMS estático</td><td>JS export</td><td><code>src/data/content.js</code></td></tr>
+          <tr><td>BaaS</td><td>Supabase</td><td><code>supabase/</code></td></tr>
+          <tr><td>Pagos</td><td>Wompi Web Checkout</td><td><code>wompi.js</code> + RPC</td></tr>
+          <tr><td>Email</td><td>Resend</td><td>Edge webhook / resend-ticket / notify</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Capas del frontend</h3>
+      <div class="mermaid">
+flowchart LR
+  main[main.jsx rutas] --> App[App landing]
+  main --> Admin
+  main --> Jury
+  main --> Login
+  main --> PaymentResult
+  App --> Sections[Secciones UI]
+  App --> URM[UnifiedRegisterModal]
+  URM --> libSB[supabase.js]
+  URM --> libW[wompi.js]
+  Admin --> libSB
+  Admin --> CheckIn[AdminCheckIn]
+  Admin --> Preview[AdminTicketPreview]
+  Preview --> TicketTpl[attendeeTicketEmail.js]
+      </div>
+
+      <h3>Rutas</h3>
+      <table>
+        <thead><tr><th>Ruta</th><th>Rol</th></tr></thead>
+        <tbody>
+          <tr><td><code>/</code>, <code>/boleta</code>, <code>/boleta/:seatType</code></td><td>Landing + deep link compra</td></tr>
+          <tr><td><code>/pago/resultado</code></td><td>Retorno Wompi</td></tr>
+          <tr><td><code>/login</code>, <code>/registro</code></td><td>Auth</td></tr>
+          <tr><td><code>/admin</code></td><td>Admin</td></tr>
+          <tr><td><code>/jurado</code></td><td>Jurado</td></tr>
+          <tr><td><code>/resultados-vivo</code></td><td>Redirect a / (desactivado)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Flujo alto nivel: compra de boleta</h3>
+      <div class="mermaid">
+sequenceDiagram
+  actor U as Comprador
+  participant SPA as Front Vercel
+  participant RPC as Supabase RPC
+  participant DB as Postgres
+  participant W as Wompi
+  participant WH as wompi-webhook
+  participant R as Resend
+  U->>SPA: Completa UnifiedRegisterModal
+  SPA->>RPC: create_event_wompi_checkout
+  RPC->>DB: INSERT pending + reference
+  RPC-->>SPA: publicKey, reference, signature, amount
+  SPA->>W: POST checkout.wompi.co
+  U->>W: Paga
+  W->>WH: transaction.updated APPROVED
+  WH->>DB: status=pago + ticket_number
+  WH->>R: email HTML + QR
+  R-->>U: Correo con ticket
+  W-->>SPA: redirect /pago/resultado
+      </div>
+    </section>
+
+    <section class="doc" id="componentes">
+      <h2>02 · Componentes</h2>
+      <h3>Landing actual</h3>
+      <div class="mermaid">
+flowchart TB
+  Navbar --> Hero
+  Hero --> About
+  About --> FinalRound
+  FinalRound --> Judges
+  Judges --> Sponsors
+  Sponsors --> MuestraComercial
+  MuestraComercial --> Prizes
+  Prizes --> News
+  News --> InstagramFeed
+  InstagramFeed --> Gallery
+  Gallery --> Allies
+  Allies --> Footer
+  Footer -.-> UnifiedRegisterModal
+      </div>
+      <h3>Activos</h3>
+      <table>
+        <thead><tr><th>Componente</th><th>Función</th></tr></thead>
+        <tbody>
+          <tr><td>Navbar / Hero / About / FinalRound / Judges</td><td>Marketing + semifinalistas + jurados</td></tr>
+          <tr><td>Sponsors / MuestraComercial / Prizes / News</td><td>Patrocinio, stands, premios, prensa</td></tr>
+          <tr><td>InstagramFeed / Gallery / Allies / Footer</td><td>Social, álbum, logos, pie</td></tr>
+          <tr><td>UnifiedRegisterModal</td><td>Registro + pago (único modal vivo)</td></tr>
+          <tr><td>Admin / AdminCheckIn / AdminTicketPreview</td><td>Panel, QR, PDF físicos</td></tr>
+          <tr><td>Jury / Juicio2Ronda / JuryRound2Results</td><td>Portal jurado 2ª ronda</td></tr>
+          <tr><td>PaymentResult / Login / Signup</td><td>Post-pago y auth</td></tr>
+        </tbody>
+      </table>
+      <h3>Legacy comentados</h3>
+      <p><code>Competition</code>, <code>PitchRound</code>, <code>Editions</code>, <code>Entradas</code>, <code>Testimonials</code>, <code>Contact</code>, default <code>Ventures</code>.</p>
+      <h3>Huérfanos (0 imports)</h3>
+      <p><code>AttendeeModal</code>, <code>SponsorModal</code>, <code>ExhibitorModal</code>, <code>RegisterModal</code>, <code>ClosedCompetitorModal</code>, <code>LiveRound2Results</code>.</p>
+      <h3>¿Wompi / Resend en componentes?</h3>
+      <table>
+        <thead><tr><th>Integración</th><th>¿En componentes?</th><th>Detalle</th></tr></thead>
+        <tbody>
+          <tr><td>Wompi checkout</td><td>Sí (modal)</td><td>UnifiedRegisterModal → RPC → wompi.js</td></tr>
+          <tr><td>Wompi resultado</td><td>Sí</td><td>PaymentResult</td></tr>
+          <tr><td>Wompi webhook</td><td>No (servidor)</td><td>Edge wompi-webhook</td></tr>
+          <tr><td>Resend envío</td><td>No (servidor)</td><td>wompi-webhook / resend-ticket</td></tr>
+          <tr><td>Resend disparo UI</td><td>Sí</td><td>Admin → Reenviar ticket</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="doc" id="supabase">
+      <h2>03 · Supabase</h2>
+      <div class="mermaid">
+flowchart LR
+  subgraph DB
+    T1[attendee_registrations]
+    T2[sponsor_registrations]
+    T3[exhibitor_registrations]
+    T4[competitor_registrations]
+    T5[profiles]
+    T6[jury_scores_round2]
+  end
+  subgraph RPC
+    C1[create_event_wompi_checkout]
+    C2[check_in_attendee_by_token]
+    C3[set_attendee_checked_in]
+  end
+  subgraph Edge
+    E1[wompi-webhook]
+    E2[resend-ticket]
+    E3[notify-registration]
+  end
+  Front --> RPC
+  Front --> Edge
+  Edge --> DB
+  RPC --> DB
+  Wompi --> E1
+      </div>
+      <table>
+        <thead><tr><th>Function</th><th>Quién</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td>wompi-webhook</td><td>Wompi</td><td>Marca pago + email ticket</td></tr>
+          <tr><td>resend-ticket</td><td>Admin / SQL</td><td>Reenvía ticket</td></tr>
+          <tr><td>notify-registration</td><td>Front</td><td>Aviso inscripción</td></tr>
+        </tbody>
+      </table>
+      <p>Trigger: <code>status=pago</code> → <code>ticket_number</code>. QR: <code>ticket_token</code> UUID.</p>
+      <div class="mermaid">
+flowchart TB
+  User[Usuario Auth] --> Profile{profiles.role}
+  Profile -->|admin| AdminUI[/admin]
+  Profile -->|jurado| JuryUI[/jurado]
+  Profile -->|otro| Public[Landing]
+      </div>
+    </section>
+
+    <section class="doc" id="wompi-resend">
+      <h2>04 · Wompi y Resend</h2>
+      <p>No son componentes visuales: libs + RPC + Edge. La UI solo dispara.</p>
+      <h3>Flujo Wompi (compra)</h3>
+      <div class="mermaid">
+sequenceDiagram
+  participant Modal as UnifiedRegisterModal
+  participant SB as supabase.js
+  participant RPC as create_event_wompi_checkout
+  participant DB as attendee_registrations
+  participant WLib as wompi.js
+  participant Wompi as checkout.wompi.co
+  participant WH as wompi-webhook
+  participant Resend as api.resend.com
+  Modal->>SB: createEventWompiCheckout
+  SB->>RPC: rpc
+  RPC->>DB: INSERT pending
+  RPC-->>SB: datos firmados
+  Modal->>WLib: redirectToWompiCheckout
+  WLib->>Wompi: form POST
+  Wompi->>WH: transaction.updated
+  WH->>DB: status=pago
+  WH->>Resend: email ticket
+  Wompi-->>Modal: /pago/resultado
+      </div>
+      <table>
+        <thead><tr><th>Tipo</th><th>amount_in_cents</th><th>UI</th></tr></thead>
+        <tbody>
+          <tr><td>Preferencial</td><td>7990000</td><td>COP $79.900</td></tr>
+          <tr><td>General</td><td>5000000</td><td>COP $50.000</td></tr>
+        </tbody>
+      </table>
+      <h3>Flujo Resend (correo ticket)</h3>
+      <div class="mermaid">
+flowchart TB
+  A[Pago APPROVED wompi-webhook] --> B[buildAttendeeTicketEmail]
+  C[Admin Reenviar ticket] --> D[Edge resend-ticket]
+  E[SQL test service_role] --> D
+  D --> B
+  B --> F[HTML Preferencial/General]
+  F --> G[QR sharkcaribe-ticket:UUID]
+  G --> H[Resend API]
+  H --> I[Inbox]
+      </div>
+      <p>Plantilla: <code>src/lib/attendeeTicketEmail.js</code> → sync → redesplegar Edge.</p>
+      <p>Secrets: <code>RESEND_API_KEY</code>, <code>RESEND_FROM</code>, <code>PUBLIC_SITE_URL</code>, <code>WOMPI_EVENTS_SECRET</code>.</p>
+      <h3>Check-in</h3>
+      <div class="mermaid">
+flowchart LR
+  QR[QR correo] --> Cam[AdminCheckIn]
+  Cam --> Parse[extractTicketToken]
+  Parse --> RPC[check_in_attendee_by_token]
+  RPC --> OK{pago?}
+  OK -->|sí| IN[checked_in_at]
+  OK -->|no| ERR[error]
+      </div>
+    </section>
+
+    <section class="doc" id="fisicas">
+      <h2>05 · Boletas físicas y PDF</h2>
+      <p>100 Preferencial + 100 General en BD e impresión en hoja <strong>32 × 47 cm</strong>.</p>
+      <h3>1) Inventario SQL</h3>
+      <p>Script: <code>supabase/physical_ticket_inventory.sql</code></p>
+      <div class="mermaid">
+flowchart TB
+  SQL[SQL physical_ticket_inventory] --> INS[INSERT 100+100]
+  INS --> PAGO[status=pago]
+  PAGO --> TRIG[ticket_number]
+  INS --> TOK[ticket_token UUID]
+  INS --> MARK[FISICO:INVENTARIO]
+      </div>
+      <table>
+        <thead><tr><th>Campo</th><th>Preferencial</th><th>General</th></tr></thead>
+        <tbody>
+          <tr><td>document_number</td><td>FIS-PREF-001…100</td><td>FIS-GEN-001…100</td></tr>
+          <tr><td>payment_confirmation</td><td colspan="2">FISICO:INVENTARIO</td></tr>
+        </tbody>
+      </table>
+      <h3>2) PDF Admin</h3>
+      <p>Admin → Boleta → Inventario físico · <code>AdminTicketPreview.jsx</code></p>
+      <div class="mermaid">
+flowchart LR
+  Admin[Admin Boleta] --> Filtro[FISICO:INVENTARIO]
+  Filtro --> Pref[PDF Preferencial]
+  Filtro --> Gen[PDF General]
+  Pref --> Win[Ventana print]
+  Gen --> Win
+  Win --> Grid[Cuadrícula]
+  Grid --> Page["320×470 mm"]
+      </div>
+      <ul>
+        <li>Cuadrícula lado a lado + filas abajo, sin solapes</li>
+        <li>QR único por boleta</li>
+        <li>Tamaño aprox. boleta: ancho ≈ 14,8 cm × escala (ej. 32% ≈ 4,7 cm)</li>
+      </ul>
+      <h3>3) Venta en caja</h3>
+      <div class="mermaid">
+sequenceDiagram
+  participant Caja
+  participant DB as Postgres
+  participant Evento as Acceso QR
+  Caja->>Caja: Entrega boleta física
+  Caja->>DB: Opcional actualizar datos comprador
+  Evento->>DB: check_in_attendee_by_token
+      </div>
+    </section>
+  </main>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      securityLevel: 'loose',
+      flowchart: { htmlLabels: true },
+    });
+  </script>
+</body>
+</html>
