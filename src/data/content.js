@@ -871,13 +871,12 @@ export const JUDGES = [
     photo: '/jurados/isa.jpeg',
     instagramUrl: '',
   },
-  // Oculta hasta tener foto en /public/jurados/jacqueline.jpeg
-  // {
-  //   name: 'Jacqueline Rojas',
-  //   title: 'Ex directora del SENA Regional Atlántico',
-  //   photo: '/jurados/jacqueline.jpeg',
-  //   instagramUrl: '',
-  // },
+  {
+    name: 'Jacqueline Rojas',
+    title: 'Experta en educación, formación para el trabajo, empleo y gestión pública',
+    photo: '/jurados/jackque.jpeg',
+    instagramUrl: '',
+  },
 ]
 
 /* Emprendimientos concursantes — round: 'inscrito' | 'segunda_ronda' */
