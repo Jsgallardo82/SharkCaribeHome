@@ -873,8 +873,9 @@ export const JUDGES = [
   },
   {
     name: 'Jacqueline Rojas',
-    title: 'Experta en educación, formación para el trabajo, empleo y gestión pública',
-    photo: '/jurados/jackque.jpeg',
+    title:
+      'Experta en educación, formación para el trabajo, empleo y gestión pública, con trayectoria enfocada en generación de oportunidades e impulso al desarrollo de los territorios',
+    photo: '/jurados/jaque.jpeg',
     instagramUrl: '',
   },
 ]
