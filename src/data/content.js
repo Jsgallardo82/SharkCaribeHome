@@ -722,7 +722,7 @@ export const PITCH_ROUND = {
 export const FINAL_ROUND = {
   eyebrow: 'Próximo hito',
   badge: 'SEMIFINALISTAS',
-  title: 'Ellos avanzan a la semifinal',
+  title: 'Ellos avanzan a la semifinal.',
   lead:
     'Los semifinalistas se preparan para el gran cierre. La Gran Final será el 25 de noviembre de 2026.',
   finalistsTitle: 'Semifinalistas 2026',
@@ -823,7 +823,7 @@ export const PRIZES = {
       tier: 'bronze',
     },
   ],
-  alliesNote: 'Más premios de las entidades aliadas',
+  alliesNote: 'Más premios de las entidades aliadas.',
   mentionsTitle: 'Menciones especiales',
   mentions: [
     { label: 'Innovación', emoji: '💡' },
@@ -839,13 +839,13 @@ export const PRIZES = {
 export const JUDGES = [
   {
     name: 'Eduardo Verano de la Rosa',
-    title: 'Gobernador del Atlántico',
+    title: 'Gobernador del Atlántico.',
     photo: '/jurados/verano.jpeg',
     instagramUrl: '',
   },
   {
     name: 'Ricardo Insignares',
-    title: 'Gerente Centro Comercial Buenavista',
+    title: 'Gerente Centro Comercial Buenavista.',
     photo: '/jurados/ricardo.jpeg',
     instagramUrl:
       'https://www.instagram.com/reel/DbdXGPrRU2s/?igsh=dDcxeDl1MjFyeG8=',
@@ -867,14 +867,14 @@ export const JUDGES = [
   },
   {
     name: 'Isa Severiche',
-    title: 'Publicista · CEO Shark Caribe Pitch Competition',
+    title: 'Publicista · CEO Shark Caribe Pitch Competition.',
     photo: '/jurados/isa.jpeg',
     instagramUrl: '',
   },
   {
     name: 'Jacqueline Rojas',
     title:
-      'Experta en educación, formación para el trabajo, empleo y gestión pública, con trayectoria enfocada en generación de oportunidades e impulso al desarrollo de los territorios',
+      'Experta en educación, formación para el trabajo, empleo y gestión pública, con trayectoria enfocada en generación de oportunidades e impulso al desarrollo de los territorios.',
     photo: '/jurados/jaque.jpeg',
     instagramUrl: '',
   },
@@ -940,7 +940,7 @@ export const HERO = {
   brandLine: 'by',
   brand: 'Shark Caribe',
   meta: '25/11/2026 - Hotel Dann Carlton Barranquilla',
-  supportMessage: 'Asiste y apoya a los participantes',
+  supportMessage: 'Asiste y apoya a los participantes.',
   ctaLabel: 'Compra aquí',
 }
 

@@ -221,7 +221,7 @@ export default function Judges() {
             </div>
             <p className="judges-ticket__closing">
               Voces que evaluarán el talento, innovación e impacto de los
-              competidores
+              competidores.
             </p>
           </div>
         </Ticket>

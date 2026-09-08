@@ -139,7 +139,7 @@ export default function Sponsors({ onRegister }) {
           <div className="sponsors__content">
             <p className="sponsors__kicker">Patrocinios</p>
             <h2 className="sponsors__title">
-              Lleva tu marca al escenario de Shark Caribe Pitch Competition
+              Lleva tu marca al escenario de Shark Caribe Pitch Competition.
             </h2>
             <p className="sponsors__text">
               Conecta con emprendedores, empresarios e inversionistas del Caribe.
