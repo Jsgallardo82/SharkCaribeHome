@@ -153,6 +153,10 @@ export default function App() {
       <main>
         <Hero onRegister={openRegister} />
         <About />
+        {/* Aliados también aquí arriba, además del cierre antes del footer.
+            Es el mismo componente montado dos veces: no tiene estado ni id,
+            así que no hay ids duplicados ni anclas rotas. */}
+        <Allies />
         {/* <Ventures /> */}
         {/* <PitchRound /> */}
         <FinalRound onRegister={openRegister} />
