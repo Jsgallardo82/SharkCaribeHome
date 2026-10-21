@@ -18,7 +18,7 @@ export const TICKET_LOGOS = {
   organizer: [
     {
       name: 'IS Comunicaciones',
-      src: '/issnofondo.png',
+      src: '/logos/issnew.png',
     },
   ],
   allies: [
@@ -139,88 +139,57 @@ function themeForSeat(seatType) {
   }
 }
 
-function resolveLogoBg(logo, index, alternate) {
-  if (logo?.bg === 'black' || logo?.bg === 'white') return logo.bg
-  if (logo?.darkBg) return 'black'
-  if (!alternate) return null
-  return index % 2 === 0 ? 'white' : 'black'
+/* Una celda de logo.
+   OJO: esto va en un correo, no en el sitio. La versión anterior armaba la
+   cuadrícula con display:flex y Gmail la rompía — los doce logos salían en
+   tres columnas con huecos. En correo lo único que se comporta igual en
+   todos los clientes son las tablas, así que no volver a flex aquí.
+   Tampoco object-fit: se usa max-width + max-height, que Gmail sí respeta. */
+function logoCellHtml(logo, baseUrl, maxH, maxW, cellH, isOrganizer) {
+  const src = resolveAssetUrl(logo.src, baseUrl)
+  const h = Math.min(logo.height ?? maxH, cellH - 16)
+  const w = Math.min(logo.maxWidth ?? maxW, maxW)
+  /* El logo del organizador (issnew.png) es blanco con dorado: necesita
+     fondo oscuro o desaparece sobre los fondos claros del ticket. */
+  const fondo = isOrganizer ? 'background:#0d1a3d;border-radius:6px;' : ''
+  return (
+    `<td align="center" valign="middle" height="${cellH}" ` +
+    `style="height:${cellH}px;padding:6px 8px;border:1px solid #0d1a3d;` +
+    `line-height:0;${fondo}">` +
+    `<img src="${escapeHtml(src)}" alt="${escapeHtml(logo.name)}" ` +
+    `style="display:block;width:auto;height:auto;` +
+    `max-width:${w}px;max-height:${h}px;border:0;" />` +
+    `</td>`
+  )
 }
 
-function logoRowFlexHtml(
-  logos,
-  baseUrl,
-  heightPx,
-  maxWidthPx = 88,
-  startIndex = 0,
-  alternate = false
-) {
+/** Cuadrícula de logos en tabla. Las filas incompletas se rellenan con
+    celdas vacías para que las columnas no se descuadren. */
+function logoGridHtml(logos, baseUrl, heightPx, maxWidthPx = 72, perRow = 6) {
   if (!logos.length) return ''
-  const isOrganizerOnly = !alternate && logos.length === 1
-  const cellH = isOrganizerOnly ? 72 : 68
-  const cellW = isOrganizerOnly ? 160 : 'auto'
-  const radius = isOrganizerOnly ? '6px' : '0'
-  const organizerBorder = isOrganizerOnly ? 'border:1px solid #0d1a3d;' : ''
-  const cellBase = isOrganizerOnly
-    ? `flex:0 0 ${cellW}px;width:${cellW}px;height:${cellH}px;min-width:${cellW}px;min-height:${cellH}px;` +
-      `padding:8px 14px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;` +
-      `line-height:0;overflow:hidden;border-radius:${radius};background:transparent;${organizerBorder}`
-    : `flex:0 0 auto;height:${cellH}px;min-width:${cellH}px;padding:6px 10px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;line-height:0;background:transparent;border:1px solid #0d1a3d;`
-  const imgs = logos
-    .map((logo, i) => {
-      const src = resolveAssetUrl(logo.src, baseUrl)
-      const h = Math.min(logo.height ?? heightPx, cellH - 16)
-      const maxW = Math.min(
-        logo.maxWidth ?? maxWidthPx,
-        isOrganizerOnly ? cellW - 16 : maxWidthPx
-      )
-      const bg = resolveLogoBg(logo, startIndex + i, alternate)
-      const img = `<img src="${escapeHtml(src)}" alt="${escapeHtml(logo.name)}" height="${h}" style="display:block;height:${h}px;width:auto;max-width:${maxW}px;object-fit:contain;" />`
-      const join = !isOrganizerOnly && i > 0 ? 'margin-left:-1px;' : ''
-      if (isOrganizerOnly) {
-        return `<div style="${cellBase}">${img}</div>`
-      }
-      if (bg === 'black') {
-        return `<div style="${cellBase}${join}background:#000000;">${img}</div>`
-      }
-      if (bg === 'white') {
-        return `<div style="${cellBase}${join}background:#ffffff;">${img}</div>`
-      }
-      return `<div style="${cellBase}${join}">${img}</div>`
-    })
-    .join('')
-  const rowJoin = !isOrganizerOnly && startIndex > 0 ? 'margin-top:-1px;' : ''
-  return `<div style="display:flex;justify-content:center;align-items:center;flex-wrap:nowrap;width:100%;gap:0;margin:0;${rowJoin}">${imgs}</div>`
-}
+  const isOrganizer = logos.length === 1 && perRow === 1
+  const cellH = isOrganizer ? 72 : 68
 
-/** Filas centradas de logos (sin cuadrícula). */
-function logoGridHtml(
-  logos,
-  baseUrl,
-  heightPx,
-  maxWidthPx = 72,
-  perRow = 6,
-  alternateBg = false
-) {
-  if (!logos.length) return ''
-  if (logos.length === 1 && !alternateBg) {
-    return logoRowFlexHtml(logos, baseUrl, heightPx, maxWidthPx, 0, false)
-  }
-  const chunks = []
+  const filas = []
   for (let i = 0; i < logos.length; i += perRow) {
-    chunks.push(logos.slice(i, i + perRow))
-  }
-  return chunks
-    .map((chunk, rowIdx) =>
-      logoRowFlexHtml(
-        chunk,
-        baseUrl,
-        heightPx,
-        maxWidthPx,
-        rowIdx * perRow,
-        false
+    const chunk = logos.slice(i, i + perRow)
+    const celdas = chunk
+      .map((logo) =>
+        logoCellHtml(logo, baseUrl, heightPx, maxWidthPx, cellH, isOrganizer)
       )
-    )
-    .join('')
+      .join('')
+    const faltan = perRow - chunk.length
+    const relleno =
+      faltan > 0 ? '<td style="border:0;">&nbsp;</td>'.repeat(faltan) : ''
+    filas.push(`<tr>${celdas}${relleno}</tr>`)
+  }
+
+  return (
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" ` +
+    `align="center" style="margin:0 auto;border-collapse:collapse;">` +
+    filas.join('') +
+    `</table>`
+  )
 }
 
 /**
@@ -267,8 +236,8 @@ export function buildAttendeeTicketEmail(record, options = {}) {
     )
     .join('')
 
-  const organizerHtml = logoGridHtml(TICKET_LOGOS.organizer, baseUrl, 64, 180, 1, false)
-  const alliesHtml = logoGridHtml(TICKET_LOGOS.allies, baseUrl, 32, 70, 6, false)
+  const organizerHtml = logoGridHtml(TICKET_LOGOS.organizer, baseUrl, 64, 180, 1)
+  const alliesHtml = logoGridHtml(TICKET_LOGOS.allies, baseUrl, 32, 70, 6)
   const metalBar = theme.featured ? metalStripeHtml() : ''
   const vipBadge = theme.featured
     ? `<p style="margin:14px 0 0;"><span style="display:inline-block;padding:7px 16px;border-radius:999px;border:1px solid #ffd76a;background:linear-gradient(180deg,#3a3120 0%,#1a2340 100%);color:#ffd76a;font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;">Acceso Preferencial</span></p>`
