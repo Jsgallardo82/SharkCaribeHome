@@ -1,3 +1,32 @@
+/* ============================================================
+ *  GENERADOR DESACTUALIZADO - NO LO CORRAS
+ *
+ *  Este script reescribe por completo:
+ *    - supabase/functions/wompi-webhook/index.ts
+ *    - supabase/functions/resend-ticket/index.ts
+ *
+ *  Su plantilla interna todavia tiene la logica VIEJA del webhook
+ *  (findRegistrationByReference + maybeSingle), que revienta cuando
+ *  una referencia de pago tiene mas de una fila. Desde que existe la
+ *  compra de varias boletas, el webhook se mantiene A MANO.
+ *
+ *  Correrlo revertiria ese arreglo en silencio: las compras de varias
+ *  boletas se cobrarian y nunca quedarian confirmadas.
+ *
+ *  Para recuperar el generador, primero hay que traer a esta plantilla
+ *  la logica actual de wompi-webhook/index.ts.
+ * ============================================================ */
+if (!process.env.REGEN_TICKETS_LO_SE) {
+  console.error("")
+  console.error("Abortado: este generador esta desactualizado y revertiria")
+  console.error("el soporte de compra multiple en wompi-webhook.")
+  console.error("")
+  console.error("Lee el comentario al inicio del archivo. Si de verdad")
+  console.error("sabes lo que haces: REGEN_TICKETS_LO_SE=1")
+  console.error("")
+  process.exit(1)
+}
+
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
