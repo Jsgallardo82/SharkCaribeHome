@@ -94,8 +94,9 @@
   width: auto;
   max-width: 280px;
   object-fit: contain;
-  /* El logo ISS viene con fondo claro y tipografía outlined */
-  background: #f2f2f2;
+  /* issnew.png es blanco con filetes dorados: necesita fondo oscuro.
+     Con el #f2f2f2 anterior (pensado para el iss.jpeg viejo) quedaba invisible. */
+  background: var(--color-secondary);
   border-radius: var(--radius);
   padding: 0.65rem 1rem;
 }

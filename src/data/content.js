@@ -120,13 +120,14 @@ export const HERO_SLIDES = [
 ]
 
 /* Organizador. */
-export const ORGANIZER = { name: 'IS Comunicaciones', logo: '/logos/iss.jpeg' }
+export const ORGANIZER = { name: 'IS Comunicaciones', logo: '/logos/issnew.png' }
 
 /* Aliados estratégicos (logos en /public/logos). */
 export const ALLIES = [
   { name: 'Universidad Sergio Arboleda', sub: 'Barranquilla', logo: '/logos/sergioarboleda.png' },
   { name: 'Prime Business School', sub: 'Universidad Sergio Arboleda', logo: '/logos/prime.png' },
   { name: 'SENA', sub: '', logo: '/logos/sena.png' },
+  { name: 'Universidad Simón Bolívar', sub: 'MacondoLab', logo: '/logos/simon.png' },
   { name: 'Índice', sub: '', logo: '/logos/indice.png' },
   { name: 'FCA', sub: '', logo: '/logos/fca.png' },
   { name: 'Elena', sub: '', logo: '/logos/elena.jpeg' },
@@ -134,7 +135,7 @@ export const ALLIES = [
   { name: 'Space Rock', sub: '', logo: '/logos/spacerock.png' },
   { name: 'CC Buenavista', sub: '', logo: '/logos/ccbuenavista.png' },
   { name: 'Reformada', sub: '', logo: '/logos/reformada.png' },
-  { name: 'Universidad del Atlántico', sub: 'Vigilada Mineducación', logo: '/logos/UA.png' },
+  { name: 'OVIU', sub: 'Clínica Oftalmológica Internacional', logo: '/logos/oviu.png' },
 ]
 
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
