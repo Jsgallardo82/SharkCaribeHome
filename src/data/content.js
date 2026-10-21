@@ -388,6 +388,12 @@ export const UNIFIED_REGISTER = {
   feeHint:
     'Al continuar se crea tu registro pendiente y se abre el checkout seguro de Wompi. El pago confirma tu ticket automáticamente.',
   categoryLabel: '¿Qué tipo de ticket deseas?',
+  quantityLabel: '¿Cuántas boletas?',
+  quantityHint:
+    'Cada boleta lleva su propio código QR de acceso. Se paga todo en una sola transacción.',
+  companionsTitle: 'Datos de las demás boletas',
+  companionsHint:
+    'Solo necesitamos el nombre. Si agregas el correo, le enviamos el QR directamente a esa persona; si lo dejas vacío, todas las boletas te llegan a ti.',
   payCta: 'Comprar e ir a pagar',
   payCtaBusy: 'Abriendo pago…',
   payCtaDisabled: 'Pago no disponible',
@@ -438,12 +444,16 @@ export const ATTENDEE_INTERESTS = [
   { value: 'aprender', label: 'Aprender / Inspiración' },
 ]
 
+/* amountCop debe coincidir con los montos del RPC create_event_wompi_checkout
+   (allí van en centavos: 7990000 y 5000000). Si cambia el precio, cambia en
+   los dos lados o el total mostrado no cuadrará con el cobro real. */
 export const ATTENDEE_SEAT_TYPES = [
   {
     value: 'preferencial',
     label: 'Preferencial',
     price: '$79.900',
     priceLabel: 'COP $79.900',
+    amountCop: 79900,
     description: 'Acceso preferencial a una experiencia premium.',
     featured: true,
   },
@@ -452,10 +462,15 @@ export const ATTENDEE_SEAT_TYPES = [
     label: 'General',
     price: '$50.000',
     priceLabel: 'COP $50.000',
+    amountCop: 50000,
     description: 'Acceso general al evento.',
     featured: false,
   },
 ]
+
+/* Tope de boletas por compra. El servidor valida el mismo número:
+   subirlo aquí sin subirlo en el RPC hace que la compra sea rechazada. */
+export const MAX_TICKETS_PER_PURCHASE = 10
 
 /* ============================================================
    FORMULARIO · PATROCINADORES

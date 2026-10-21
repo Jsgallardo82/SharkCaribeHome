@@ -926,15 +926,19 @@ export async function createEventWompiCheckout(kind, values) {
   const redirectOrigin =
     typeof window !== 'undefined' ? window.location.origin : null
 
-  console.info('[Shark Caribe][Wompi] Invocando RPC create_event_wompi_checkout…', {
+  /* Los asistentes usan su propia función (soporta 1..10 boletas por compra).
+     Patrocinadores y expositores siguen con el RPC unificado de siempre. */
+  const rpcName =
+    kind === 'asistente' ? 'create_ticket_purchase' : 'create_event_wompi_checkout'
+
+  console.info(`[Shark Caribe][Wompi] Invocando RPC ${rpcName}…`, {
     kind,
     email: values.email,
+    quantity: values.quantity || 1,
     origin: redirectOrigin,
   })
 
-  const { data, error } = await supabase.rpc('create_event_wompi_checkout', {
-    payload,
-  })
+  const { data, error } = await supabase.rpc(rpcName, { payload })
 
   if (error) {
     console.error('[Shark Caribe][Wompi] Falló RPC checkout', {
@@ -981,6 +985,7 @@ export async function createEventWompiCheckout(kind, values) {
           interest: values.interest,
           seat_type: values.seatType,
           referral_source: values.referralSource,
+          quantity: values.quantity || 1,
         }
       : {
           company_name: values.companyName?.trim(),

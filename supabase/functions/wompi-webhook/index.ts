@@ -404,20 +404,25 @@ async function verifyEventChecksum(event, eventsSecret) {
   return (await sha256Hex(concat)) === checksum
 }
 
-async function findRegistrationByReference(supabase, reference) {
+/**
+ * Una compra de asistente puede tener varias boletas que comparten la misma
+ * referencia de pago (una fila por boleta, cada una con su propio QR).
+ * Por eso devuelve SIEMPRE una lista, nunca una sola fila.
+ */
+async function findRegistrationsByReference(supabase, reference) {
   for (const table of PAYMENT_TABLES) {
     const { data, error } = await supabase
       .from(table)
       .select('id, status, amount_in_cents, wompi_transaction_id')
       .eq('payment_reference', reference)
-      .maybeSingle()
+      .order('id', { ascending: true })
     if (error) {
       console.error('[wompi-webhook] find error', { table, error })
       return { error }
     }
-    if (data) return { table, row: data }
+    if (Array.isArray(data) && data.length > 0) return { table, rows: data }
   }
-  return { table: null, row: null }
+  return { table: null, rows: [] }
 }
 
 async function sendResendEmail({ apiKey, from, to, subject, html }) {
@@ -551,22 +556,39 @@ Deno.serve(async (req) => {
   const amountInCents =
     typeof tx.amount_in_cents === 'number' ? tx.amount_in_cents : null
 
-  const found = await findRegistrationByReference(supabase, reference)
+  const found = await findRegistrationsByReference(supabase, reference)
   if (found.error) return json(500, { error: 'Error al buscar registro.' })
-  const { table, row } = found
-  if (!row || !table) return json(200, { ok: true, unknownReference: true })
-  const rowStatus = normalizeStatus(row.status)
+  const { table, rows } = found
+  if (!table || !rows.length) return json(200, { ok: true, unknownReference: true })
 
+  const ids = rows.map((r) => r.id)
+  const pendingRows = rows.filter((r) => normalizeStatus(r.status) !== 'pago')
+
+  /* El cobro cubre TODAS las boletas del grupo, así que se compara contra
+     la suma. Cada fila guarda su precio unitario. */
+  const expectedTotal = rows.reduce(
+    (sum, r) => (r.amount_in_cents == null ? sum : sum + Number(r.amount_in_cents)),
+    0
+  )
   if (
     amountInCents != null &&
-    row.amount_in_cents != null &&
-    Number(amountInCents) !== Number(row.amount_in_cents)
+    expectedTotal > 0 &&
+    Number(amountInCents) !== expectedTotal
   ) {
+    console.warn('[wompi-webhook] monto no coincide', {
+      reference,
+      cobrado: amountInCents,
+      esperado: expectedTotal,
+      boletas: rows.length,
+    })
     return json(200, { ok: true, amountMismatch: true })
   }
 
   if (status === 'APPROVED') {
-    if (rowStatus === 'pago') return json(200, { ok: true, alreadyPaid: true, table })
+    if (!pendingRows.length) {
+      return json(200, { ok: true, alreadyPaid: true, table, rows: rows.length })
+    }
+
     const { data: updatedRows, error: updateError } = await supabase
       .from(table)
       .update({
@@ -577,33 +599,49 @@ Deno.serve(async (req) => {
         wompi_transaction_id: transactionId,
         reviewed_at: new Date().toISOString(),
       })
-      .eq('id', row.id)
+      .in(
+        'id',
+        pendingRows.map((r) => r.id)
+      )
       .select('id')
     if (updateError) return json(500, { error: 'No se pudo marcar el pago.' })
     const updatedCount = Array.isArray(updatedRows) ? updatedRows.length : 0
     if (updatedCount === 0) return json(500, { error: 'No se actualizó ninguna fila.' })
 
-    let emailResult = null
-    try {
-      const paidRecord = await fetchPaidRecord(supabase, table, row.id)
-      if (paidRecord) emailResult = await sendPaidEmail(table, paidRecord)
-    } catch (err) {
-      emailResult = { error: err instanceof Error ? err.message : 'email_failed' }
+    /* Un correo por boleta: cada fila lleva su propio ticket_number y su QR.
+       Si una falla, las demás igual se envían — el pago ya está confirmado
+       en la base de datos y eso es lo que no se puede perder. */
+    const emails = []
+    for (const id of pendingRows.map((r) => r.id)) {
+      try {
+        const paidRecord = await fetchPaidRecord(supabase, table, id)
+        if (paidRecord) emails.push(await sendPaidEmail(table, paidRecord))
+      } catch (err) {
+        console.error('[wompi-webhook] correo falló', { id, err })
+        emails.push({ error: err instanceof Error ? err.message : 'email_failed' })
+      }
     }
+
     return json(200, {
       ok: true,
       paid: true,
       table,
       rows: updatedCount,
-      email: emailResult,
+      emails,
     })
   }
 
-  if (transactionId && rowStatus !== 'pago' && !row.wompi_transaction_id) {
+  const needsTxId = rows.filter(
+    (r) => normalizeStatus(r.status) !== 'pago' && !r.wompi_transaction_id
+  )
+  if (transactionId && needsTxId.length) {
     await supabase
       .from(table)
       .update({ wompi_transaction_id: transactionId })
-      .eq('id', row.id)
+      .in(
+        'id',
+        needsTxId.map((r) => r.id)
+      )
   }
-  return json(200, { ok: true, status, table })
+  return json(200, { ok: true, status, table, rows: ids.length })
 })

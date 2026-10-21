@@ -7,6 +7,7 @@ import {
   COMPETITOR_REGISTRATION_CLOSED,
   EXHIBITOR_STAND_TYPES,
   INSTAGRAM_URL,
+  MAX_TICKETS_PER_PURCHASE,
   REFERRAL_SOURCES,
   SPONSOR_PLANS,
   SUPPORT_EMAIL,
@@ -62,6 +63,29 @@ const EMPTY_ATTENDEE = {
   referralSourceOther: '',
 }
 
+/* Formato propio en vez de style:'currency': Intl produce "$ 239.700" con
+   espacio, y el resto del sitio escribe "COP $79.900". */
+const COP_NUMBER = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 })
+
+function formatCop(value) {
+  return `COP $${COP_NUMBER.format(value)}`
+}
+
+/* Las boletas adicionales solo piden nombre; el correo es opcional y sirve
+   para que el QR le llegue directo a esa persona en vez de al comprador. */
+function emptyCompanion() {
+  return { fullName: '', email: '' }
+}
+
+/* La lista de acompañantes siempre tiene quantity - 1 elementos.
+   Al bajar la cantidad se conservan los datos ya escritos de los que quedan. */
+function resizeCompanions(list, quantity) {
+  const target = Math.max(0, quantity - 1)
+  const next = list.slice(0, target)
+  while (next.length < target) next.push(emptyCompanion())
+  return next
+}
+
 const EMPTY_COMPANY = {
   companyName: '',
   taxId: '',
@@ -94,7 +118,7 @@ function categoryFromInitial({
   return ''
 }
 
-function validateAttendee(form) {
+function validateAttendee(form, companions = []) {
   const errors = {}
   if (form.fullName.trim().length < 3) errors.fullName = 'Escribe tu nombre completo.'
   if (!form.documentType) errors.documentType = 'Selecciona tu tipo de documento.'
@@ -112,6 +136,17 @@ function validateAttendee(form) {
   else if (form.referralSource === 'other' && !form.referralSourceOther.trim()) {
     errors.referralSourceOther = 'Especifica por qué medio te enteraste.'
   }
+
+  companions.forEach((person, i) => {
+    if (person.fullName.trim().length < 3) {
+      errors[`companionName${i}`] = 'Escribe el nombre completo de esta persona.'
+    }
+    const email = person.email.trim()
+    if (email && !EMAIL_RE.test(email)) {
+      errors[`companionEmail${i}`] = 'Ese correo no es válido.'
+    }
+  })
+
   return errors
 }
 
@@ -151,10 +186,14 @@ function validateCompany(form, mode) {
   return errors
 }
 
-function feeLabelFor(categoryId, form) {
+function feeLabelFor(categoryId, form, quantity = 1) {
   if (categoryId === 'publico_preferencial' || categoryId === 'publico_general') {
     const seat = ATTENDEE_SEAT_TYPES.find((s) => s.value === form.seatType)
-    return seat?.priceLabel || 'Según ubicación'
+    if (!seat) return 'Según ubicación'
+    if (quantity > 1) {
+      return `${formatCop(seat.amountCop * quantity)} · ${quantity} × ${formatCop(seat.amountCop)}`
+    }
+    return seat.priceLabel
   }
   if (categoryId === 'patrocinador') {
     const plan = SPONSOR_PLANS.find((p) => p.value === form.plan)
@@ -209,6 +248,8 @@ export default function UnifiedRegisterModal({
       ? initialStandType
       : '',
   }))
+  const [quantity, setQuantity] = useState(1)
+  const [companions, setCompanions] = useState([])
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
@@ -226,7 +267,7 @@ export default function UnifiedRegisterModal({
   const isSponsor = category === 'patrocinador'
   const isExhibitor = category === 'expositor'
   const isCompetitor = category === 'competidor'
-  const feeDisplay = feeLabelFor(category, isAttendee ? attendee : company)
+  const feeDisplay = feeLabelFor(category, isAttendee ? attendee : company, quantity)
 
   useEffect(() => {
     const previouslyFocused = document.activeElement
@@ -270,7 +311,44 @@ export default function UnifiedRegisterModal({
       setAttendee((prev) => ({ ...prev, seatType: 'preferencial' }))
     } else if (nextId === 'publico_general') {
       setAttendee((prev) => ({ ...prev, seatType: 'general' }))
+    } else {
+      /* Patrocinador/expositor/competidor no compran por cantidad. */
+      setQuantity(1)
+      setCompanions([])
     }
+  }
+
+  function changeQuantity(value) {
+    const next = Math.min(
+      MAX_TICKETS_PER_PURCHASE,
+      Math.max(1, Number(value) || 1)
+    )
+    setQuantity(next)
+    setCompanions((prev) => resizeCompanions(prev, next))
+    setErrors((prev) => {
+      /* Al cambiar la cantidad, los errores de acompañantes que ya no existen
+         quedarían huérfanos y bloquearían el envío sin mostrarse. */
+      const cleaned = {}
+      for (const [key, message] of Object.entries(prev)) {
+        const match = key.match(/^companion(?:Name|Email)(\d+)$/)
+        if (match && Number(match[1]) >= next - 1) continue
+        cleaned[key] = message
+      }
+      return cleaned
+    })
+    setSubmitError('')
+  }
+
+  function updateCompanion(index, field, value) {
+    setCompanions((prev) =>
+      prev.map((person, i) => (i === index ? { ...person, [field]: value } : person))
+    )
+    setErrors((prev) => {
+      const next = { ...prev }
+      delete next[`companion${field === 'fullName' ? 'Name' : 'Email'}${index}`]
+      return next
+    })
+    setSubmitError('')
   }
 
   function updateAttendee(field, value) {
@@ -295,7 +373,7 @@ export default function UnifiedRegisterModal({
 
   function validateOrScroll() {
     const found = isAttendee
-      ? validateAttendee(attendee)
+      ? validateAttendee(attendee, companions)
       : validateCompany(company, isSponsor ? 'patrocinador' : 'expositor')
     setErrors(found)
     if (Object.keys(found).length > 0) {
@@ -340,6 +418,11 @@ export default function UnifiedRegisterModal({
             accompaniedCompetitorId: attendee.accompaniedCompetitorId || null,
             referralSource: attendee.referralSource,
             referralSourceOther: attendee.referralSourceOther,
+            quantity,
+            companions: companions.map((person) => ({
+              fullName: person.fullName.trim(),
+              email: person.email.trim().toLowerCase() || null,
+            })),
           }
         : {
             companyName: company.companyName,
@@ -468,6 +551,36 @@ export default function UnifiedRegisterModal({
 
                 {isAttendee && (
                   <>
+                    <div className="field" data-field="quantity">
+                      <label className="field__label" htmlFor="uni-quantity">
+                        {UNIFIED_REGISTER.quantityLabel}{' '}
+                        <span className="field__req">*</span>
+                      </label>
+                      <select
+                        id="uni-quantity"
+                        value={quantity}
+                        onChange={(e) => changeQuantity(e.target.value)}
+                      >
+                        {Array.from(
+                          { length: MAX_TICKETS_PER_PURCHASE },
+                          (_, i) => i + 1
+                        ).map((n) => (
+                          <option key={n} value={n}>
+                            {n === 1 ? '1 boleta' : `${n} boletas`}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="field__hint">
+                        {UNIFIED_REGISTER.quantityHint}
+                      </p>
+                    </div>
+
+                    {quantity > 1 && (
+                      <p className="field__hint companions__lead">
+                        Empecemos por tus datos: tú eres quien paga y recibe la compra.
+                      </p>
+                    )}
+
                     <div className="field" data-field="fullName">
                       <label className="field__label" htmlFor="uni-name">
                         Nombre completo <span className="field__req">*</span>
@@ -637,6 +750,72 @@ export default function UnifiedRegisterModal({
                         ))}
                       </select>
                     </div>
+
+                    {companions.length > 0 && (
+                      <section
+                        className="companions"
+                        aria-labelledby="uni-companions-title"
+                      >
+                        <h3 id="uni-companions-title" className="companions__title">
+                          {UNIFIED_REGISTER.companionsTitle}
+                        </h3>
+                        <p className="field__hint">
+                          {UNIFIED_REGISTER.companionsHint}
+                        </p>
+
+                        {companions.map((person, i) => (
+                          <div className="companion" key={i}>
+                            <p className="companion__badge">Boleta {i + 2}</p>
+
+                            <div className="field" data-field={`companionName${i}`}>
+                              <label
+                                className="field__label"
+                                htmlFor={`uni-companion-name-${i}`}
+                              >
+                                Nombre completo <span className="field__req">*</span>
+                              </label>
+                              <input
+                                id={`uni-companion-name-${i}`}
+                                type="text"
+                                value={person.fullName}
+                                onChange={(e) =>
+                                  updateCompanion(i, 'fullName', e.target.value)
+                                }
+                              />
+                              {errors[`companionName${i}`] && (
+                                <p className="field__error">
+                                  {errors[`companionName${i}`]}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="field" data-field={`companionEmail${i}`}>
+                              <label
+                                className="field__label"
+                                htmlFor={`uni-companion-email-${i}`}
+                              >
+                                Correo electrónico{' '}
+                                <span className="field__optional">(opcional)</span>
+                              </label>
+                              <input
+                                id={`uni-companion-email-${i}`}
+                                type="email"
+                                placeholder="Si lo dejas vacío, el QR te llega a ti"
+                                value={person.email}
+                                onChange={(e) =>
+                                  updateCompanion(i, 'email', e.target.value)
+                                }
+                              />
+                              {errors[`companionEmail${i}`] && (
+                                <p className="field__error">
+                                  {errors[`companionEmail${i}`]}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </section>
+                    )}
 
                     <fieldset className="field" data-field="referralSource">
                       <legend className="field__label">
@@ -988,9 +1167,11 @@ export default function UnifiedRegisterModal({
                   >
                     {submitting
                       ? UNIFIED_REGISTER.payCtaBusy
-                      : wompiReady
-                        ? UNIFIED_REGISTER.payCta
-                        : UNIFIED_REGISTER.payCtaDisabled}
+                      : !wompiReady
+                        ? UNIFIED_REGISTER.payCtaDisabled
+                        : isAttendee && quantity > 1
+                          ? `Comprar ${quantity} boletas e ir a pagar`
+                          : UNIFIED_REGISTER.payCta}
                   </button>
                 </footer>
               </>
