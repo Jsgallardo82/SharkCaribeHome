@@ -669,6 +669,33 @@ export const REGISTER_OPTIONS = [
   { id: 'participante', label: 'Competidor' },
 ]
 
+/* ============================================================
+   DECORACIÓN DE HALLOWEEN (temporal)
+
+   Se enciende y se apaga SOLA con estas fechas. Es a propósito:
+   si dependiera de un despliegue para quitarla, un problema de
+   deploy podría dejar el sitio con calabazas en noviembre, a
+   semanas del evento y con gente comprando boletas.
+
+   Para apagarla antes: pon `enabled: false` o adelanta `endsAt`.
+   Para quitarla del todo: borra esto, HalloweenDecor.jsx,
+   HalloweenDecor.css y su línea en App.jsx.
+   ============================================================ */
+export const HALLOWEEN = {
+  enabled: true,
+  startsAt: '2026-10-24T00:00:00-05:00',
+  endsAt: '2026-11-01T06:00:00-05:00', // madrugada del 1 de noviembre
+}
+
+export function isHalloweenActive(now = new Date()) {
+  if (!HALLOWEEN.enabled) return false
+  const t = now.getTime()
+  return (
+    t >= new Date(HALLOWEEN.startsAt).getTime() &&
+    t < new Date(HALLOWEEN.endsAt).getTime()
+  )
+}
+
 export const NAV_LINKS = [
   // { label: 'Emprendimientos', href: '#emprendimientos' },
   // { label: '2ª Ronda', href: '#segunda-ronda' },

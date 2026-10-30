@@ -1,0 +1,307 @@
+/* ============================================================
+   DECORACIÓN DE HALLOWEEN (temporal — se apaga sola el 1 de nov)
+
+   Dos partes:
+     1. La capa .hw: telarañas, murciélagos, calabazas y niebla.
+        Todo fixed + pointer-events:none, así cubre la página
+        completa sin alterar el layout ni bloquear clics.
+     2. Los acentos naranja bajo :root[data-halloween], que el
+        componente activa en <html>.
+
+   El modal de compra (z-index 200) queda por encima de todo esto
+   a propósito: es donde la gente escribe su cédula y paga.
+   ============================================================ */
+
+:root[data-halloween] {
+  --hw-naranja: #ff7518;
+  --hw-naranja-suave: #ffa64d;
+  --hw-morado: #6b2fa0;
+
+  /* El morado de marca ya era medio Halloween; aquí pasa a calabaza. */
+  --color-accent: var(--hw-naranja);
+}
+
+/* --- Capa general --- */
+
+.hw {
+  position: fixed;
+  inset: 0;
+  z-index: 90; /* sobre el contenido, bajo navbar (100) y modal (200) */
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* --- Telarañas de esquina --- */
+
+.hw__web {
+  position: absolute;
+  width: clamp(90px, 14vw, 180px);
+  height: clamp(90px, 14vw, 180px);
+  color: rgba(255, 255, 255, 0.42);
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+}
+
+.hw__web--tl {
+  top: 0;
+  left: 0;
+}
+
+.hw__web--tr {
+  top: 0;
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.hw__web--bl {
+  bottom: 0;
+  left: 0;
+  transform: scaleY(-1);
+  opacity: 0.7;
+}
+
+/* --- Murciélagos --- */
+
+/* El contenedor vuela; el SVG de adentro aletea. Separados a propósito:
+   si las dos animaciones van sobre el mismo elemento, las dos escriben
+   `transform` y la última gana. */
+.hw__bat {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: clamp(26px, 3.4vw, 46px);
+  color: #0a0a12;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
+  opacity: 0.85;
+  will-change: transform;
+}
+
+.hw__bat-ala {
+  display: block;
+  width: 100%;
+  height: auto;
+  will-change: transform;
+  animation: hw-aleteo 0.5s ease-in-out infinite alternate;
+}
+
+/* Cada uno cruza a su propio ritmo y altura para que no se vean en fila. */
+.hw__bat--1 {
+  top: 14%;
+  animation: hw-vuelo 26s linear infinite;
+}
+
+.hw__bat--2 {
+  top: 34%;
+  width: clamp(18px, 2.4vw, 32px);
+  animation: hw-vuelo 34s linear infinite 6s;
+}
+
+.hw__bat--2 .hw__bat-ala {
+  animation-duration: 0.42s;
+}
+
+.hw__bat--3 {
+  top: 58%;
+  animation: hw-vuelo-inverso 30s linear infinite 3s;
+}
+
+.hw__bat--3 .hw__bat-ala {
+  animation-duration: 0.56s;
+}
+
+.hw__bat--4 {
+  top: 76%;
+  width: clamp(14px, 2vw, 26px);
+  opacity: 0.6;
+  animation: hw-vuelo-inverso 40s linear infinite 12s;
+}
+
+.hw__bat--4 .hw__bat-ala {
+  animation-duration: 0.48s;
+}
+
+@keyframes hw-vuelo {
+  from {
+    transform: translateX(-20vw) translateY(0);
+  }
+  50% {
+    transform: translateX(45vw) translateY(-5vh);
+  }
+  to {
+    transform: translateX(120vw) translateY(2vh);
+  }
+}
+
+@keyframes hw-vuelo-inverso {
+  from {
+    transform: translateX(120vw) scaleX(-1) translateY(0);
+  }
+  50% {
+    transform: translateX(45vw) scaleX(-1) translateY(6vh);
+  }
+  to {
+    transform: translateX(-20vw) scaleX(-1) translateY(-3vh);
+  }
+}
+
+@keyframes hw-aleteo {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0.72);
+  }
+}
+
+/* --- Calabazas --- */
+
+.hw__pumpkin {
+  position: absolute;
+  bottom: 14px;
+  width: clamp(38px, 5vw, 64px);
+  color: var(--hw-naranja);
+  filter: drop-shadow(0 0 14px rgba(255, 117, 24, 0.55));
+  will-change: transform;
+}
+
+.hw__pumpkin--1 {
+  left: 18px;
+  animation: hw-flotar 5.5s ease-in-out infinite;
+}
+
+.hw__pumpkin--2 {
+  right: 18px;
+  width: clamp(30px, 4vw, 50px);
+  animation: hw-flotar 7s ease-in-out infinite 1.2s;
+}
+
+@keyframes hw-flotar {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+/* --- Niebla --- */
+
+.hw__fog {
+  position: absolute;
+  left: -50%;
+  bottom: 0;
+  width: 200%;
+  height: 38vh;
+  background:
+    linear-gradient(to top, rgba(92, 56, 150, 0.5), transparent 85%),
+    radial-gradient(62% 100% at 18% 100%, rgba(150, 100, 215, 0.55), transparent 72%),
+    radial-gradient(55% 100% at 48% 100%, rgba(255, 117, 24, 0.34), transparent 72%),
+    radial-gradient(70% 100% at 82% 100%, rgba(128, 85, 200, 0.5), transparent 72%);
+  filter: blur(18px);
+  animation: hw-niebla 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Segunda capa en sentido contrario: da sensación de volumen, que es lo
+   que faltaba — una sola capa plana casi no se percibía. */
+.hw__fog::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 70%;
+  background:
+    radial-gradient(50% 100% at 35% 100%, rgba(255, 140, 60, 0.26), transparent 70%),
+    radial-gradient(60% 100% at 70% 100%, rgba(170, 110, 230, 0.4), transparent 70%);
+  animation: hw-niebla-2 21s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes hw-niebla {
+  from {
+    transform: translateX(-6%);
+  }
+  to {
+    transform: translateX(6%);
+  }
+}
+
+@keyframes hw-niebla-2 {
+  from {
+    transform: translateX(5%) scaleY(1);
+  }
+  to {
+    transform: translateX(-7%) scaleY(1.15);
+  }
+}
+
+/* --- Acentos en el contenido --- */
+
+:root[data-halloween] .section__title,
+:root[data-halloween] .entradas__title-accent {
+  text-shadow: 0 0 18px rgba(255, 117, 24, 0.45);
+}
+
+/* Botones calabaza. El degradado (claro arriba, quemado abajo) es lo que
+   los hace leer como farol y no como un bloque naranja plano. */
+:root[data-halloween] .btn--primary,
+:root[data-halloween] .hero__ticket-card:not(.is-featured) .hero__ticket-cta {
+  background: linear-gradient(180deg, #ff9a3d 0%, #ff7518 48%, #e05607 100%);
+  border-color: #e05607;
+  color: #2a1403;
+  box-shadow:
+    0 0 20px rgba(255, 117, 24, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* El navbar fuerza `color: white !important` en su CTA. Sobre naranja eso
+   da 2.69:1 de contraste, por debajo del mínimo accesible de 4.5:1. Con el
+   café oscuro sube a 6.5:1, así que toca ganarle con otro !important. */
+:root[data-halloween] .navbar__cta.btn--primary {
+  color: #2a1403 !important;
+}
+
+:root[data-halloween] .btn--primary:hover,
+:root[data-halloween] .hero__ticket-card:not(.is-featured) .hero__ticket-cta:hover {
+  background: linear-gradient(180deg, #ffab57 0%, #ff8426 48%, #c94c02 100%);
+  border-color: #c94c02;
+}
+
+/* El "Comprar" de la boleta Preferencial queda dorado: ese dorado es el
+   distintivo de la categoría premium, no un color de marca cualquiera. */
+
+:root[data-halloween] .btn--outline:hover {
+  background-color: var(--hw-naranja);
+  border-color: var(--hw-naranja);
+  color: #1a0f05;
+}
+
+/* --- Móvil: menos elementos, el ancho no sobra --- */
+
+@media (max-width: 640px) {
+  .hw__web--bl,
+  .hw__bat--2,
+  .hw__bat--4 {
+    display: none;
+  }
+
+  .hw__fog {
+    height: 18vh;
+  }
+}
+
+/* --- Respeta a quien pidió menos movimiento --- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hw__bat,
+  .hw__bat-ala,
+  .hw__pumpkin,
+  .hw__fog {
+    animation: none !important;
+  }
+
+  /* Sin animación, los murciélagos quedarían fuera de pantalla
+     (el keyframe los traía desde -20vw), así que se ocultan. */
+  .hw__bat {
+    display: none;
+  }
+}
