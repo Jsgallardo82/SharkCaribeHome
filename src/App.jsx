@@ -16,7 +16,6 @@ import MuestraComercial from './components/MuestraComercial.jsx'
 import News from './components/News.jsx'
 import Allies from './components/Allies.jsx'
 import Footer from './components/Footer.jsx'
-import HalloweenDecor from './components/HalloweenDecor.jsx'
 import {
   installSharkySoundOnFirstGesture,
   playSharkySound,
@@ -178,9 +177,6 @@ export default function App() {
       </main>
       <Allies />
       <Footer />
-      {/* Temporal: se monta sola solo dentro de la ventana de fechas
-          definida en content.js (HALLOWEEN). Ver HalloweenDecor.jsx. */}
-      <HalloweenDecor />
       {registerOpen && (
         <Suspense fallback={null}>
           <UnifiedRegisterModal
