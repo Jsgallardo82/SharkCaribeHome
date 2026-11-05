@@ -873,14 +873,16 @@ export const JUDGES = [
     instagramUrl:
       'https://www.instagram.com/reel/Dc2KflpsFWB/?utm_source=ig_web_copy_link',
   },
-  {
-    name: 'César Prada',
-    title:
-      'CEO de Prago International con sedes en Colombia, Ecuador, Peru & Chile.',
-    photo: '/jurados/cesar.jpeg',
-    instagramUrl:
-      'https://www.instagram.com/reel/DctWPcbRAHX/?utm_source=ig_web_copy_link',
-  },
+  /* Oculto temporalmente. Para mostrarlo de nuevo, descomenta este bloque.
+     La foto sigue en /public/jurados/cesar.jpeg. */
+  // {
+  //   name: 'César Prada',
+  //   title:
+  //     'CEO de Prago International con sedes en Colombia, Ecuador, Peru & Chile.',
+  //   photo: '/jurados/cesar.jpeg',
+  //   instagramUrl:
+  //     'https://www.instagram.com/reel/DctWPcbRAHX/?utm_source=ig_web_copy_link',
+  // },
   {
     name: 'Isa Severiche',
     title: 'Publicista · CEO Shark Caribe Pitch Competition.',
