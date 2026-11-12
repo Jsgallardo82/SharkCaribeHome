@@ -136,6 +136,7 @@ export const ALLIES = [
   { name: 'CC Buenavista', sub: '', logo: '/logos/ccbuenavista.png' },
   { name: 'Reformada', sub: '', logo: '/logos/reformada.png' },
   { name: 'OVIU', sub: 'Clínica Oftalmológica Internacional', logo: '/logos/oviu.png' },
+  { name: 'AMI', sub: '', logo: '/logos/logoami.JPG' },
 ]
 
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */

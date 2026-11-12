@@ -8,6 +8,17 @@ import './FinalRound.css'
 
 const FLOAT_EMOJIS = ['🏆', '✨', '🦈', '🔥', '📅', '📍']
 
+function shuffle(list) {
+  const next = [...list]
+  for (let i = next.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const current = next[i]
+    next[i] = next[j]
+    next[j] = current
+  }
+  return next
+}
+
 export default function FinalRound({ onRegister }) {
   const sectionRef = useRef(null)
   const [visible, setVisible] = useState(false)
@@ -51,7 +62,9 @@ export default function FinalRound({ onRegister }) {
         const data = await fetchPublicVentures()
         if (cancelled) return
         setFinalists(
-          data.filter((v) => String(v.stage || '').toLowerCase() === 'final')
+          shuffle(
+            data.filter((v) => String(v.stage || '').toLowerCase() === 'final')
+          )
         )
       } catch {
         if (!cancelled) setFinalists([])

@@ -11,6 +11,9 @@ const Signup = lazy(() => import('./components/Signup.jsx'))
 const Admin = lazy(() => import('./components/Admin.jsx'))
 const Jury = lazy(() => import('./components/Jury.jsx'))
 const PaymentResult = lazy(() => import('./components/PaymentResult.jsx'))
+const LiveRound2Results = lazy(
+  () => import('./components/LiveRound2Results.jsx'),
+)
 
 function RouteFallback() {
   return (
@@ -42,8 +45,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/registro" element={<Signup />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/jurado" element={<Jury />} />
-          {/* Ranking en vivo desactivado: sin montaje ni polling */}
-          <Route path="/resultados-vivo" element={<Navigate to="/" replace />} />
+          {/* Ranking en vivo: solo en local (npm run dev); en producción redirige */}
+          <Route
+            path="/resultados-vivo"
+            element={
+              import.meta.env.DEV ? (
+                <LiveRound2Results />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
         </Routes>
       </Suspense>
       <Analytics />
