@@ -136,7 +136,7 @@ export const ALLIES = [
   { name: 'CC Buenavista', sub: '', logo: '/logos/ccbuenavista.png' },
   { name: 'Reformada', sub: '', logo: '/logos/reformada.png' },
   { name: 'OVIU', sub: 'Clínica Oftalmológica Internacional', logo: '/logos/oviu.png' },
-  { name: 'AMI', sub: '', logo: '/logos/logoami.JPG' },
+  { name: 'AMI', sub: '', logo: '/logos/logoami.png' },
 ]
 
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
@@ -795,6 +795,7 @@ export const COMPETITOR_PHOTOS = [
     photo: '/concursantes/tulipancito.jpeg',
   },
   { match: /\blynka\b/i, photo: '/concursantes/lynka.jpeg' },
+  { match: /max\s*luxe/i, photo: '/concursantes/maxluxe.jpeg' },
 ]
 
 export function resolveCompetitorPhotos(ventureName = '') {
