@@ -130,7 +130,6 @@ export const ALLIES = [
   { name: 'Universidad Simón Bolívar', sub: 'MacondoLab', logo: '/logos/simon.png' },
   { name: 'Índice', sub: '', logo: '/logos/indice.png' },
   { name: 'FCA', sub: '', logo: '/logos/fca.png' },
-  { name: 'Elena', sub: '', logo: '/logos/elena.jpeg' },
   { name: 'Mi Red', sub: '', logo: '/logos/mired.png' },
   { name: 'Space Rock', sub: '', logo: '/logos/spacerock.png' },
   { name: 'CC Buenavista', sub: '', logo: '/logos/ccbuenavista.png' },
