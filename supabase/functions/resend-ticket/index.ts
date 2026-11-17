@@ -39,7 +39,7 @@ const TICKET_LOGOS = {
     { name: 'Mi Red', src: '/logos/mired.png', height: 36, maxWidth: 78 },
     { name: 'Space Rock', src: '/logos/spacerock.png', height: 36, maxWidth: 78 },
     { name: 'OVIU', src: '/logos/oviu.png' },
-    { name: 'Elena', src: '/logos/elena.jpeg' },
+    { name: 'AMI', src: '/logos/logoami.png' },
   ],
 }
 
@@ -158,9 +158,10 @@ function logoCellHtml(logo, baseUrl, maxH, maxW, cellH, isOrganizer) {
   /* El logo del organizador (issnew.png) es blanco con dorado: necesita
      fondo oscuro o desaparece sobre los fondos claros del ticket. */
   const fondo = isOrganizer ? 'background:#0d1a3d;border-radius:6px;' : ''
+  const borde = isOrganizer ? 'border:0;' : 'border:1px solid #0d1a3d;'
   return (
     `<td align="center" valign="middle" height="${cellH}" ` +
-    `style="height:${cellH}px;padding:6px 8px;border:1px solid #0d1a3d;` +
+    `style="height:${cellH}px;padding:6px 8px;${borde}` +
     `line-height:0;${fondo}">` +
     `<img src="${escapeHtml(src)}" alt="${escapeHtml(logo.name)}" ` +
     `style="display:block;width:auto;height:auto;` +
