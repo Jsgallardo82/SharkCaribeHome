@@ -314,16 +314,41 @@ export function buildAttendeeTicketEmail(record, options = {}) {
 
   const html = `
     <div style="font-family:Segoe UI,Arial,sans-serif;background:#0a1330;padding:24px;color:#0d1a3d;">
-      <div style="max-width:560px;margin:0 auto 16px;color:#e2e8f0;font-size:14px;line-height:1.5;">
-        <p style="margin:0 0 8px;">Hola <strong style="color:#fff;">${escapeHtml(name)}</strong>,</p>
-        <p style="margin:0;color:#94a3b8;">Gracias por tu compra. Este es tu ticket de acceso:</p>
+      <div style="max-width:560px;margin:0 auto 22px;color:#e8eef8;text-align:center;">
+        <p style="margin:0 0 18px;text-align:left;font-size:16px;line-height:1.5;">Hola <strong style="color:#ffffff;">${escapeHtml(name)}</strong>,</p>
+        <p style="margin:0;font-size:36px;line-height:1.05;font-weight:800;letter-spacing:0.03em;color:#ffffff;text-transform:uppercase;">Nos vemos<br>en la Gran Final</p>
+        <p style="margin:16px auto 0;max-width:460px;font-size:15px;line-height:1.6;color:#d5deef;">El Caribe se reúne para escuchar a quienes están transformando la región. Tu lugar en Shark Caribe Pitch Competition ya está reservado.</p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:18px 0 0;border:1px solid rgba(255,255,255,0.4);border-radius:14px;">
+          <tr>
+            <td style="padding:16px 10px 14px;">
+              <p style="margin:0 0 14px;font-size:18px;font-weight:800;color:#ffffff;">¡Te esperamos!</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td width="34%" valign="top" style="padding:0 6px;text-align:center;">
+                    <p style="margin:0;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#9fb0d0;">Fecha</p>
+                    <p style="margin:4px 0 0;font-size:13px;line-height:1.35;font-weight:700;color:#ffffff;">Miércoles<br>25 de noviembre</p>
+                  </td>
+                  <td width="36%" valign="top" style="padding:0 6px;text-align:center;border-left:1px solid rgba(255,255,255,0.25);border-right:1px solid rgba(255,255,255,0.25);">
+                    <p style="margin:0;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#9fb0d0;">Lugar</p>
+                    <p style="margin:4px 0 0;font-size:13px;line-height:1.35;font-weight:700;color:#ffffff;">Hotel Dann Carlton<br>Barranquilla</p>
+                  </td>
+                  <td width="30%" valign="top" style="padding:0 6px;text-align:center;">
+                    <p style="margin:0;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#9fb0d0;">Horario</p>
+                    <p style="margin:4px 0 0;font-size:13px;line-height:1.35;font-weight:700;color:#ffffff;">Desde las<br>3:00 p. m.</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:14px 0 0;font-size:13px;line-height:1.45;color:#94a3b8;">Abajo está tu boleta de acceso. Preséntala en la entrada.</p>
       </div>
       ${cardHtml}
     </div>
   `
 
   return {
-    subject: `Tu ticket #${ticketNo} · Shark Caribe 2026`,
+    subject: `Nos vemos en la Gran Final · Ticket #${ticketNo}`,
     html,
   }
 }

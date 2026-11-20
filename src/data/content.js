@@ -14,6 +14,9 @@ export const REGISTER_URL =
 export const INSTAGRAM_URL =
   'https://www.instagram.com/shark.caribe?igsh=a3FiYWx0bTRsMWJv'
 
+/* La venta de boletas vive en Shark Pass. */
+export const TICKET_URL = 'https://sharkpass.co'
+
 /* Links para compartir boleta (WhatsApp). Abren el registro con tipo listo.
    Dominio de producción: sharkcaribe.co */
 export const BOLETA_SHARE_LINKS = {
@@ -99,23 +102,46 @@ export const INSTAGRAM_FEED = {
 /* Términos de referencia de la competencia (documento descargable en /public) */
 export const TERMS_URL = '/terminos-referencia-shark-caribe-2026.pdf'
 
-/* Carrusel del hero: slide 1 imagen; 2 Preferencial; 3 General */
+/* Carrusel del hero: la pieza original y seis recortes rectangulares de la agenda. */
 export const HERO_SLIDES = [
   {
     id: 'hero0',
     kind: 'image',
     src: '/hero/hero0.jpg',
-    alt: 'Shark Caribe 2026',
+    alt: 'Shark Caribe Pitch Competition, 25 de noviembre de 2026',
   },
   {
-    id: 'hero-preferencial',
-    kind: 'ticket',
-    seatType: 'preferencial',
+    id: 'hero-opening',
+    kind: 'feature',
+    kicker: 'Ven y deléitate con',
+    name: 'Saluna Mejía',
+    time: '4:00 – 4:10 p. m.',
+    right: '/agenda/derecha.jpeg',
+    alt: 'Opening musical de Saluna Mejía',
   },
   {
-    id: 'hero-general',
-    kind: 'ticket',
-    seatType: 'general',
+    id: 'hero-grupo-1',
+    kind: 'image',
+    src: '/hero/hero-grupo-1.jpg',
+    alt: 'Semifinalistas, grupo 1',
+  },
+  {
+    id: 'hero-grupo-2',
+    kind: 'image',
+    src: '/hero/hero-grupo-2.jpg',
+    alt: 'Semifinalistas, grupo 2',
+  },
+  {
+    id: 'hero-jurados',
+    kind: 'image',
+    src: '/hero/hero-jurados.jpg',
+    alt: 'Jurados de la Gran Final',
+  },
+  {
+    id: 'hero-conducen',
+    kind: 'image',
+    src: '/hero/hero-conducen.jpg',
+    alt: 'Host Jairo Martínez y referí Jonathan Quant',
   },
 ]
 
@@ -669,7 +695,89 @@ export const REGISTER_OPTIONS = [
   { id: 'participante', label: 'Competidor' },
 ]
 
+export const AGENDA = {
+  poster: '/agenda/cronograma.jpeg',
+  date: 'Miércoles 25 de noviembre',
+  place: 'Hotel Dann Carlton · Salón Los Laureles, piso 12',
+  ingress: 'Ingreso desde las 3:00 p. m.',
+  program: 'Programa de 4:00 p. m. a 9:00 p. m.',
+  items: [
+    { time: '3:00 p. m.', title: 'Registro e ingreso' },
+    {
+      time: '4:00 – 4:10 p. m.',
+      title: 'Opening musical',
+      detail: 'Saluna Mejía y presentación de jurados',
+      poster: '/agenda/opening-saluna.jpeg',
+      posterLabel: 'Ver opening',
+    },
+    {
+      time: '4:10 – 4:30 p. m.',
+      title: 'Palabras de Eduardo Verano de la Rosa',
+      href: '#jurados',
+      linkLabel: 'Ver jurados',
+    },
+    {
+      time: '4:30 – 4:50 p. m.',
+      title: 'Panel: Emprender no tiene edad',
+      detail: 'BusinessKids · Modera Laura Yibeth Rozo Penagos',
+      poster: '/agenda/panel-businesskids.jpeg',
+      posterLabel: 'Ver panel',
+    },
+    {
+      time: '4:50 – 5:20 p. m.',
+      title: 'Primer grupo de semifinalistas',
+      href: '#gran-final',
+      linkLabel: 'Ver semifinalistas',
+    },
+    {
+      time: '5:20 – 5:40 p. m.',
+      title: 'Jaime Alfaro de Castro',
+      detail: 'Subsecretario de Turismo del Atlántico',
+      poster: '/agenda/jaime-alfaro.jpeg',
+      posterLabel: 'Ver pieza',
+    },
+    {
+      time: '5:40 – 6:10 p. m.',
+      title: 'Segundo grupo de semifinalistas',
+      href: '#gran-final',
+      linkLabel: 'Ver semifinalistas',
+    },
+    {
+      time: '6:10 – 6:30 p. m.',
+      title: 'La fórmula para convertir lo que queremos en resultados',
+      detail: 'Guadís Riverda Matos',
+      poster: '/agenda/guadis-riverda.jpeg',
+      posterLabel: 'Ver pieza',
+    },
+    {
+      time: '6:30 – 6:50 p. m.',
+      title: 'Charla motivacional',
+      detail: 'Jacqueline Rojas · Fundación Territorios con Propósito',
+      poster: '/agenda/jacqueline-rojas.jpeg',
+      posterLabel: 'Ver pieza',
+    },
+    { time: '6:50 – 7:00 p. m.', title: 'Elección y anuncio de los 5 finalistas' },
+    { time: '7:00 – 7:25 p. m.', title: 'Pitches finalistas' },
+    { time: '7:25 – 8:00 p. m.', title: 'Elección de ganadores' },
+    { time: '8:00 – 8:30 p. m.', title: 'Premiación' },
+    { time: '8:30 – 9:00 p. m.', title: 'Cierre' },
+  ],
+  hosts: [
+    {
+      role: 'Host',
+      name: 'Jairo Martínez',
+      poster: '/agenda/jairo-martinez.jpeg',
+    },
+    {
+      role: 'Referí',
+      name: 'Jonathan Quant',
+      poster: '/agenda/jonathan-quant.jpeg',
+    },
+  ],
+}
+
 export const NAV_LINKS = [
+  { label: 'Agenda', href: '#agenda' },
   // { label: 'Emprendimientos', href: '#emprendimientos' },
   // { label: '2ª Ronda', href: '#segunda-ronda' },
   { label: 'Semifinal', href: '#gran-final' },
@@ -748,7 +856,7 @@ export const FINAL_ROUND = {
   trainingBody:
     'Como parte del compromiso de Shark Caribe Pitch Competition con el fortalecimiento empresarial de los emprendedores en competencia, desarrollamos a través de la Universidad Sergio Arboleda el PROGRAMA DE ENTRENAMIENTO EN COMUNICACIÓN ESTRATÉGICA diseñado para mejorar las capacidades de negociación y potencializar la propuesta de valor de los emprendimientos ante potenciales clientes e inversionistas.',
   ticketsCta: 'Compra tu entrada a la Gran Final',
-  ticketsHref: '#inicio',
+  ticketsHref: TICKET_URL,
   dateLabel: 'Miércoles 25 de noviembre',
   yearLabel: '2026',
   timeLabel: '3:00 p. m. – 9:45 p. m.',

@@ -127,21 +127,15 @@ export default function FinalRound({ onRegister }) {
           </h3>
           <p className="final-round__training-body">{FINAL_ROUND.trainingBody}</p>
           <div className="final-round__training-actions">
-            {typeof onRegister === 'function' ? (
-              <button
-                type="button"
-                className="final-round__tickets-cta"
-                onClick={() => onRegister('asistente')}
-              >
-                {FINAL_ROUND.ticketsCta}
-                <span aria-hidden="true">→</span>
-              </button>
-            ) : (
-              <a className="final-round__tickets-cta" href={FINAL_ROUND.ticketsHref}>
-                {FINAL_ROUND.ticketsCta}
-                <span aria-hidden="true">→</span>
-              </a>
-            )}
+            <a
+              className="final-round__tickets-cta"
+              href={FINAL_ROUND.ticketsHref}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {FINAL_ROUND.ticketsCta}
+              <span aria-hidden="true">→</span>
+            </a>
           </div>
         </div>
 

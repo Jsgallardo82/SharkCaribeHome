@@ -6,6 +6,7 @@ import {
   HERO,
   HERO_SLIDES,
   ORGANIZER,
+  TICKET_URL,
 } from '../data/content.js'
 import { sharkySoundInteractionProps } from '../lib/sharkySound.js'
 import './Hero.css'
@@ -23,7 +24,8 @@ function seatForSlide(slide) {
 
 export default function Hero({ onRegister }) {
   const [active, setActive] = useState(0)
-  const count = HERO_SLIDES.length
+  const slides = HERO_SLIDES
+  const count = slides.length
 
   useEffect(() => {
     if (count <= 1) return undefined
@@ -64,7 +66,7 @@ export default function Hero({ onRegister }) {
       <div className="hero__overlay" aria-hidden="true" />
 
       <div className="hero__track">
-        {HERO_SLIDES.map((slide, i) => {
+        {slides.map((slide, i) => {
           const isActive = i === active
           const seat = slide.kind === 'ticket' ? seatForSlide(slide) : null
 
@@ -73,7 +75,7 @@ export default function Hero({ onRegister }) {
               key={slide.id}
               className={`hero__slide ${isActive ? 'is-active' : ''} ${
                 slide.kind === 'ticket' ? 'hero__slide--ticket' : ''
-              }`}
+              } ${slide.kind === 'feature' ? 'hero__slide--feature' : ''}`}
               aria-hidden={!isActive}
             >
               {slide.kind === 'image' ? (
@@ -85,6 +87,22 @@ export default function Hero({ onRegister }) {
                   fetchPriority={i === 0 ? 'high' : 'low'}
                   loading={i === 0 ? 'eager' : 'lazy'}
                 />
+              ) : slide.kind === 'feature' ? (
+                <div className="hero__feature">
+                  <div className="hero__feature-copy">
+                    <p className="hero__feature-kicker">{slide.kicker}</p>
+                    <p className="hero__feature-name">{slide.name}</p>
+                    <p className="hero__feature-time">{slide.time}</p>
+                    <span className="hero__feature-barcode" aria-hidden="true" />
+                  </div>
+                  <img
+                    src={slide.right}
+                    alt={slide.alt}
+                    className="hero__feature-side"
+                    draggable={false}
+                    loading={isActive ? 'eager' : 'lazy'}
+                  />
+                </div>
               ) : seat ? (
                 <div className="hero__ticket">
                   <div
@@ -160,15 +178,14 @@ export default function Hero({ onRegister }) {
       <div className="hero__register">
         <div className="hero__register-row">
           <p className="hero__support">{HERO.supportMessage}</p>
-          <button
-            type="button"
+          <a
             className="btn hero__register-btn"
-            onClick={() =>
-              onRegister?.('asistente', { seatType: 'preferencial' })
-            }
+            href={TICKET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {HERO.ctaLabel}
-          </button>
+          </a>
         </div>
       </div>
 
@@ -191,7 +208,7 @@ export default function Hero({ onRegister }) {
             ›
           </button>
           <div className="hero__dots" role="tablist" aria-label="Diapositivas del hero">
-            {HERO_SLIDES.map((slide, i) => (
+            {slides.map((slide, i) => (
               <button
                 key={slide.id}
                 type="button"

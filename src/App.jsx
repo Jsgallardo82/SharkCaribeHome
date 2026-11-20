@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
+import Agenda from './components/Agenda.jsx'
 // import Competition from './components/Competition.jsx'
 import Judges from './components/Judges.jsx'
 // import Ventures from './components/Ventures.jsx'
@@ -16,6 +17,7 @@ import MuestraComercial from './components/MuestraComercial.jsx'
 import News from './components/News.jsx'
 import Allies from './components/Allies.jsx'
 import Footer from './components/Footer.jsx'
+import { TICKET_URL } from './data/content.js'
 import {
   installSharkySoundOnFirstGesture,
   playSharkySound,
@@ -132,26 +134,15 @@ export default function App() {
     if (!seat && !onBoletaRoute) return
 
     deepLinkHandled.current = true
-
-    if (seat) {
-      openRegister('asistente', { seatType: seat })
-    } else {
-      openRegister('unificado', { category: '' })
-    }
-
-    const hero = document.getElementById('inicio')
-    if (hero) {
-      requestAnimationFrame(() => {
-        hero.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      })
-    }
-  }, [location.pathname, openRegister, searchParams, seatFromPath])
+    window.location.assign(TICKET_URL)
+  }, [location.pathname, searchParams, seatFromPath])
 
   return (
     <>
       <Navbar onRegister={openRegister} />
       <main>
         <Hero onRegister={openRegister} />
+        <Agenda />
         <About />
         {/* Aliados también aquí arriba, además del cierre antes del footer.
             Es el mismo componente montado dos veces: no tiene estado ni id,

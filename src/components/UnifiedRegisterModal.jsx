@@ -11,6 +11,7 @@ import {
   REFERRAL_SOURCES,
   SPONSOR_PLANS,
   SUPPORT_EMAIL,
+  TICKET_URL,
   UNIFIED_REGISTER,
 } from '../data/content.js'
 import {
@@ -304,6 +305,10 @@ export default function UnifiedRegisterModal({
   }, [isAttendee])
 
   function selectCategory(nextId) {
+    if (nextId === 'publico_preferencial' || nextId === 'publico_general') {
+      window.open(TICKET_URL, '_blank', 'noopener,noreferrer')
+      return
+    }
     setCategory(nextId)
     setErrors({})
     setSubmitError('')

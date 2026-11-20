@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { TICKET_URL } from '../data/content.js'
 import { fetchPublicVentures, isSupabaseConfigured } from '../lib/supabase'
 import './Ventures.css'
 
@@ -33,14 +34,6 @@ export function VentureModal({ venture, onClose, onRegister }) {
     category === 'silver' || category === 'prime' || category === 'junior'
       ? `venture-modal--${category}`
       : ''
-
-  function handleSupportClick() {
-    onClose()
-    onRegister?.('asistente', {
-      accompaniedCompetitorId: venture.id || '',
-      ventureName: venture.name || '',
-    })
-  }
 
   return (
     <div
@@ -125,13 +118,14 @@ export function VentureModal({ venture, onClose, onRegister }) {
               Apoya a {venture.name || 'este concursante'}: compra tu ticket y
               vive el Gran Pitch Competition.
             </p>
-            <button
-              type="button"
+            <a
               className="btn venture-modal__support-cta"
-              onClick={handleSupportClick}
+              href={TICKET_URL}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Compra un ticket
-            </button>
+            </a>
           </div>
         ) : null}
       </div>
