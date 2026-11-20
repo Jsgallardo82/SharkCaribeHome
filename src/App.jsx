@@ -11,9 +11,9 @@ import FinalRound from './components/FinalRound.jsx'
 import Prizes from './components/Prizes.jsx'
 import About from './components/About.jsx'
 // import Editions from './components/Editions.jsx'
-import Sponsors from './components/Sponsors.jsx'
+// import Sponsors from './components/Sponsors.jsx'
 // import Entradas from './components/Entradas.jsx'
-import MuestraComercial from './components/MuestraComercial.jsx'
+// import MuestraComercial from './components/MuestraComercial.jsx'
 import News from './components/News.jsx'
 import Allies from './components/Allies.jsx'
 import Footer from './components/Footer.jsx'
@@ -152,8 +152,8 @@ export default function App() {
         {/* <PitchRound /> */}
         <FinalRound onRegister={openRegister} />
         <Judges />
-        <Sponsors onRegister={openRegister} />
-        <MuestraComercial onRegister={openRegister} />
+        {/* <Sponsors onRegister={openRegister} /> */}
+        {/* <MuestraComercial onRegister={openRegister} /> */}
         <Prizes />
         {/* <Competition onRegister={openRegister} /> */}
         {/* <Entradas onRegister={openRegister} /> */}

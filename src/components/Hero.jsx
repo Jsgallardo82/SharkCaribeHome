@@ -92,13 +92,26 @@ export default function Hero({ onRegister }) {
                   <div className="hero__feature-copy">
                     <p className="hero__feature-kicker">{slide.kicker}</p>
                     <p className="hero__feature-name">{slide.name}</p>
+                    {slide.role ? (
+                      <p className="hero__feature-role">{slide.role}</p>
+                    ) : null}
+                    {slide.logo ? (
+                      <img
+                        src={slide.logo}
+                        alt={slide.logoAlt || ''}
+                        className="hero__feature-logo"
+                        draggable={false}
+                      />
+                    ) : null}
                     <p className="hero__feature-time">{slide.time}</p>
                     <span className="hero__feature-barcode" aria-hidden="true" />
                   </div>
                   <img
                     src={slide.right}
                     alt={slide.alt}
-                    className="hero__feature-side"
+                    className={`hero__feature-side${
+                      slide.fit === 'contain' ? ' is-contain' : ''
+                    }`}
                     draggable={false}
                     loading={isActive ? 'eager' : 'lazy'}
                   />
