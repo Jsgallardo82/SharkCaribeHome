@@ -120,6 +120,19 @@ export const HERO_SLIDES = [
     alt: 'Opening musical de Saluna Mejía',
   },
   {
+    id: 'hero-panel',
+    kind: 'feature',
+    kicker: 'Panel especial',
+    name: 'Emprender no tiene edad',
+    time: '4:30 – 4:50 p. m.',
+    logo: '/agenda/moderadorakids.jpeg',
+    logoAlt: 'Laura Yibeth Rozo Penagos, moderadora',
+    right: '/agenda/kids%20derecha.jpeg',
+    fit: 'contain',
+    wide: true,
+    alt: 'Panel Emprender no tiene edad, BusinessKids',
+  },
+  {
     id: 'hero-jaime',
     kind: 'feature',
     kicker: 'El visitante ya llegó. ¿Quién le vende?',
@@ -326,6 +339,58 @@ export const JURY_ROUND2_CRITERIA = [
 
 export const JURY_ROUND2_SCORE_MIN = 1
 export const JURY_ROUND2_SCORE_MAX = 5
+
+/* Rúbrica de fogueo · final. Nota 1–5; puntos = nota ÷ 5 × peso. Total sobre 100. */
+export const JURY_FINAL_CRITERIA = [
+  {
+    key: 'dominio_precision',
+    label: 'Dominio y precisión de las respuestas',
+    weight: 25,
+    hint: '5: datos concretos de producto, proceso y números, sin titubear. 3: lo básico, con cifras vagas. 1: no conoce lo esencial o responde con generalidades.',
+  },
+  {
+    key: 'sustento_evidencia',
+    label: 'Sustento con evidencia',
+    weight: 20,
+    hint: '5: respalda con ventas, pedidos, clientes, fotos o pruebas. 3: algún dato, pero casi todo es opinión. 1: solo afirma, sin dato ni ejemplo.',
+  },
+  {
+    key: 'coherencia_pitch',
+    label: 'Coherencia con el pitch',
+    weight: 15,
+    hint: '5: confirma y amplía lo presentado; cifras y planes coinciden. 3: hay diferencias y las aclara. 1: se contradice y no lo aclara.',
+  },
+  {
+    key: 'manejo_objeciones',
+    label: 'Manejo de objeciones y presión',
+    weight: 15,
+    hint: '5: mantiene la calma, acepta la crítica y dice cómo resolver lo que no sabe. 3: responde, pero se pone a la defensiva. 1: evade, se bloquea o inventa.',
+  },
+  {
+    key: 'capacidad_negociacion',
+    label: 'Capacidad de negociación',
+    weight: 15,
+    hint: '5: defiende el valor, sabe qué ceder y qué no, y lo argumenta. 3: acepta o rechaza sin razones, o cede muy rápido. 1: acepta cualquier condición.',
+  },
+  {
+    key: 'claridad_sintesis',
+    label: 'Claridad y síntesis',
+    weight: 10,
+    hint: '5: escucha y responde exactamente lo preguntado, en poco tiempo. 3: responde, pero se extiende o se desvía. 1: no contesta lo preguntado o repite el pitch.',
+  },
+]
+
+export const JURY_FINAL_SCORE_MIN = 1
+export const JURY_FINAL_SCORE_MAX = 5
+export const JURY_FINAL_TOTAL = 100
+
+export function juryFinalCriterionPoints(score, weight) {
+  const n = Number(score)
+  if (!Number.isFinite(n) || n < JURY_FINAL_SCORE_MIN || n > JURY_FINAL_SCORE_MAX) {
+    return null
+  }
+  return (n * weight) / 5
+}
 
 /* Ranking en vivo: visible desde esta hora (Colombia, UTC-5) */
 export const LIVE_RANKING_REVEALS_AT = '2026-08-18T08:30:00-05:00'

@@ -111,7 +111,7 @@ export default function Hero({ onRegister }) {
                     alt={slide.alt}
                     className={`hero__feature-side${
                       slide.fit === 'contain' ? ' is-contain' : ''
-                    }`}
+                    }${slide.wide ? ' is-wide' : ''}`}
                     draggable={false}
                     loading={isActive ? 'eager' : 'lazy'}
                   />

@@ -301,6 +301,18 @@
   font-size: 0.95rem;
 }
 
+.juicio2__weight {
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.juicio2__criterion-points {
+  margin: 0.45rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
 .juicio2__hint {
   margin: 0.25rem 0 0.55rem;
   color: var(--color-text-muted);

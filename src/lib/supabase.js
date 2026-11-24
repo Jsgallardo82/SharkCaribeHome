@@ -341,6 +341,156 @@ export async function fetchAllJuryScoresRound2() {
   })
 }
 
+/* ---------- Jurado · Final ---------- */
+
+const JURY_FINAL_SCORE_COLUMNS =
+  'id, competitor_id, dominio_precision, sustento_evidencia, coherencia_pitch, manejo_objeciones, capacidad_negociacion, claridad_sintesis, total, observaciones, updated_at'
+
+export async function fetchJuryFinalCompetitors() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const { data, error } = await supabase
+    .from('jury_final_competitors')
+    .select('id, full_name, venture_name, sector, category, logo_url')
+    .order('venture_name', { ascending: true })
+
+  if (error) {
+    console.error('[Shark Caribe] Error al listar finalistas:', error)
+    throw new Error(
+      error.message?.includes('jury_final_competitors') || error.code === '42P01'
+        ? 'Falta ejecutar supabase/jury_scores_final.sql en Supabase.'
+        : `No pudimos cargar los finalistas: ${error.message}`
+    )
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
+export async function fetchMyJuryScoresFinal() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const session = await getSession()
+  if (!session?.user) throw new Error('No hay sesión activa.')
+
+  const { data, error } = await supabase
+    .from('jury_scores_final')
+    .select(JURY_FINAL_SCORE_COLUMNS)
+    .eq('juror_id', session.user.id)
+
+  if (error) {
+    console.error('[Shark Caribe] Error al leer mis calificaciones de la final:', error)
+    throw new Error(
+      error.message?.includes('jury_scores_final') || error.code === '42P01'
+        ? 'Falta ejecutar supabase/jury_scores_final.sql en Supabase.'
+        : `No pudimos cargar tus calificaciones: ${error.message}`
+    )
+  }
+
+  return Array.isArray(data) ? data : []
+}
+
+export async function upsertJuryScoreFinal(values) {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const session = await getSession()
+  if (!session?.user) throw new Error('No hay sesión activa.')
+
+  const row = {
+    juror_id: session.user.id,
+    competitor_id: values.competitorId,
+    dominio_precision: Number(values.dominio_precision),
+    sustento_evidencia: Number(values.sustento_evidencia),
+    coherencia_pitch: Number(values.coherencia_pitch),
+    manejo_objeciones: Number(values.manejo_objeciones),
+    capacidad_negociacion: Number(values.capacidad_negociacion),
+    claridad_sintesis: Number(values.claridad_sintesis),
+    observaciones: values.observaciones?.trim()
+      ? values.observaciones.trim()
+      : null,
+  }
+
+  const { data, error } = await supabase
+    .from('jury_scores_final')
+    .upsert(row, { onConflict: 'juror_id,competitor_id' })
+    .select(JURY_FINAL_SCORE_COLUMNS)
+    .single()
+
+  if (error) {
+    console.error('[Shark Caribe] Error al guardar calificación de la final:', error)
+    throw new Error(
+      error.message || 'No pudimos guardar la calificación. Inténtalo de nuevo.'
+    )
+  }
+
+  return data
+}
+
+export async function fetchAllJuryScoresFinal() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const withCompetitor = await supabase
+    .from('jury_scores_final')
+    .select(
+      `id, juror_id, competitor_id,
+       dominio_precision, sustento_evidencia, coherencia_pitch,
+       manejo_objeciones, capacidad_negociacion, claridad_sintesis,
+       total, observaciones,
+       created_at, updated_at,
+       competitor:competitor_registrations(id, venture_name, full_name, category, sector)`
+    )
+    .order('updated_at', { ascending: false })
+
+  if (withCompetitor.error) {
+    console.error(
+      '[Shark Caribe] Error al leer calificaciones de la final (admin):',
+      withCompetitor.error
+    )
+    throw new Error(
+      withCompetitor.error.message?.includes('jury_scores_final') ||
+        withCompetitor.error.code === '42P01'
+        ? 'Falta ejecutar supabase/jury_scores_final.sql en Supabase.'
+        : `No pudimos cargar los resultados: ${withCompetitor.error.message}`
+    )
+  }
+
+  const rows = Array.isArray(withCompetitor.data) ? withCompetitor.data : []
+  const jurorIds = [...new Set(rows.map((r) => r.juror_id).filter(Boolean))]
+
+  let profileById = {}
+  if (jurorIds.length) {
+    const profilesRes = await supabase
+      .from('profiles')
+      .select('id, email')
+      .in('id', jurorIds)
+
+    if (profilesRes.error) {
+      console.warn(
+        '[Shark Caribe] No se pudieron leer perfiles de jurados:',
+        profilesRes.error
+      )
+    } else if (Array.isArray(profilesRes.data)) {
+      profileById = Object.fromEntries(
+        profilesRes.data.map((p) => [p.id, p])
+      )
+    }
+  }
+
+  return rows.map((row) => {
+    const profile = profileById[row.juror_id]
+    const email = profile?.email || ''
+    return {
+      ...row,
+      jurorEmail: email,
+      jurorName: email
+        ? email
+            .split('@')[0]
+            .replace(/[._-]+/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase())
+        : '',
+    }
+  })
+}
+
 export async function fetchLiveJuryRound2Ranking() {
   if (!supabase) throw new Error('Supabase no está configurado.')
 

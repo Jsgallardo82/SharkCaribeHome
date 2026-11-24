@@ -35,6 +35,7 @@ import {
   COMPETITION_STAGE_ORDER,
 } from '../data/content.js'
 import JuryRound2Results from './JuryRound2Results.jsx'
+import JuryFinalResults from './JuryFinalResults.jsx'
 import AdminCheckIn from './AdminCheckIn.jsx'
 import AdminTicketPreview from './AdminTicketPreview.jsx'
 import './Admin.css'
@@ -47,6 +48,7 @@ const TABS = [
   { id: 'patrocinadores', label: 'Patrocinadores' },
   { id: 'expositores', label: 'Expositores' },
   { id: 'resultados-2ronda', label: 'Resultados 2ª ronda' },
+  { id: 'resultados-final', label: 'Resultados fogueo' },
 ]
 
 const COMPETITOR_COLUMNS = [
@@ -334,6 +336,20 @@ function rowKeyOf(row, index) {
 }
 
 function tabConfig(tab) {
+  if (tab === 'resultados-final') {
+    return {
+      title: 'Resultados · Fogueo',
+      columns: [],
+      cellValue: () => '',
+      detailFields: () => [],
+      empty: '',
+      canConfirmPayment: false,
+      confirmPayment: null,
+      setRows: null,
+      exportFile: 'resultados-final',
+      exportSheet: 'Resultados',
+    }
+  }
   if (tab === 'resultados-2ronda') {
     return {
       title: 'Resultados · 2ª ronda',
@@ -405,7 +421,12 @@ function tabConfig(tab) {
 }
 
 function tabRowCount(itemId, counts) {
-  if (itemId === 'resultados-2ronda' || itemId === 'acceso' || itemId === 'boleta')
+  if (
+    itemId === 'resultados-2ronda' ||
+    itemId === 'resultados-final' ||
+    itemId === 'acceso' ||
+    itemId === 'boleta'
+  )
     return '·'
   if (itemId === 'asistentes') return counts.attendees
   if (itemId === 'patrocinadores') return counts.sponsors
@@ -1165,6 +1186,8 @@ export default function Admin() {
               />
             ) : tab === 'resultados-2ronda' ? (
               <JuryRound2Results />
+            ) : tab === 'resultados-final' ? (
+              <JuryFinalResults />
             ) : (
               <>
             {tab === 'asistentes' && (

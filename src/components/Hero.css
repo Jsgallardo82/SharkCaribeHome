@@ -164,6 +164,13 @@
   background: #fff;
 }
 
+.hero__feature-side.is-wide {
+  flex: 1 1 48%;
+  width: auto;
+  max-width: 52%;
+  min-width: 0;
+}
+
 .hero__feature-logo {
   display: block;
   align-self: center;
@@ -634,6 +641,7 @@
     order: 1;
     flex-basis: auto;
     width: 100%;
+    max-width: none;
     height: 210px;
   }
 

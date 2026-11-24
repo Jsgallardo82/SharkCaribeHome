@@ -12,7 +12,7 @@ import {
 import { JURY_PORTAL, USER_ROLES } from '../data/content.js'
 import Ticket, { Barcode } from './Ticket.jsx'
 import Footer from './Footer.jsx'
-import Juicio2Ronda from './Juicio2Ronda.jsx'
+import JuicioFinal from './JuicioFinal.jsx'
 import './Jury.css'
 
 export default function Jury() {
@@ -143,7 +143,7 @@ export default function Jury() {
           </Ticket>
         </div>
 
-        <Juicio2Ronda />
+        <JuicioFinal />
       </div>
 
       <Footer />
