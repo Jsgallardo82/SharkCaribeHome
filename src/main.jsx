@@ -10,6 +10,7 @@ const Login = lazy(() => import('./components/Login.jsx'))
 const Signup = lazy(() => import('./components/Signup.jsx'))
 const Admin = lazy(() => import('./components/Admin.jsx'))
 const Jury = lazy(() => import('./components/Jury.jsx'))
+const Porter = lazy(() => import('./components/Porter.jsx'))
 const PaymentResult = lazy(() => import('./components/PaymentResult.jsx'))
 const LiveRound2Results = lazy(
   () => import('./components/LiveRound2Results.jsx'),
@@ -45,6 +46,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/registro" element={<Signup />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/jurado" element={<Jury />} />
+          <Route path="/portero" element={<Porter />} />
           {/* Ranking en vivo: solo en local (npm run dev); en producción redirige */}
           <Route
             path="/resultados-vivo"

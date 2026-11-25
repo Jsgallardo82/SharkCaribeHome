@@ -533,6 +533,10 @@ export default function Admin() {
             navigate('/jurado', { replace: true })
             return
           }
+          if (profile?.role === 'portero') {
+            navigate('/portero', { replace: true })
+            return
+          }
           setStatus('forbidden')
           return
         }

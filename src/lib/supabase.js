@@ -172,6 +172,7 @@ export async function getProfile() {
 export function homePathForRole(role) {
   if (role === 'admin') return '/admin'
   if (role === 'jurado') return '/jurado'
+  if (role === 'portero') return '/portero'
   return '/'
 }
 
@@ -1272,6 +1273,23 @@ export async function checkInAttendeeByToken(token) {
   }
 
   return data
+}
+
+export async function fetchEventGuests() {
+  if (!supabase) throw new Error('Supabase no está configurado.')
+
+  const { data, error } = await supabase.rpc('list_event_guests')
+
+  if (error) {
+    console.error('[Shark Caribe] list_event_guests:', error)
+    throw new Error(
+      error.message?.includes('list_event_guests') || error.code === 'PGRST202'
+        ? 'Falta ejecutar la función list_event_guests de supabase/profiles_role_portero.sql.'
+        : error.message || 'No pudimos cargar la lista de invitados.'
+    )
+  }
+
+  return Array.isArray(data) ? data : []
 }
 
 export async function setAttendeeCheckedIn(id, checkedIn) {

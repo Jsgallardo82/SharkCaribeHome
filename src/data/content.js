@@ -292,6 +292,7 @@ export const USER_ROLES = {
   asistente: 'asistente',
   concursante: 'concursante',
   jurado: 'jurado',
+  portero: 'portero',
 }
 
 export const USER_ROLE_LABELS = [
@@ -300,6 +301,7 @@ export const USER_ROLE_LABELS = [
   { value: 'asistente', label: 'Asistente' },
   { value: 'concursante', label: 'Concursante' },
   { value: 'jurado', label: 'Jurado' },
+  { value: 'portero', label: 'Portero' },
 ]
 
 /* Portal del jurado */
