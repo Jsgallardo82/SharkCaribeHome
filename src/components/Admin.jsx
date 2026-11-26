@@ -41,13 +41,13 @@ import AdminTicketPreview from './AdminTicketPreview.jsx'
 import './Admin.css'
 
 const TABS = [
-  { id: 'acceso', label: 'Acceso' },
-  { id: 'boleta', label: 'Boleta' },
-  { id: 'competidores', label: 'Competidores' },
-  { id: 'asistentes', label: 'Asistentes' },
-  { id: 'patrocinadores', label: 'Patrocinadores' },
-  { id: 'expositores', label: 'Expositores' },
-  { id: 'resultados-2ronda', label: 'Resultados 2ª ronda' },
+  // { id: 'acceso', label: 'Acceso' },
+  // { id: 'boleta', label: 'Boleta' },
+  // { id: 'competidores', label: 'Competidores' },
+  // { id: 'asistentes', label: 'Asistentes' },
+  // { id: 'patrocinadores', label: 'Patrocinadores' },
+  // { id: 'expositores', label: 'Expositores' },
+  // { id: 'resultados-2ronda', label: 'Resultados 2ª ronda' },
   { id: 'resultados-final', label: 'Resultados fogueo' },
 ]
 
@@ -472,7 +472,7 @@ export default function Admin() {
   const navigate = useNavigate()
   const [status, setStatus] = useState('checking')
   const [email, setEmail] = useState('')
-  const [tab, setTab] = useState('competidores')
+  const [tab, setTab] = useState('resultados-final')
   const [competitorRows, setCompetitorRows] = useState([])
   const [attendeeRows, setAttendeeRows] = useState([])
   const [sponsorRows, setSponsorRows] = useState([])
