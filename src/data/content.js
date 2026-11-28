@@ -102,14 +102,8 @@ export const INSTAGRAM_FEED = {
 /* Términos de referencia de la competencia (documento descargable en /public) */
 export const TERMS_URL = '/terminos-referencia-shark-caribe-2026.pdf'
 
-/* Carrusel del hero: la pieza original y seis recortes rectangulares de la agenda. */
+/* Carrusel del hero: piezas de la agenda, semifinalistas, jurados y conducción. */
 export const HERO_SLIDES = [
-  {
-    id: 'hero0',
-    kind: 'image',
-    src: '/hero/hero0.jpg',
-    alt: 'Shark Caribe Pitch Competition, 25 de noviembre de 2026',
-  },
   {
     id: 'hero-opening',
     kind: 'feature',
@@ -214,6 +208,7 @@ export const ALLIES = [
   { name: 'Reformada', sub: '', logo: '/logos/reformada.png' },
   { name: 'OVIU', sub: 'Clínica Oftalmológica Internacional', logo: '/logos/oviu.png' },
   { name: 'AMI', sub: '', logo: '/logos/logoami.png' },
+  { name: 'Defensa Civil', sub: '', logo: '/logos/defensacivil.jpeg' },
 ]
 
 /* Correo al que se envían los soportes de pago y la fotocopia del documento */
@@ -1173,7 +1168,7 @@ export const HERO = {
   brand: 'Shark Caribe',
   meta: '25/11/2026 - Hotel Dann Carlton Barranquilla',
   supportMessage: 'Asiste y apoya a los participantes.',
-  ctaLabel: 'Compra aquí',
+  ctaLabel: 'SharkPass',
 }
 
 /* Sección competidores + calendario (debajo del hero) */
